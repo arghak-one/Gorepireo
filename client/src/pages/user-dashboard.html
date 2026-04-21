@@ -1,0 +1,233 @@
+<style>
+    :root {
+        --bg-base: #050b14;
+        --text-primary: #FFFFFF;
+        --text-secondary: #9CA3AF;
+        --accent: #C19A32;
+        --accent-hover: #a8852a;
+        --accent-dim: rgba(193, 154, 50, 0.12);
+        --accent-border: rgba(193, 154, 50, 0.3);
+        --surface: rgba(255, 255, 255, 0.03);
+        --surface-glass: rgba(5, 11, 20, 0.92);
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --radius-md: 14px;
+        --radius-lg: 24px;
+        --radius-pill: 9999px;
+        --font-sans: 'Plus Jakarta Sans', sans-serif;
+        --success: #10B981;
+        --warning: #F59E0B;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+    .grid { display: grid; grid-template-columns: 320px 1fr; gap: 32px; }
+
+    .profile-card {
+        background: var(--surface-glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 40px 32px;
+        text-align: center; position: sticky; top: 40px; height: fit-content;
+    }
+
+    .avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 24px; }
+    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-border); }
+    .avatar-overlay { position: absolute; bottom: 0; right: 0; background: var(--accent); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 4px solid var(--bg-base); color: white; }
+
+    .section-card { background: var(--surface-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 32px; }
+    .dashboard-tab { display: none; }
+    .dashboard-tab.active { display: block; animation: dashFadeIn 0.3s ease-out; }
+
+    @keyframes dashFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } .profile-card { position: relative; top: 0; } }
+</style>
+
+<main id="app-content">
+    <div class="dashboard-container">
+        <div class="welcome-box" style="margin-bottom: 40px;">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(193,154,50,0.12);border:1px solid rgba(193,154,50,0.3);padding:5px 14px;border-radius:30px;font-size:11px;font-weight:700;color:#C19A32;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px;">
+                <i class="fas fa-star"></i> Dashboard
+            </div>
+            <h1 style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;letter-spacing:-1px;line-height:1.1;">
+                <span style="color:white;">Hello, </span><em id="userName" style="color:#C19A32;font-style:italic;">User</em>
+            </h1>
+            <p style="color:var(--text-secondary); font-size:14px; margin-top:8px;">Welcome to your GoRepireo Command Center.</p>
+        </div>
+
+        <div class="grid">
+            <aside class="profile-card">
+                <div class="avatar-container">
+                    <img id="avatarDisplay" src="https://ui-avatars.com/api/?name=User&background=random" class="avatar-img" alt="User Avatar">
+                    <label for="avatarInput" class="avatar-overlay"><i class="fas fa-camera"></i></label>
+                    <input type="file" id="avatarInput" accept="image/*" onchange="window.uploadAvatar(this)" style="display:none">
+                </div>
+                <div class="profile-info">
+                    <h2 id="fullNameDisplay" style="font-family:'Playfair Display',serif;font-size: 26px;font-weight:700;margin-bottom:4px;">Loading...</h2>
+                    <p id="emailDisplay" style="font-size:13px;color:var(--text-secondary);">email@example.com</p>
+                </div>
+                <div class="stats-min" style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border-subtle);">
+                    <div class="stat-item">
+                        <span style="display:block; font-size:11px; color:var(--text-secondary);">Total Orders</span>
+                        <strong id="totalOrders" style="font-size:18px;">0</strong>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="main-content">
+                <div id="tab-home" class="dashboard-tab active">
+                    <section class="section-card">
+                        <h3 style="margin-bottom:24px; font-size:17px;"><i class="fas fa-bolt" style="color:var(--accent); margin-right:10px;"></i> Quick Actions</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px;">
+                            <a href="/src/pages/service.html?service=Electrician" class="cta-btn" style="text-align:center; padding:12px; background:var(--surface); border:1px solid var(--border-subtle); border-radius:12px; text-decoration:none; color:white;">Electrician</a>
+                            <a href="/src/pages/service.html?service=Plumber" class="cta-btn" style="text-align:center; padding:12px; background:var(--surface); border:1px solid var(--border-subtle); border-radius:12px; text-decoration:none; color:white;">Plumber</a>
+                        </div>
+                    </section>
+                </div>
+
+                <div id="tab-orders" class="dashboard-tab">
+                    <section class="section-card">
+                        <h3 style="margin-bottom:24px;"><i class="fas fa-history" style="color:var(--accent);"></i> Recent Activity</h3>
+                        <div id="orderHistoryList">
+                            <div style="text-align:center; padding:40px; color:var(--text-secondary);">
+                                <i class="fas fa-box-open" style="font-size:40px; margin-bottom:16px; opacity:0.5;"></i>
+                                <p>No services booked yet.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    (function() {
+        const getSB = () => window.getSB ? window.getSB() : (window.supabaseClient || window.dbClient?.database);
+
+        window.initDashboard = async function() {
+            // 1. Instant UI from Cache
+            let cachedName = localStorage.getItem('userName');
+            let cachedEmail = localStorage.getItem('userEmail') || localStorage.getItem('currentUserEmail');
+            let cachedAvatar = localStorage.getItem('userAvatar');
+
+            const updateUIElements = (name, email, avatar) => {
+                if (name && name !== 'User') {
+                    document.getElementById('userName').innerText = name.split(' ')[0];
+                    document.getElementById('fullNameDisplay').innerText = name;
+                }
+                if (email) document.getElementById('emailDisplay').innerText = email;
+                if (avatar) document.getElementById('avatarDisplay').src = avatar;
+            };
+
+            updateUIElements(cachedName, cachedEmail, cachedAvatar);
+
+            // 2. Wait for SDK
+            const client = getSB();
+            if (!client) {
+                console.log("[UserDash] SDK not ready, retrying in 500ms...");
+                setTimeout(window.initDashboard, 500);
+                return;
+            }
+
+            // 3. Resilience: Identity Recovery Fallback
+            if (!cachedEmail) {
+                console.log("[UserDash] Missing identity keys. Attempting recovery...");
+                const recovered = await window.syncSession();
+                if (recovered) {
+                    cachedEmail = recovered.email;
+                    cachedName = recovered.user_metadata?.name || cachedName;
+                    updateUIElements(cachedName, cachedEmail, recovered.user_metadata?.avatar_url);
+                } else {
+                    document.getElementById('fullNameDisplay').innerHTML = '<span style="color:var(--error);">Session Error. Please <a href="login.html" style="color:var(--accent); text-decoration:underline;">Login again</a></span>';
+                    return;
+                }
+            }
+
+            // 4. Timeout Handling
+            const loadTimeout = setTimeout(() => {
+                const statusEl = document.getElementById('fullNameDisplay');
+                if (statusEl && statusEl.innerText === 'Loading...') {
+                    statusEl.innerHTML = '<span style="color:var(--error); font-size:14px;">Slow Connection. <button onclick="location.reload()" style="background:none; border:none; color:var(--accent); text-decoration:underline; cursor:pointer; font-weight:700;">Click to Retry</button></span>';
+                }
+            }, 10000);
+
+            try {
+                // 5. Parallel Fetching for better performance
+                const [userRes, ordersRes] = await Promise.all([
+                    client.from('users').select('*').eq('email', cachedEmail).maybeSingle(),
+                    client.from('orders').select('*').eq('user_email', cachedEmail).order('created_at', { ascending: false })
+                ]);
+
+                clearTimeout(loadTimeout);
+
+                const user = userRes.data;
+                const orders = ordersRes.data;
+
+                if (user) {
+                    document.getElementById('userName').innerText = user.name ? user.name.split(' ')[0] : 'User';
+                    document.getElementById('fullNameDisplay').innerText = user.name;
+                    document.getElementById('emailDisplay').innerText = user.email;
+                    const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=C19A32&color=fff`;
+                    document.getElementById('avatarDisplay').src = avatar;
+                    
+                    // Update cache for next time
+                    localStorage.setItem('userName', user.name);
+                    localStorage.setItem('userAvatar', user.avatar_url || '');
+                }
+
+                if (orders && orders.length > 0) {
+                    document.getElementById('totalOrders').innerText = orders.length;
+                    const list = document.getElementById('orderHistoryList');
+                    list.innerHTML = orders.map(o => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle); border-radius:12px; margin-bottom:12px; transition:0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+                            <div style="display:flex; align-items:center; gap:16px;">
+                                <div style="width:40px; height:40px; background:var(--accent-dim); color:var(--accent); border-radius:10px; display:flex; justify-content:center; align-items:center; border:1px solid var(--accent-border);"><i class="fas fa-tools"></i></div>
+                                <div>
+                                    <h4 style="font-size:14px; font-weight:600; margin:0;">${o.service_name}</h4>
+                                    <span style="font-size:11px; color:var(--text-secondary);">${new Date(o.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                </div>
+                            </div>
+                            <div style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; text-transform:uppercase; background:rgba(16,185,129,0.1); color:#10B981; border:1px solid rgba(16,185,129,0.2);">${o.status}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("[UserDash] Initialization failed:", err);
+            }
+        };
+
+        window.switchTab = function(tabId, el) {
+            document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (el) {
+                document.querySelectorAll('.mbn-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+
+        window.uploadAvatar = async function(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            const email = localStorage.getItem('currentUserEmail');
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64 = e.target.result;
+                const SB = getSB();
+                const { error } = await SB.from('users').update({ avatar_url: base64 }).eq('email', email);
+                if (!error) {
+                    document.getElementById('avatarDisplay').src = base64;
+                    localStorage.setItem('currentUserAvatar', base64);
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.logout = function() {
+            localStorage.clear();
+            if (window.appRouter) window.appRouter.navigateTo('/index.html');
+            else window.location.href = "/index.html";
+        };
+
+        initDashboard();
+        console.log("User dashboard fragment initialized");
+    })();
+</script>

@@ -1,0 +1,320 @@
+<script>
+    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
+    if (window === window.top) {
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+    }
+</script>
+
+<style>
+    /* Registration Scoped Styles */
+    :root {
+        --bg-base: #050b14;
+        --text-primary: #FFFFFF;
+        --text-secondary: #CBD5E1;
+        --accent: #C19A32;
+        --accent-hover: #a8852a;
+        --accent-dim: rgba(193, 154, 50, 0.12);
+        --accent-border: rgba(193, 154, 50, 0.3);
+        --surface: rgba(255, 255, 255, 0.05);
+        --border-subtle: rgba(255, 255, 255, 0.12);
+        --radius-md: 14px;
+        --radius-lg: 24px;
+        --radius-pill: 9999px;
+        --error: #EF4444;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body { background-color: #050b14 !important; margin: 0; padding: 0; }
+    main { background-color: #050b14; min-height: 100vh; padding: 40px 20px; }
+
+    .container {
+        max-width: 850px;
+        margin: 0 auto 120px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(24px);
+        border-radius: var(--radius-lg);
+        padding: 48px;
+        border: 1px solid var(--border-subtle);
+    }
+
+    /* Input Styling */
+    input::placeholder, textarea::placeholder { color: #94A3B8 !important; }
+    input, select, textarea {
+        width: 100%; padding: 16px 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.05); color: var(--text-primary); outline: none; transition: 0.3s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+
+    /* Role Selector */
+    .role-selector-container { display: flex; justify-content: center; margin-bottom: 40px; position: relative; z-index: 2000; }
+    .role-selector { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); padding: 6px; display: flex; gap: 4px; }
+    .role-btn { padding: 10px 24px; border-radius: var(--radius-pill); border: none; background: transparent; color: var(--text-secondary); font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .role-btn.active { background: var(--accent); color: white; }
+
+    /* Success & Utility */
+    .hidden { display: none !important; }
+    .section-heading { font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin: 48px 0 24px; color: var(--text-primary); }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 240px; margin-bottom: 24px; position: relative; }
+    label { display: block; font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; }
+
+    .btn-submit {
+        width: 100%; padding: 18px; background: var(--accent); color: white; border: none;
+        border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; margin-top: 32px;
+    }
+
+    /* Custom Selection UI */
+    .custom-select-trigger {
+        width: 100%; padding: 16px 20px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; cursor: pointer;
+    }
+    .custom-select-options {
+        position: absolute; top: 100%; left: 0; right: 0; background: #0a1120; border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md); z-index: 100; display: none; margin-top: 8px;
+    }
+    .custom-select-wrapper.open .custom-select-options { display: block; }
+    .custom-option { padding: 12px 16px; cursor: pointer; }
+    .custom-option:hover { background: var(--accent-dim); color: var(--accent); }
+
+    /* Calendar */
+    .calendar-popup {
+        position: absolute; top: 100%; left: 0; background: #0a1120; border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg); padding: 24px; z-index: 150; width: 320px; display: none;
+    }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .calendar-day { padding: 8px 0; cursor: pointer; text-align: center; }
+    .calendar-day:hover { background: var(--accent-dim); }
+</style>
+
+<main id="app-content">
+    <div class="container" id="formContainer">
+        <div class="role-selector-container">
+            <div class="role-selector">
+                <button type="button" class="role-btn active" id="workerRoleBtn" onclick="window.switchRole('worker')">
+                    <i class="fas fa-tools"></i> Worker
+                </button>
+                <button type="button" class="role-btn" id="shopRoleBtn" onclick="window.switchRole('shop')">
+                    <i class="fas fa-store"></i> Shop
+                </button>
+            </div>
+        </div>
+
+        <div class="form-title">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(193,154,50,0.12);border:1px solid rgba(193,154,50,0.3);padding:5px 14px;border-radius:30px;font-size:11px;letter-spacing:1.5px;margin-bottom:18px;">
+                <i class="fas fa-handshake"></i> Partner Program
+            </div>
+            <h2 id="mainFormTitle">Join as a <em>Professional</em></h2>
+            <p id="workerTagline">Start your journey with GoRepireo and grow your professional service business.</p>
+            <p id="shopTagline" class="hidden">Own a shop? Join our partner store network and reach thousands of local customers.</p>
+        </div>
+
+        <div id="workerFormSection" class="form-section">
+            <form id="workerForm">
+                <div class="section-heading">1. Personal Details</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Full Name <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="fname" class="mandatory" placeholder="Enter your full name">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Date of Birth <span style="color:var(--accent)">*</span></label>
+                        <div class="custom-select-trigger" id="dateTrigger" onclick="window.toggleCalendar()">Select Date</div>
+                        <input type="date" id="dob" class="mandatory" style="display:none">
+                        <div class="calendar-popup" id="calendarPopup">
+                            <div class="calendar-header" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <h4 id="calendarMonth">Month Year</h4>
+                                <div style="display:flex; gap:10px;">
+                                    <button type="button" onclick="window.prevNav(event)">&lt;</button>
+                                    <button type="button" onclick="window.nextNav(event)">&gt;</button>
+                                </div>
+                            </div>
+                            <div class="calendar-grid" id="calendarGrid"></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Gender <span style="color:var(--accent)">*</span></label>
+                        <div class="custom-select-wrapper" id="genderWrapper">
+                            <div class="custom-select-trigger" onclick="window.toggleCustomSelect('genderWrapper')">Select Gender</div>
+                            <select id="gender" class="mandatory" style="display:none">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                            <ul class="custom-select-options">
+                                <li class="custom-option" data-value="Male">Male</li>
+                                <li class="custom-option" data-value="Female">Female</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Mobile Number <span style="color:var(--accent)">*</span></label>
+                        <input type="tel" id="mobile" class="mandatory" placeholder="Primary Contact">
+                    </div>
+                    <div class="col">
+                        <label>WhatsApp Number <span style="color:var(--accent)">*</span></label>
+                        <input type="tel" id="whatsapp" class="mandatory" placeholder="For instant updates">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Email Address <span style="color:var(--accent)">*</span></label>
+                        <input type="email" id="email" class="mandatory" placeholder="yourname@email.com">
+                    </div>
+                </div>
+
+                <div class="section-heading">2. Professional Details</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Service Category <span style="color:var(--accent)">*</span></label>
+                        <div class="custom-select-wrapper" id="serviceWrapper">
+                            <div class="custom-select-trigger" onclick="window.toggleCustomSelect('serviceWrapper')">Select Service</div>
+                            <select id="service" class="mandatory" style="display:none">
+                                <option value="">Select Service</option>
+                                <option value="Electrician">Electrician</option>
+                                <option value="Plumber">Plumber</option>
+                                <option value="AC Technician">AC Technician</option>
+                                <option value="Carpenter">Carpenter</option>
+                                <option value="Cleaning Specialist">Cleaning Specialist</option>
+                                <option value="Appliance Repair">Appliance Repair Specialist</option>
+                                <option value="Painter">Painter / Wall Artist</option>
+                            </select>
+                            <ul class="custom-select-options">
+                                <li class="custom-option" data-value="Electrician">Electrician</li>
+                                <li class="custom-option" data-value="Plumber">Plumber</li>
+                                <li class="custom-option" data-value="AC Technician">AC Technician</li>
+                                <li class="custom-option" data-value="Carpenter">Carpenter</li>
+                                <li class="custom-option" data-value="Cleaning Specialist">Cleaning Specialist</li>
+                                <li class="custom-option" data-value="Appliance Repair">Appliance Repair Specialist</li>
+                                <li class="custom-option" data-value="Painter">Painter / Wall Artist</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Total Experience <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="experience" class="mandatory" placeholder="e.g. 5 Years">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); padding:16px 20px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+                            <input type="checkbox" id="hasTools" style="width:20px; height:20px; margin:0; cursor:pointer;">
+                            <label for="hasTools" style="margin:0; text-transform:none; letter-spacing:0;">I have my own professional tools & equipment.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-heading">3. Location Details</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Pincode <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="pincode" class="mandatory" placeholder="6-digit Pincode">
+                    </div>
+                    <div class="col">
+                        <label>District <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="district" class="mandatory" placeholder="City / District">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>State <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="state" class="mandatory" placeholder="State Name">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Full Current Address <span style="color:var(--accent)">*</span></label>
+                        <textarea id="address" class="mandatory" rows="3" placeholder="House No, Street, Landmark..."></textarea>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="window.submitWorkerApplication()">Submit Application</button>
+            </form>
+        </div>
+
+        <div id="shopFormSection" class="hidden form-section">
+            <form id="shopForm">
+                <div class="section-heading">Business Information</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Shop Name <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="shopName" class="mandatory" placeholder="Enter Business Name">
+                    </div>
+                    <div class="col">
+                        <label>Owner Name <span style="color:var(--accent)">*</span></label>
+                        <input type="text" id="ownerName" class="mandatory" placeholder="Owner Full Name">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Registered Email <span style="color:var(--accent)">*</span></label>
+                        <input type="email" id="shopEmail" class="mandatory" placeholder="Business Email">
+                    </div>
+                    <div class="col">
+                        <label>Phone Number <span style="color:var(--accent)">*</span></label>
+                        <input type="tel" id="shopPhone" class="mandatory" placeholder="Business Contact">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Store Address <span style="color:var(--accent)">*</span></label>
+                        <textarea id="shopAddress" class="mandatory" rows="3" placeholder="Full address of the shop"></textarea>
+                    </div>
+                </div>
+
+                <div class="section-heading">Attachments</div>
+                <div class="row">
+                    <div class="col">
+                        <label>Storefront Photo</label>
+                        <div style="border:2px dashed var(--border-subtle); border-radius:var(--radius-md); padding:32px; text-align:center; cursor:pointer; background:rgba(255,255,255,0.02);" onclick="alert('Demo: Select Shop Photo')">
+                            <i class="fas fa-camera" style="font-size:24px; color:var(--text-secondary); margin-bottom:12px;"></i>
+                            <p style="font-size:12px; color:var(--text-secondary);">Click to upload storefront photo</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Ownership Proof (ID)</label>
+                        <div style="border:2px dashed var(--border-subtle); border-radius:var(--radius-md); padding:32px; text-align:center; cursor:pointer; background:rgba(255,255,255,0.02);" onclick="alert('Demo: Select ID Proof')">
+                            <i class="fas fa-id-card" style="font-size:24px; color:var(--text-secondary); margin-bottom:12px;"></i>
+                            <p style="font-size:12px; color:var(--text-secondary);">Click to upload owner ID (Aadhar/PAN)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="window.submitShopPartner()">Submit Shop Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="container success-screen hidden" id="successScreen" style="text-align:center; margin-top: 100px;">
+        <i class="fas fa-check-circle" style="font-size:80px; color:var(--success); margin-bottom:24px;"></i>
+        <h2>Application Sent!</h2>
+        <div style="background:rgba(16, 185, 129, 0.05); color:var(--success); padding:12px 24px; border-radius:999px; margin-bottom:24px; border: 1px dashed rgba(16,185,129,0.4); display:inline-block;">
+            Application ID: <span id="displayAppId">...</span>
+        </div>
+        <p style="color:var(--text-secondary); margin-bottom:40px;">We have received your application. Our team will review it and notify you via email/mobile within 48 hours.</p>
+        <a href="/index.html" class="btn-submit" style="display:inline-block; text-decoration:none; width:auto; padding:16px 60px;">Go to Home</a>
+    </div>
+
+    <!-- Registration Global Logic -->
+    <script type="module" src="/src/js/registration.js"></script>
+    <script>
+        // Standalone fallback: if not in SPA, manually run init
+        if (!window.switchRole) {
+            console.warn("Global registration logic missing. Reloading standalone logic...");
+        }
+    </script>
+</main>
+</body>
+</html>

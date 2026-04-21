@@ -1,0 +1,192 @@
+<script>
+    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
+    // ONLY run if not already inside the SPA router context
+    if (window === window.top && !window.isSPA) {
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+    }
+</script>
+
+<style>
+<!-- Unified Design System -->
+<link rel="stylesheet" href="/src/css/tokens.css">
+<link rel="stylesheet" href="/src/css/glass-ui.css">
+<link rel="stylesheet" href="/src/css/auth-layout.css">
+<link rel="stylesheet" href="/src/css/mobile-nav.css">
+
+<style>
+    /* Registration Shell Guard Redundant Element Purge */
+    .mobile-app-header, .premium-side-drawer, .drawer-overlay, .mobile-bottom-nav, .lang-chip { display: none !important; }
+
+    /* Custom Register Tweaks */
+    .register-wrapper { max-width: 960px; grid-template-columns: 1fr 1.4fr; }
+    .rules-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px; }
+    .rules-title { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+    .rule-item { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #4B5563; }
+    .rule-item.valid { color: var(--success); }
+    
+    .detect-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border-subtle); padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: var(--transition-base); }
+    .detect-btn:hover { background: var(--accent-dim); color: var(--accent); }
+    
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+</style>
+
+
+<main id="register-fragment">
+    <div class="auth-page-container">
+        <div class="register-wrapper">
+            <div class="brand-panel">
+                <a href="/index.html" class="brand-logo">
+                    <div class="brand-logo-icon"><img src="/assets/GoRepireo.png" alt="GoRepireo"></div>
+                    <span>GoRepireo</span>
+                </a>
+                <div class="brand-content">
+                    <div class="brand-tag"><i class="fas fa-user-plus"></i> Free to Join</div>
+                    <h2 class="brand-headline">Get Started<br><em>in Minutes.</em></h2>
+                    <p class="brand-desc">Create your GoRepireo account and unlock access to premium, verified home services.</p>
+                    <div class="brand-steps">
+                        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Create account</strong>Fill in your details.</div></div>
+                        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Book service</strong>Choose from 30+ services.</div></div>
+                        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Relax</strong>Expert arrives at your door.</div></div>
+                    </div>
+                </div>
+                <div class="brand-footer">© 2024 GoRepireo. All rights reserved.</div>
+            </div>
+
+            <div class="form-panel">
+                <div class="form-header">
+                    <h2>Create <em>Account</em></h2>
+                    <p>Join GoRepireo — it takes under a minute.</p>
+                </div>
+
+                <div class="field-row">
+                    <div class="input-wrap no-margin">
+                        <i class="fas fa-user field-icon"></i>
+                        <input type="text" id="name" placeholder="Full Name">
+                    </div>
+                    <div class="input-wrap no-margin">
+                        <i class="fas fa-phone field-icon"></i>
+                        <input type="tel" id="phone" placeholder="Phone Number">
+                    </div>
+                </div>
+
+                <div class="input-wrap">
+                    <i class="fas fa-envelope field-icon"></i>
+                    <input type="email" id="email" placeholder="Email Address">
+                </div>
+
+                <div class="input-wrap">
+                    <i class="fas fa-location-dot field-icon"></i>
+                    <input type="text" id="address" placeholder="Your Address">
+                    <button class="detect-btn" onclick="window.detectLocationSmart()">
+                        <i class="fas fa-crosshairs" id="locIcon"></i>
+                        <span>Detect</span>
+                    </button>
+                </div>
+
+                <div class="input-wrap">
+                    <i class="fas fa-lock field-icon"></i>
+                    <input type="password" id="password" placeholder="Create Password" onkeyup="window.validateRealTime()">
+                    <i class="fas fa-eye-slash pass-toggle" id="eyeIcon" onclick="window.togglePass('password','eyeIcon')"></i>
+                </div>
+
+                <div class="rules-box">
+                    <span class="rules-title">Password Requirements</span>
+                    <div class="rules-grid">
+                        <div class="rule-item" id="rule-length"><i class="fas fa-circle"></i> Min 8 Characters</div>
+                        <div class="rule-item" id="rule-capital"><i class="fas fa-circle"></i> 1 Uppercase</div>
+                        <div class="rule-item" id="rule-small"><i class="fas fa-circle"></i> 1 Lowercase</div>
+                        <div class="rule-item" id="rule-number"><i class="fas fa-circle"></i> 1 Number</div>
+                        <div class="rule-item" id="rule-special"><i class="fas fa-circle"></i> 1 Special Char</div>
+                    </div>
+                </div>
+
+                <div class="input-wrap">
+                    <i class="fas fa-lock field-icon"></i>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password">
+                    <i class="fas fa-eye-slash pass-toggle" id="eyeIconConfirm" onclick="window.togglePass('confirmPassword','eyeIconConfirm')"></i>
+                </div>
+
+                <button class="register-btn" onclick="window.registerUser({
+                    name: document.getElementById('name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    email: document.getElementById('email').value.trim().toLowerCase(),
+                    address: document.getElementById('address').value.trim(),
+                    password: document.getElementById('password').value
+                })">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+                <div class="form-footer">
+                    <p>Already have an account? <a href="/src/pages/login.html">Login</a></p>
+                    <a href="/index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Go Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script>
+    (function() {
+        window.togglePass = function(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            }
+        };
+
+        window.validateRealTime = function() {
+            const password = document.getElementById('password').value;
+            const rules = {
+                'rule-length': password.length >= 8,
+                'rule-capital': /[A-Z]/.test(password),
+                'rule-small': /[a-z]/.test(password),
+                'rule-number': /\d/.test(password),
+                'rule-special': /[\W_]/.test(password)
+            };
+            for (const [id, valid] of Object.entries(rules)) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.toggle('valid', valid);
+                    el.querySelector('i').className = valid ? 'fas fa-check-circle' : 'fas fa-circle';
+                }
+            }
+        };
+
+        window.detectLocationSmart = function() {
+            const addressField = document.getElementById('address');
+            const icon = document.getElementById('locIcon');
+            if(!addressField || !icon) return;
+            addressField.value = "Finding location...";
+            icon.className = "fas fa-spinner fa-spin";
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            addressField.value = data.display_name;
+                            icon.className = "fas fa-check";
+                        }).catch(() => {
+                            addressField.value = "Position found, could not name.";
+                            icon.className = "fas fa-crosshairs";
+                        });
+                }, () => {
+                    addressField.value = "Location access denied.";
+                    icon.className = "fas fa-crosshairs";
+                });
+            } else {
+                alert("Geolocation not supported.");
+                icon.className = "fas fa-crosshairs";
+            }
+        };
+
+        console.log("Register fragment localized logic (Real-time check, detect location)");
+    })();
+</script>

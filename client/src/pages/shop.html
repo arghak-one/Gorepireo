@@ -1,0 +1,304 @@
+<script>
+    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
+    if (window === window.top) {
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+    }
+</script>
+
+<style>
+    /* Clean Body Reset for Fragments */
+    body { background-color: #050b14 !important; margin: 0; padding: 0; }
+    
+    :root {
+        --bg-base: #050b14;
+        --bg-section: #0a1120;
+        --accent-gold: #C19A32;
+        --accent-gold-dim: rgba(193, 154, 50, 0.15);
+        --text-primary: #FFFFFF;
+        --text-secondary: #CBD5E1; /* Brightened from #9CA3AF */
+        --surface: rgba(255, 255, 255, 0.05); /* Increased slightly */
+        --surface-card: rgba(255, 255, 255, 0.04);
+        --border-subtle: rgba(255, 255, 255, 0.12); /* Increased from 0.08 */
+        --border-gold: rgba(193, 154, 50, 0.4);
+        --radius-pill: 9999px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* --- VISIBILITY REFRESH --- */
+    input::placeholder { color: #94A3B8 !important; opacity: 1 !important; }
+    input:focus::placeholder { color: #CBD5E1 !important; }
+
+    .container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 40px 5% 120px;
+    }
+
+    .shop-hero {
+        text-align: center;
+        padding: 64px 20px 48px;
+    }
+
+    .shop-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent-gold-dim);
+        border: 1px solid var(--border-gold);
+        color: var(--accent-gold);
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 800; /* Increased */
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+    }
+
+    .shop-hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+
+    .shop-hero h1 em { font-style: italic; color: var(--accent-gold); }
+
+    .shop-hero p {
+        color: var(--text-secondary);
+        font-size: 17px;
+        font-weight: 500; /* Increased */
+        max-width: 500px;
+        margin: 0 auto 36px;
+    }
+
+    .shop-search-bar {
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,0.06); /* Brightened */
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-pill);
+        padding: 6px 6px 6px 20px;
+        max-width: 520px;
+        margin: 0 auto;
+        gap: 12px;
+        transition: var(--transition);
+    }
+    .shop-search-bar:focus-within { border-color: var(--accent-gold); background: rgba(193, 154, 50, 0.05); }
+
+    .shop-search-bar input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: white;
+        font-size: 14px;
+    }
+
+    .shop-search-bar button {
+        background: var(--accent-gold);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: var(--radius-pill);
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .shop-search-bar button:hover { background: #a8852a; }
+
+    .category-nav {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        scrollbar-width: none;
+    }
+    .category-nav::-webkit-scrollbar { display: none; }
+
+    .category-pill {
+        padding: 9px 22px;
+        background: var(--surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-pill);
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .category-pill.active {
+        background: var(--accent-gold);
+        color: white;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 24px;
+    }
+
+    .product-card {
+        background: var(--surface-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover { border-color: var(--border-gold); transform: translateY(-8px); }
+
+    .product-image-container { height: 210px; background: rgba(0,0,0,0.2); position: relative; }
+    .product-image { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-info { padding: 22px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .product-company { font-size: 11px; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+    .product-price { font-size: 26px; font-weight: 800; color: white; }
+
+    .details-btn {
+        width: 100%;
+        margin-top: 14px;
+        padding: 12px;
+        background: var(--accent-gold-dim);
+        border: 1px solid var(--border-gold);
+        border-radius: var(--radius-md);
+        color: var(--accent-gold);
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .details-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+        z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
+    }
+</style>
+
+<main id="app-content">
+    <div class="container">
+        <div class="shop-hero">
+            <div class="shop-tag"><i class="fas fa-bolt"></i> Official GoRepireo Store</div>
+            <h1>Premium Tools &<br><em>Home Essentials.</em></h1>
+            <p>Verified products from certified professionals. Everything you need for your home, delivered fast.</p>
+            <div class="shop-search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="shopSearch" placeholder="Search products, tools, hardware...">
+                <button onclick="window.applyFilters()">Search</button>
+            </div>
+        </div>
+
+        <div class="category-nav">
+            <div class="category-pill active" data-category="all" onclick="window.selectCategory('all', this)">All Categories</div>
+            <div class="category-pill" data-category="Electronics" onclick="window.selectCategory('Electronics', this)">Electronics</div>
+            <div class="category-pill" data-category="Plumbing" onclick="window.selectCategory('Plumbing', this)">Plumbing</div>
+            <div class="category-pill" data-category="Electrical" onclick="window.selectCategory('Electrical', this)">Electrical</div>
+            <div class="category-pill" data-category="Tools" onclick="window.selectCategory('Tools', this)">Tools</div>
+            <div class="category-pill" data-category="Hardware" onclick="window.selectCategory('Hardware', this)">Hardware</div>
+        </div>
+
+        <div id="productGrid" class="product-grid">
+            <!-- Items loaded via Supabase -->
+        </div>
+    </div>
+
+    <!-- Product Details Overlay -->
+    <div id="detailsOverlay" class="details-overlay" onclick="window.closeDetails(event)">
+        <div class="details-modal" style="background:#0a1120; border:1px solid var(--border-gold); border-radius:24px; max-width:600px; padding:40px; position:relative;">
+            <button onclick="window.hideDetails()" style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">&times;</button>
+            <img id="modalImage" src="" style="width:100%; border-radius:12px; margin-bottom:20px;">
+            <h2 id="modalName" style="font-family:'Playfair Display'; margin-bottom:10px;">Product Name</h2>
+            <div class="product-price" id="modalPrice">₹0</div>
+            <p id="modalDesc" style="color:var(--text-secondary); margin-top:20px;">Detailed description will appear here.</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    (function() {
+        let allItems = [];
+
+        window.fetchItems = async function() {
+            const SB = window.getSB ? window.getSB() : window.supabaseClient;
+            if (!SB) {
+                console.warn("[Shop] SDK not ready, retrying...");
+                setTimeout(window.fetchItems, 500);
+                return;
+            }
+            try {
+                const { data, error } = await SB.from('shop_items').select('*').gt('quantity', 0);
+                if (error) throw error;
+                allItems = data || [];
+                window.renderItems(allItems);
+            } catch (err) {
+                console.error("Fetch error:", err);
+                document.getElementById('productGrid').innerHTML = `<div style="grid-column: 1/-1; padding: 100px; text-align: center;">Error loading items.</div>`;
+            }
+        };
+
+        window.renderItems = function(items) {
+            const grid = document.getElementById('productGrid');
+            if (items.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 100px; text-align: center;">No items found.</div>`;
+                return;
+            }
+            grid.innerHTML = items.map(item => `
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="${item.image_url || 'https://via.placeholder.com/400x300'}" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-company">${item.company || 'Premium'}</div>
+                        <h3 class="product-name">${item.name}</h3>
+                        <div class="product-price"><span>₹</span>${item.price.toLocaleString()}</div>
+                        <button class="details-btn" onclick="window.showDetails('${item.id}')">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.selectCategory = function(cat, el) {
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            window.applyFilters();
+        };
+
+        window.applyFilters = function() {
+            const query = (document.getElementById('shopSearch')?.value || '').toLowerCase();
+            const category = document.querySelector('.category-pill.active')?.getAttribute('data-category') || 'all';
+            
+            const filtered = allItems.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query);
+                const matchesCategory = category === 'all' || item.category === category;
+                return matchesSearch && matchesCategory;
+            });
+            window.renderItems(filtered);
+        };
+
+        window.showDetails = function(id) {
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('modalImage').src = item.image_url || '';
+            document.getElementById('modalName').innerText = item.name;
+            document.getElementById('modalPrice').innerText = '₹' + item.price.toLocaleString();
+            document.getElementById('modalDesc').innerText = item.description || 'Verified product.';
+            document.getElementById('detailsOverlay').style.display = 'flex';
+        };
+
+        window.hideDetails = function() {
+            document.getElementById('detailsOverlay').style.display = 'none';
+        };
+
+        window.closeDetails = function(e) {
+            if (e.target.id === 'detailsOverlay') window.hideDetails();
+        };
+
+        window.fetchItems();
+    })();
+</script>

@@ -1,0 +1,147 @@
+/* 
+   GoRepireo - Worker Dashboard Layout
+   Version: 1.0.0 (Pro Max Edition)
+   Description: Modular layout styles for the Professional Partner Dashboard.
+*/
+
+.worker-page-container {
+    display: flex;
+    min-height: 100vh;
+    padding-top: 72px;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    width: 280px;
+    background: var(--bg-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-right: var(--glass-border);
+    height: calc(100vh - 72px);
+    position: fixed;
+    left: 0;
+    top: 72px;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    transition: var(--transition-base);
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+    transition: var(--transition-base);
+    cursor: pointer;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: var(--accent-glow);
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+    min-height: 100vh;
+    transition: var(--transition-base);
+}
+
+@media (max-width: 1024px) {
+    .sidebar { transform: translateX(-100%); width: 0; display: none; }
+    .main-content { margin-left: 0; padding: 24px; }
+}
+
+/* --- STATS GRID --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--bg-surface);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--transition-base);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 1px solid var(--accent-border);
+}
+
+/* --- SECTION CARDS --- */
+.section-card {
+    background: var(--bg-surface);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 32px;
+}
+
+.job-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: var(--glass-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    transition: var(--transition-base);
+}
+
+.job-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* --- STATUS BADGES --- */
+.job-status {
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.status-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }

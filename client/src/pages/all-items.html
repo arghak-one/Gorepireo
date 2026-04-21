@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoRepireo | All Items</title>
+    <link rel='icon' type='image/png' href='/assets/GoRepireo.png'>
+    <!-- Playfair Display + Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Scripts -->
+    <link rel="stylesheet" href="/src/css/mobile-nav.css">
+
+
+    <style>
+        :root {
+            --bg-base: #050b14;
+            --bg-gradient: radial-gradient(circle at 80% -10%, rgba(193,154,50,0.08) 0%, transparent 50%),
+                           radial-gradient(circle at 20% 100%, rgba(193,154,50,0.04) 0%, transparent 40%);
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --accent: #C19A32;
+            --accent-hover: #a8852a;
+            --accent-dim: rgba(193, 154, 50, 0.12);
+            --accent-border: rgba(193, 154, 50, 0.3);
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-glass: rgba(5, 11, 20, 0.92);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-pill: 9999px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--accent), var(--accent-hover)); border-radius: 10px; border: 2px solid var(--bg-base); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION --- (Simplified to avoid conflicts) */
+        body { padding-top: 0; }
+        @media (max-width: 1024px) { body { padding-bottom: 80px; } }
+
+        /* ---- SEARCH ---- */
+        .search-container {
+            flex: 1;
+            max-width: 480px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 11px 20px 11px 46px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-pill);
+            color: white;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input::placeholder { color: #4B5563; }
+
+        .search-input:focus {
+            border-color: var(--accent-border);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 3px rgba(193,154,50,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .search-input:focus + .search-icon,
+        .search-container:focus-within .search-icon {
+            color: var(--accent);
+        }
+
+        /* ---- RESULT COUNT ---- */
+        .result-count {
+            flex-shrink: 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .result-count span { color: var(--accent); font-weight: 700; }
+
+        /* ---- PAGE HERO STRIP ---- */
+        .page-hero {
+            padding: 40px 40px 0;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .page-hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .page-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .page-hero h1 em { font-style: italic; color: var(--accent); }
+
+        .page-hero p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        /* ---- CONTAINER ---- */
+        .container {
+            max-width: 1440px;
+            margin: 32px auto 100px;
+            padding: 0 40px;
+        }
+
+        /* ---- PRODUCT GRID ---- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+        }
+
+        /* ---- PRODUCT CARD ---- */
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--accent-border);
+        }
+
+        .product-image-container {
+            width: 100%;
+            height: 220px;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover .product-image { transform: scale(1.08); }
+
+        /* Gradient overlay on image */
+        .product-image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(to top, rgba(5,11,20,0.7), transparent);
+        }
+
+        .shop-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(5,11,20,0.8);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
+        .verified-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 28px; height: 28px;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.35);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            color: #10B981;
+            z-index: 1;
+        }
+
+        .product-info {
+            padding: 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-company {
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .product-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .product-price small {
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 1px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 13px;
+            background: rgba(193,154,50,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: var(--radius-md);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 4px;
+        }
+
+        .add-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(193,154,50,0.3);
+        }
+
+        /* ---- LOADING OVERLAY ---- */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 9999;
+        }
+
+        .loading-overlay p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .loader {
+            width: 64px; height: 64px;
+            border: 2px solid rgba(193,154,50,0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            box-shadow: 0 0 20px rgba(193,154,50,0.15);
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* ---- EMPTY STATE ---- */
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: rgba(193,154,50,0.3);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state p { font-size: 16px; font-weight: 500; }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .page-hero { padding: 28px 20px 0; }
+            .page-hero h1 { font-size: 28px; }
+            .container { padding: 0 20px; margin-top: 24px; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+    <main id="app-content">
+
+    <!-- --- MOBILE APP HEADER --- -->
+    <div class="mobile-app-header">
+        <a href="/index.html" class="logo-container">
+            <img src="/assets/GoRepireo.png" alt="GoRepireo" class="mobile-header-logo">
+        </a>
+        <div class="mobile-menu-trigger" onclick="window.togglePremiumDrawer()">
+            <i class="fas fa-bars-staggered"></i>
+        </div>
+    </div>
+
+    <!-- --- PREMIUM SIDE DRAWER --- -->
+    <div class="drawer-overlay" onclick="window.togglePremiumDrawer()"></div>
+    <div class="premium-side-drawer">
+        <div class="gnav-drawer-logo">
+            <img src="/assets/GoRepireo.png" alt="Logo">
+        </div>
+        <nav class="gnav-drawer-links">
+            <a href="/index.html" class="mobile-link">Home</a>
+            <a href="/src/pages/service.html" class="mobile-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="mobile-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="mobile-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-drawer-footer">
+            <div onclick="window.toggleLanguage()" style="padding: 14px 24px; display: flex; align-items: center; gap: 12px; color: #94A3B8; cursor: pointer;">
+                <i class="fas fa-language" style="color: #C19A32;"></i>
+                <span id="mobileLangTrigger">EN / HI</span>
+            </div>
+            <a href="/src/pages/login.html" class="mobile-link" id="drawerLogin">Login / Profile</a>
+            <a href="/src/pages/worker-register.html" class="gnav-drawer-cta">Become a Pro</a>
+        </div>
+    </div>
+
+    <!-- --- UNIFIED DESKTOP HEADER --- -->
+    <header id="gnav-desktop">
+        <a href="/index.html" class="gnav-logo">
+            <div class="gnav-logo-circle">
+                <img src="/assets/GoRepireo.png" alt="GoRepireo">
+            </div>
+            <span class="gnav-logo-text">GoRepireo</span>
+        </a>
+        <nav class="gnav-links">
+            <a href="/index.html" class="desktop-nav-link" data-i18n="nav-home">Home</a>
+            <a href="/src/pages/service.html" class="desktop-nav-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="desktop-nav-link active" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="desktop-nav-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-actions">
+            <div class="gnav-lang-btn" onclick="window.toggleLanguage()">
+                <i class="fas fa-language"></i>
+                <span id="langSwitcherTrigger">EN</span>
+            </div>
+            <div id="navAuth">
+                <a href="/src/pages/login.html" class="gnav-profile">
+                    <div class="gnav-avatar"><i class="fas fa-user-circle"></i></div>
+                    <span data-i18n="nav-login">Profile</span>
+                </a>
+            </div>
+            <a href="/src/pages/worker-register.html" class="gnav-cta" data-i18n="nav-partner">Become a Pro</a>
+        </div>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="loader"></div>
+        <p>Loading premium items…</p>
+    </div>
+
+    <!-- Secondary Sub-header for Search -->
+    <div style="background: rgba(10, 17, 32, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 40px; position: sticky; top: 72px; z-index: 99; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+            <a href="/src/pages/service.html" style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 600; border: 1px solid var(--border-subtle); padding: 8px 16px; border-radius: var(--radius-pill); background: rgba(255,255,255,0.02); transition: var(--transition);">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="search-container" style="flex: 1; max-width: 600px; position: relative;">
+            <i class="fas fa-search search-icon" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF;"></i>
+            <input type="text" class="search-input" placeholder="Search items, brands, shops…" oninput="filterItems(this.value)" style="width: 100%; padding: 12px 16px 12px 48px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; color: white; outline: none; transition: 0.3s;">
+        </div>
+
+        <div class="result-count" id="resultCount"><span>0</span> items</div>
+    </div>
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <div class="page-hero-tag"><i class="fas fa-box-open"></i> Verified Products</div>
+        <h1>Premium <em>Catalogue</em></h1>
+        <p>Select any item to add it to your service request. All products are verified by GoRepireo.</p>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="container">
+        <div id="productGrid" class="product-grid">
+            <!-- Items loaded via Supabase -->
+        </div>
+    </div>
+
+    <script>
+        let allItems = [];
+
+        async function fetchItems() {
+            const SB = window.getSB ? window.getSB() : window.supabaseClient;
+            if (!SB) {
+                console.warn("[AllItems] SDK not ready, retrying in 500ms...");
+                setTimeout(fetchItems, 500);
+                return;
+            }
+            try {
+                const { data, error } = await SB
+                    .from('shop_items')
+                    .select('*, shops(name)')
+                    .gt('quantity', 0);
+
+                if (error) throw error;
+
+                allItems = data || [];
+                renderItems(allItems);
+            } catch (err) {
+                console.error("Fetch error:", err);
+                document.getElementById('productGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading items. Please try again.</p>
+                    </div>`;
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function renderItems(items) {
+            const grid = document.getElementById('productGrid');
+            const countEl = document.getElementById('resultCount');
+
+            if (countEl) countEl.innerHTML = `<span>${items.length}</span> item${items.length !== 1 ? 's' : ''}`;
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>No items found. Try a different search.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => `
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="${item.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" class="product-image" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+                        <div class="shop-badge">${item.shops?.name || 'GoRepireo'}</div>
+                        <div class="verified-badge"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-company">${item.company || 'Premium'}</div>
+                        <h3 class="product-name">${item.name}</h3>
+                        <div class="product-meta">
+                            <div class="product-price"><small>₹</small>${item.price.toLocaleString()}</div>
+                            <div class="product-rating"><i class="fas fa-star"></i> ${item.rating || '4.5'}</div>
+                        </div>
+                        <button class="add-btn" onclick="selectItem('${item.id}', '${item.name}', ${item.price}, '${item.company || 'Premium'}', '${item.image_url || ''}')">
+                            <i class="fas fa-plus-circle"></i> Add to Order
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterItems(query) {
+            const filtered = allItems.filter(item =>
+                item.name.toLowerCase().includes(query.toLowerCase()) ||
+                (item.company && item.company.toLowerCase().includes(query.toLowerCase())) ||
+                (item.shops?.name && item.shops.name.toLowerCase().includes(query.toLowerCase()))
+            );
+            renderItems(filtered);
+        }
+
+        function selectItem(id, name, price, company, imageUrl) {
+            localStorage.setItem('selectedItemId', id);
+            localStorage.setItem('selectedItemName', name);
+            localStorage.setItem('selectedItemPrice', price);
+            localStorage.setItem('selectedItemCompany', company || 'Premium');
+            localStorage.setItem('selectedItemImage', imageUrl || '');
+
+            const savedService = localStorage.getItem('pendingService');
+            const targetUrl = savedService 
+                ? `/src/pages/service.html?service=${encodeURIComponent(savedService)}`
+                : '/src/pages/service.html';
+
+            if (window.appRouter) {
+                window.appRouter.navigateTo(targetUrl);
+            } else {
+                window.location.href = targetUrl;
+            }
+        }
+
+        window.onload = fetchItems;
+        
+        // SPA auto-init
+        if (typeof fetchItems === 'function') fetchItems();
+    </script>
+
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item"><i class="fas fa-house"></i><span class="mbn-label">Home</span></a>
+        <a href="/src/pages/service.html" class="mbn-item"><i class="fas fa-screwdriver-wrench"></i><span class="mbn-label">Services</span></a>
+        <a href="/src/pages/shop.html" class="mbn-item mbn-center-active"><div class="mbn-center-bg"><i class="fas fa-bag-shopping"></i></div><span class="mbn-label">Shop</span></a>
+        <a href="/src/pages/track.html" class="mbn-item"><i class="fas fa-truck-fast"></i><span class="mbn-label">Track</span></a>
+        <a href="/src/pages/user-dashboard.html" class="mbn-item"><i class="fas fa-circle-user"></i><span class="mbn-label">Account</span></a>
+    </nav>
+    </main>
+</body>
+
+
+</html>
+
+
+

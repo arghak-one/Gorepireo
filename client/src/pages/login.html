@@ -1,0 +1,78 @@
+<script>
+    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
+    // ONLY run if not already inside the SPA router context
+    if (window === window.top && !window.isSPA) {
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+    }
+</script>
+
+<!-- Unified Design System -->
+<link rel="stylesheet" href="/src/css/tokens.css">
+<link rel="stylesheet" href="/src/css/glass-ui.css">
+<link rel="stylesheet" href="/src/css/auth-layout.css">
+
+
+<main id="login-fragment">
+    <div class="auth-page-container">
+        <div class="login-wrapper">
+            <div class="brand-panel">
+                <div class="brand-logo">
+                    <div class="brand-logo-icon"><img src="/assets/GoRepireo.png" alt="Logo"></div>
+                    <span>GoRepireo</span>
+                </div>
+                <div class="brand-content">
+                    <h2 class="brand-headline">Your Home,<br><em>Expertly Served.</em></h2>
+                    <p class="brand-desc">Join thousands of happy customers who trust GoRepireo for premium, reliable home services.</p>
+                </div>
+                <div class="brand-footer">© 2024 GoRepireo. All rights reserved.</div>
+            </div>
+
+            <div class="form-panel">
+                <div class="form-header">
+                    <h2>Welcome <em>Back</em></h2>
+                    <p data-i18n="login-subtitle">Sign in to continue to your account.</p>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="Email Address">
+                    </div>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPass" placeholder="Password">
+                        <i class="fas fa-eye-slash pass-icon" id="toggleLoginPass" onclick="window.togglePass('loginPass', 'toggleLoginPass')"></i>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-bottom: 24px;"><a href="/src/pages/forgot-password.html" class="secondary-link">Forgot Password?</a></div>
+
+                <button class="login-btn" onclick="window.loginUser(document.getElementById('loginEmail').value, document.getElementById('loginPass').value)">
+                    <i class="fas fa-arrow-right-to-bracket"></i> Login
+                </button>
+
+                <div style="margin-top:28px; text-align:center;">
+                    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">New user? <a href="/src/pages/register.html" style="color:var(--accent-gold); font-weight:800; text-decoration:none;">Create Account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            window.togglePass = function(inputId, iconId) {
+                let input = document.getElementById(inputId);
+                let icon = document.getElementById(iconId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                }
+            };
+            console.log("Login fragment initialized via Global AuthLogic");
+        })();
+    </script>
+</main>

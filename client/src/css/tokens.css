@@ -1,0 +1,64 @@
+/* 
+   GoRepireo - Obsidian Standard Tokens
+   Version: 1.0.0 (Pro Max Edition)
+   Description: Global design tokens for the GoRepireo ecosystem.
+*/
+
+:root {
+    /* --- COLOR PALETTE (OBSIDIAN) --- */
+    --bg-base: #050b14;
+    --bg-deep: #02060c;
+    --bg-surface: rgba(255, 255, 255, 0.03);
+    
+    /* --- ACCENTS (CINEMATIC GOLD) --- */
+    --accent: #C19A32;
+    --accent-hover: #D4A93D;
+    --accent-dim: rgba(193, 154, 50, 0.12);
+    --accent-border: rgba(193, 154, 50, 0.3);
+    --accent-glow: rgba(193, 154, 50, 0.4);
+
+    /* --- TYPOGRAPHY --- */
+    --text-primary: #FFFFFF;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+
+    /* --- GLASSMORPHISM --- */
+    --glass-bg: rgba(10, 17, 32, 0.85);
+    --glass-blur: blur(40px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+
+    /* --- SPACING & RADIUS --- */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 24px;
+    --radius-pill: 9999px;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 32px;
+    --space-xl: 64px;
+
+    /* --- SYSTEM COLORS --- */
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --info: #3B82F6;
+
+    /* --- ANIMATION --- */
+    --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-base: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base resets to use these tokens */
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }

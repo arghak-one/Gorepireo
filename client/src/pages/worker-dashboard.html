@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoRepireo | Partner Dashboard</title>
+    <link rel='icon' type='image/png' href='/assets/GoRepireo.png'>
+    <!-- Playfair Display + Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Unified Design System -->
+    <link rel="stylesheet" href="/src/css/tokens.css">
+    <link rel="stylesheet" href="/src/css/glass-ui.css">
+    <link rel="stylesheet" href="/src/css/worker-layout.css">
+    <link rel="stylesheet" href="/src/css/mobile-nav.css">
+    <!-- Chart.js (Loaded globally or deferred if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--success);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1199px) {
+            .sidebar {
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                z-index: 1002;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 100px 24px 80px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .dashboard-container {
+                margin-left: 0;
+                width: 100%;
+                padding: 24px;
+            }
+
+            nav {
+                display: flex;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 24px;
+                background: var(--surface-glass);
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--border-subtle);
+            }
+            
+            .nav-logo {
+                margin-left: -16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav .nav-right {
+                display: none !important;
+            }
+
+            .bottom-nav-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: var(--surface-glass);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border-subtle);
+                z-index: 1000;
+                justify-content: space-around;
+                align-items: center;
+                padding: 12px 0;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-size: 11px;
+                font-weight: 600;
+                transition: 0.3s;
+                min-width: 64px;
+                cursor: pointer;
+            }
+
+            .bottom-nav-item i {
+                font-size: 24px;
+                margin-bottom: 2px;
+            }
+
+            .bottom-nav-item.active,
+            .bottom-nav-item:active {
+                color: var(--accent);
+            }
+
+            .dashboard-container {
+                padding-bottom: 100px !important;
+            }
+
+            aside.profile-card {
+                display: none !important;
+            }
+
+            .job-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .job-item>div:last-child {
+                width: 100%;
+                justify-content: space-between;
+                flex-direction: row-reverse;
+            }
+
+            button,
+            input,
+            select,
+            textarea,
+            .btn-action {
+                min-height: 48px;
+                font-size: 16px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .job-status {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+            }
+
+            .job-item button {
+                flex: 1;
+            }
+        }
+
+        .bottom-nav-bar {
+            display: none;
+        }
+
+        /* Tabs Logic */
+        .dashboard-tab {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .dashboard-tab.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* --- DESKTOP HEADER ROBUST FALLBACK --- */
+        #gnav-desktop {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; 
+            width: 100% !important; z-index: 9999 !important; height: 72px !important;
+            display: flex !important; align-items: center !important; justify-content: space-between !important; 
+            padding: 0 5% !important; background: rgba(5, 11, 20, 0.98) !important; 
+            backdrop-filter: blur(30px) !important; -webkit-backdrop-filter: blur(30px) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+            box-sizing: border-box !important;
+            visibility: visible !important; opacity: 1 !important;
+        }
+        .gnav-logo { display: flex !important; align-items: center !important; gap: 12px !important; text-decoration: none !important; }
+        .gnav-logo-circle { width: 44px !important; height: 44px !important; background: white !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; padding: 4px !important; flex-shrink: 0 !important; }
+        .gnav-logo-circle img { height: 38px !important; width: auto !important; object-fit: contain !important; }
+        .gnav-logo-text { color: white !important; font-size: 20px !important; font-weight: 800 !important; margin-left: 12px !important; }
+        .gnav-links { display: flex !important; align-items: center !important; gap: 32px !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
+        .desktop-nav-link { color: #94A3B8 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important; transition: 0.3s !important; }
+        .desktop-nav-link:hover, .desktop-nav-link.active { color: #C19A32 !important; }
+        .gnav-actions { display: flex !important; align-items: center !important; gap: 20px !important; }
+        .gnav-cta { background: linear-gradient(to right, #C19A32, #a8852a) !important; color: white !important; padding: 10px 24px !important; border-radius: 99px !important; font-size: 13px !important; font-weight: 700 !important; text-decoration: none !important; transition: 0.3s !important; }
+        
+        @media (max-width: 1024px) { #gnav-desktop { display: none !important; } }
+    </style>
+
+</head>
+<body data-theme="dark">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- --- MOBILE APP HEADER --- -->
+    <div class="mobile-app-header">
+        <a href="/index.html" class="logo-container">
+            <img src="/assets/GoRepireo.png" alt="GoRepireo" class="mobile-header-logo">
+        </a>
+        <div class="mobile-menu-trigger" onclick="window.togglePremiumDrawer()">
+            <i class="fas fa-bars-staggered"></i>
+        </div>
+    </div>
+
+    <!-- --- PREMIUM SIDE DRAWER --- -->
+    <div class="drawer-overlay" onclick="window.togglePremiumDrawer()"></div>
+    <div class="premium-side-drawer">
+        <div class="gnav-drawer-logo">
+            <img src="/assets/GoRepireo.png" alt="Logo">
+        </div>
+        <nav class="gnav-drawer-links">
+            <a href="/index.html" class="mobile-link">Home</a>
+            <a href="/src/pages/service.html" class="mobile-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="mobile-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="mobile-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-drawer-footer">
+            <div onclick="window.toggleLanguage()" style="padding: 14px 24px; display: flex; align-items: center; gap: 12px; color: #94A3B8; cursor: pointer;">
+                <i class="fas fa-language" style="color: #C19A32;"></i>
+                <span id="mobileLangTrigger">EN / HI</span>
+            </div>
+            <a href="javascript:void(0)" class="mobile-link" onclick="logout()">Logout</a>
+            <a href="/src/pages/worker-register.html" class="gnav-drawer-cta">Become a Pro</a>
+        </div>
+    </div>
+
+    <!-- --- UNIFIED DESKTOP HEADER --- -->
+    <header id="gnav-desktop">
+        <a href="/index.html" class="gnav-logo">
+            <div class="gnav-logo-circle">
+                <img src="/assets/GoRepireo.png" alt="GoRepireo">
+            </div>
+            <span class="gnav-logo-text">GoRepireo</span>
+        </a>
+        <nav class="gnav-links">
+            <a href="/index.html" class="desktop-nav-link" data-i18n="nav-home">Home</a>
+            <a href="/src/pages/service.html" class="desktop-nav-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="desktop-nav-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="desktop-nav-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-actions">
+            <div class="gnav-lang-btn" onclick="window.toggleLanguage()">
+                <i class="fas fa-language"></i>
+                <span id="langSwitcherTrigger">EN</span>
+            </div>
+            <div id="navAuth">
+                <button class="gnav-cta" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; margin-right: 12px;" onclick="logout()">Logout</button>
+                <a href="/src/pages/worker-dashboard.html" class="gnav-profile active">
+                    <div class="gnav-avatar"><i class="fas fa-user-circle"></i></div>
+                    <span data-i18n="nav-login">Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content">
+    <div class="app-container">
+
+        <!-- --- SIDEBAR --- -->
+        <aside class="sidebar">
+            <div class="sidebar-nav">
+                <a class="nav-item active" onclick="switchTab('tab-dashboard', this)">
+                    <i class="fas fa-th-large"></i> <span data-i18n="nav-overview">Dashboard</span>
+                </a>
+                <a class="nav-item" onclick="switchTab('tab-jobs', this)">
+                    <i class="fas fa-briefcase"></i> <span data-i18n="nav-orders">Jobs</span>
+                </a>
+                <a class="nav-item" onclick="switchTab('tab-ratings', this)">
+                    <i class="fas fa-star"></i> <span data-i18n="dash-rating">Ratings</span>
+                </a>
+                <a class="nav-item" onclick="switchTab('tab-settings', this)">
+                    <i class="fas fa-cog"></i> <span data-i18n="nav-config">Settings</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer" style="padding: 20px 16px; border-top: 1px solid var(--border-subtle);">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                        <div style="position: relative; flex-shrink: 0;">
+                            <img id="sidebarAvatar" src="https://ui-avatars.com/api/?name=Partner&background=C19A32&color=fff" 
+                                style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent-border);">
+                            <div id="sidebarStatusIndicator" class="status-badge" style="width: 10px; height: 10px; border: 2px solid var(--bg-base); bottom: 1px; right: 1px;"></div>
+                        </div>
+                        <div style="overflow: hidden;">
+                            <div id="sidebarName" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">Partner Name</div>
+                            <div id="sidebarExpertise" style="font-size: 10px; color: var(--accent); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Expertise</div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" style="background: rgba(239, 68, 68, 0.1); border: none; color: var(--error); cursor: pointer; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: 0.3s;" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="dashboard-container">
+            <header class="dashboard-header" style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid var(--accent-border);padding:5px 14px;border-radius:30px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">
+                        <i class="fas fa-certificate"></i> Partner Dashboard
+                    </div>
+                    <h1 style="font-family:'Playfair Display',serif; font-size:34px; font-weight:700; letter-spacing: -0.5px; line-height: 1.1;">
+                        Welcome back, <em id="welcomeName" style="color:var(--accent); font-style:italic;">Partner</em>!
+                    </h1>
+                    <p style="color:var(--text-secondary); font-size:14px; margin-top:8px;">Workspace / <span id="currentSectionName">Overview</span></p>
+                </div>
+                <div class="toggle-container" style="margin-top: 0; padding-top: 0; border-top: none;">
+                    <span id="statusLabel" style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Online</span>
+                    <label class="switch" style="transform: scale(0.85);">
+                        <input type="checkbox" id="statusToggle" checked onchange="toggleOnlineStatus(this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <!-- TAB: DASHBOARD (STATS & GRAPH) -->
+                <div id="tab-dashboard" class="dashboard-tab active">
+                    <div class="stats-grid" style="margin-bottom: 32px;">
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info">
+                                <h4>Active Time (Daily)</h4>
+                                <span id="activeTimeStat">0h</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info">
+                                <h4>Jobs Done</h4>
+                                <span id="jobsDoneStat">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+                            <div class="stat-info">
+                                <h4>Monthly Earnings</h4>
+                                <span id="monthlyEarningsStat">₹0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="stat-info">
+                                <h4>Unsuccessful</h4>
+                                <span id="unsuccessfulJobsStat">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card" style="padding: 24px;">
+                        <div class="section-header">
+                            <h3><i class="fas fa-chart-line"></i> Performance Growth</h3>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Last 30 Days</div>
+                        </div>
+                        <div style="height: 350px; width: 100%;">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: JOBS -->
+                <div id="tab-jobs" class="dashboard-tab">
+                    <section class="section-card glass-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-clipboard-list"></i> <span data-i18n="dash-available-jobs">Assigned Jobs</span></h3>
+                            <button onclick="initDashboard()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:13px;">
+                                <i class="fas fa-sync-alt"></i> <span data-i18n="dash-refresh">Refresh</span>
+                            </button>
+                        </div>
+                        <div id="jobsList">
+                            <div class="empty-state">
+                                <i class="fas fa-tasks" style="color:var(--accent); opacity:0.3;"></i>
+                                <p data-i18n="dash-no-orders">No jobs assigned to you yet.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- TAB: RATINGS -->
+                <div id="tab-ratings" class="dashboard-tab">
+                    <section class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-star"></i> Customer Reviews</h3>
+                            <div class="expertise-tag" style="margin-bottom: 0;">Rating: <span id="tabPartnerRating">0.0</span></div>
+                        </div>
+                        <div id="ratingsList">
+                            <div class="empty-state">
+                                <i class="fas fa-star-half-alt"></i>
+                                <p>No ratings yet. Your reviews will appear here.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- TAB: SETTINGS -->
+                <div id="tab-settings" class="dashboard-tab">
+                    <section class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-user-cog"></i> Account Settings</h3>
+                        </div>
+                        <div style="max-width: 500px; display: flex; flex-direction: column; gap: 24px;">
+                            <div class="avatar-box" style="margin: 0 auto; width: 80px; height: 80px; position: relative;">
+                                <img id="settingsAvatar" src="https://ui-avatars.com/api/?name=User&background=C19A32&color=fff"
+                                    class="avatar-img" alt="Profile Avatar" style="width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--accent-border);">
+                                <input type="file" id="avatarInput" hidden accept="image/*" onchange="uploadAvatar(this)">
+                                <button class="btn-action btn-primary" style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); padding: 6px 12px; font-size: 11px; white-space: nowrap;" onclick="document.getElementById('avatarInput').click()">Change Photo</button>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-size: 13px; color: var(--text-secondary);">Full Name</label>
+                                <input type="text" id="settingsName" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); color: white; padding: 12px; border-radius: 8px; outline: none;" placeholder="Full Name">
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-size: 13px; color: var(--text-secondary);">Email Address</label>
+                                <input type="email" id="settingsEmail" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); color: white; padding: 12px; border-radius: 8px; outline: none;" readonly>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-size: 13px; color: var(--text-secondary);">Phone Number</label>
+                                <input type="text" id="settingsPhone" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); color: white; padding: 12px; border-radius: 8px; outline: none;" placeholder="+91 XXXXX XXXXX">
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 48px; height: 48px; background: var(--accent-dim); color: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent-border);">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span style="font-size: 14px; font-weight: 600;" data-i18n="settings-language">Language</span>
+                                        <span id="currentLangLabel" style="font-size: 11px; color: var(--text-secondary); font-weight: 500;">English</span>
+                                    </div>
+                                </div>
+                                <div onclick="window.toggleLanguage()" style="cursor:pointer; display: flex; align-items: center; background: var(--accent-dim); padding: 4px; border-radius: 8px; border: 1px solid var(--accent-border);">
+                                    <span id="langBtnEN" style="padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; transition: 0.3s; color: var(--text-secondary);">EN</span>
+                                    <span id="langBtnHI" style="padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; transition: 0.3s; color: var(--text-secondary);">HI</span>
+                                </div>
+                            </div>
+
+                            <button class="btn-primary" style="padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px;" onclick="saveSettings()">
+                                <span data-i18n="shop-save">Save Changes</span>
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const getSB = () => window.getSB ? window.getSB() : (window.supabaseClient || window.dbClient?.database);
+        let currentAvatarBase64 = null;
+        let allJobs = [];
+
+        // Redirect if not logged in
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = "login.html";
+        }
+
+        async function initDashboard() {
+            // 1. Instant UI from Cache
+            let cachedName = localStorage.getItem('userName');
+            let cachedEmail = localStorage.getItem('userEmail') || localStorage.getItem('currentUserEmail');
+            let cachedAvatar = localStorage.getItem('userAvatar');
+            const cachedRole = localStorage.getItem('userRole');
+
+            const updateUIElements = (name, email, avatar) => {
+                if (name && name !== 'User') {
+                    if (document.getElementById('welcomeName')) document.getElementById('welcomeName').innerText = name.split(' ')[0];
+                    if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = name;
+                    if (document.getElementById('settingsName')) document.getElementById('settingsName').value = name;
+                }
+                if (avatar) {
+                    if (document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatar;
+                    if (document.getElementById('settingsAvatar')) document.getElementById('settingsAvatar').src = avatar;
+                }
+                if (email && document.getElementById('settingsEmail')) {
+                    document.getElementById('settingsEmail').value = email;
+                }
+            };
+
+            updateUIElements(cachedName, cachedEmail, cachedAvatar);
+
+            // 2. Wait for SDK
+            const client = getSB();
+            if (!client) {
+                console.log("[WorkerDash] SDK not ready, retrying in 500ms...");
+                setTimeout(initDashboard, 500);
+                return;
+            }
+
+            // 3. Resilience: Identity Recovery Fallback
+            if (!cachedEmail) {
+                console.log("[WorkerDash] Missing identity keys. Attempting recovery...");
+                const recovered = await window.syncSession();
+                if (recovered) {
+                    cachedEmail = recovered.email;
+                    cachedName = recovered.user_metadata?.name || cachedName;
+                    updateUIElements(cachedName, cachedEmail, recovered.user_metadata?.avatar_url);
+                } else {
+                    if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerHTML = '<span style="color:var(--error); font-size:10px;">Auth Error</span>';
+                    return;
+                }
+            }
+
+            // 4. Timeout Handling (Stat load check)
+            const loadTimeout = setTimeout(() => {
+                const statEl = document.getElementById('jobsDoneStat');
+                if (statEl && statEl.innerText === '0') {
+                    console.warn("[WorkerDash] Data loading taking too long...");
+                }
+            }, 10000);
+
+            const email = cachedEmail;
+            if (!email) return;
+
+            try {
+                // 5. Fetch Partner Data
+                const { data: partner, error } = await client
+                    .from('workers')
+                    .select('*')
+                    .eq('email', email)
+                    .maybeSingle();
+
+                clearTimeout(loadTimeout);
+
+                if (partner) {
+                    // Strict Role Verification
+                    const isShop = partner.role === 'shopkeeper' || partner.role === 'shop';
+                    if (isShop) {
+                        window.location.href = 'shop-dashboard.html';
+                        return;
+                    }
+
+                    // Update UI with fresh data
+                    const displayName = partner.name || 'Partner';
+                    if (document.getElementById('welcomeName')) document.getElementById('welcomeName').innerText = displayName.split(' ')[0];
+                    if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = partner.name;
+                    if (document.getElementById('sidebarExpertise')) document.getElementById('sidebarExpertise').innerText = partner.expertise || 'Expert';
+                    
+                    const avatarSrc = partner.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=C19A32&color=fff`;
+                    if (document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarSrc;
+                    if (document.getElementById('settingsAvatar')) document.getElementById('settingsAvatar').src = avatarSrc;
+                    
+                    // Update cache
+                    localStorage.setItem('userName', partner.name);
+                    localStorage.setItem('userAvatar', partner.avatar_url || '');
+                    localStorage.setItem('partnerId', partner.id);
+                    
+                    // Sync Status
+                    const currentStatus = partner.status || 'online';
+                    const toggle = document.getElementById('statusToggle');
+                    const label = document.getElementById('statusLabel');
+                    const indicator = document.getElementById('sidebarStatusIndicator');
+                    
+                    if (toggle) {
+                        toggle.checked = currentStatus === 'online';
+                        if (label) label.innerText = currentStatus === 'online' ? 'Online' : 'Offline';
+                        if (indicator) {
+                            if (currentStatus === 'online') indicator.classList.remove('offline');
+                            else indicator.classList.add('offline');
+                        }
+                    }
+                    
+                    if (document.getElementById('tabPartnerRating')) document.getElementById('tabPartnerRating').innerText = partner.rating || '0.0';
+                    if (document.getElementById('settingsPhone')) document.getElementById('settingsPhone').value = partner.mobile || '';
+
+                    // 4. Fetch Jobs & Init Chart
+                    await loadJobs(partner.id, partner.expertise || partner.service);
+                    initChart();
+                }
+            } catch (err) {
+                console.error("[WorkerDash] Initialization failed:", err);
+            }
+        }
+
+        function switchTab(tabId, el) {
+            // Hide all tabs
+            document.querySelectorAll('.dashboard-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show active tab
+            document.getElementById(tabId).classList.add('active');
+
+            // Update sidebar nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update bottom nav items
+            document.querySelectorAll('.mbn-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if (el) el.classList.add('active');
+
+            // Update Section Name in header
+            const names = {
+                'tab-dashboard': 'Dashboard',
+                'tab-jobs': 'Jobs',
+                'tab-ratings': 'Ratings',
+                'tab-settings': 'Account Settings'
+            };
+            document.getElementById('currentSectionName').innerText = names[tabId] || 'Workspace';
+
+            // Scroll to top
+            window.scrollTo(0,0);
+            
+            // Special init for specific tabs
+            if(tabId === 'tab-dashboard') initChart();
+        }
+
+        let myChart = null;
+        function initChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx || !allJobs) return;
+            
+            if (myChart) myChart.destroy();
+            
+            const completedJobs = allJobs.filter(j => j.status === 'completed');
+            const months = [];
+            const monthlyData = [];
+
+            // Get last 6 months
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                const monthLabel = d.toLocaleString('default', { month: 'short' });
+                months.push(monthLabel);
+
+                const monthEarnings = completedJobs
+                    .filter(j => {
+                        const jobDate = new Date(j.created_at);
+                        return jobDate.getMonth() === d.getMonth() && jobDate.getFullYear() === d.getFullYear();
+                    })
+                    .reduce((sum, j) => sum + (Number(j.total_price) || 0), 0);
+                
+                monthlyData.push(monthEarnings);
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Job Flow',
+                        data: [5, 9, 7, 12, 18, 15, 20],
+                        borderColor: '#C19A32',
+                        backgroundColor: 'rgba(193, 154, 50, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#C19A32',
+                        pointBorderColor: 'rgba(255,255,255,0.8)',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9CA3AF' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9CA3AF' }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadJobs(partnerId, expertise) {
+            const SB = getSB();
+            if (!SB) return;
+            
+            const { data: jobs, error } = await SB
+                .from('orders')
+                .select('*')
+                .or(`service_name.ilike.%${expertise}%,worker_id.eq.${partnerId}`)
+                .order('created_at', { ascending: false });
+
+            allJobs = jobs || [];
+            const list = document.getElementById('jobsList');
+            if (jobs && jobs.length > 0) {
+                const completedJobs = jobs.filter(j => j.status === 'completed');
+                const activeJobs = jobs.filter(j => j.status === 'active' || j.status === 'pending');
+                const cancelledJobs = jobs.filter(j => j.status === 'cancelled');
+                
+                document.getElementById('jobsDoneStat').innerText = completedJobs.length;
+                document.getElementById('totalJobsStat').innerText = jobs.length;
+                document.getElementById('activeJobsStat').innerText = activeJobs.length;
+                document.getElementById('unsuccessfulJobsStat').innerText = cancelledJobs.length;
+                
+                // Calculate monthly earnings (approximation for demo)
+                const earnings = completedJobs.reduce((sum, j) => sum + (Number(j.total_price) || 500), 0);
+                document.getElementById('monthlyEarningsStat').innerText = `₹${earnings.toLocaleString()}`;
+
+                list.innerHTML = jobs.map(j => {
+                    const statusClass = `status-${j.status}`;
+                    const workerLat = localStorage.getItem('workerLat');
+                    const workerLng = localStorage.getItem('workerLng');
+                    const dist = calculateDistance(workerLat, workerLng, j.lat, j.lng);
+                    const distText = dist !== null ? `${dist.toFixed(1)} km away` : 'Distance unknown';
+                    
+                    // Filter: If pending and no worker assigned, check radius
+                    if (j.status === 'pending' && !j.worker_id) {
+                        if (dist !== null && dist > 10) return ''; // Hide if > 10km
+                    }
+
+                    return `
+                        <div class="job-item">
+                            <div class="job-meta">
+                                <div class="job-icon"><i class="fas ${getIcon(j.service_name)}"></i></div>
+                                <div class="job-details">
+                                    <h4>${j.service_name}</h4>
+                                    <span>Client: ${j.user_email} | ${new Date(j.created_at).toLocaleDateString()}</span>
+                                    <div style="font-size:11px; color:var(--accent); font-weight:700; margin-top:4px;">
+                                        <i class="fas fa-location-dot"></i> ${distText}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="job-status ${statusClass}">${j.status}</div>
+                                ${j.status === 'pending' && !j.worker_id ? `<button class="btn-action btn-primary" onclick="claimJob('${j.id}')" data-i18n="dash-claim-job">Claim</button>` : ''}
+                                ${j.status === 'active' ? `<button class="btn-action btn-primary" onclick="updateJobStatus('${j.id}', 'completed')">Complete</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Also load ratings
+            await loadRatings(partnerId);
+        }
+
+        async function loadRatings(partnerId) {
+            // Placeholder: In a real app, you'd have a 'reviews' table
+            // We'll simulate some ratings based on completed jobs
+            const list = document.getElementById('ratingsList');
+            const reviews = [
+                { user: 'Rahul S.', rating: 5, comment: 'Excellent service, very professional!' },
+                { user: 'Amit K.', rating: 4, comment: 'Good work, arrived on time.' }
+            ];
+            
+            list.innerHTML = reviews.map(r => `
+                <div class="job-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; width: 100%;">
+                        <strong style="font-size: 14px;">${r.user}</strong>
+                        <div style="color: #F59E0B;">${'<i class="fas fa-star"></i>'.repeat(r.rating)}</div>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">"${r.comment}"</p>
+                </div>
+            `).join('');
+        }
+
+        async function updateJobStatus(jobId, newStatus) {
+            const SB = getSB();
+            if (!SB) return;
+            
+            const { error } = await SB
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', jobId);
+
+            if (!error) {
+                alert(`Job marked as ${newStatus}!`);
+                initDashboard();
+            } else {
+                alert("Error updating job: " + error.message);
+            }
+        }
+
+        async function toggleOnlineStatus(checkbox) {
+            const SB = getSB();
+            if (!SB) return;
+            
+            const email = localStorage.getItem('currentUserEmail');
+            const newStatus = checkbox.checked ? 'online' : 'offline';
+            const sidebarIndicator = document.getElementById('sidebarStatusIndicator');
+            const label = document.getElementById('statusLabel');
+
+            const { error } = await SB
+                .from('workers')
+                .update({ status: newStatus })
+                .eq('email', email);
+
+            if (!error) {
+                localStorage.setItem('isOnline', checkbox.checked ? 'true' : 'false');
+                if (checkbox.checked) updateWorkerLocation();
+                
+                if (label) label.innerText = checkbox.checked ? 'Online' : 'Offline';
+                if (sidebarIndicator) {
+                    if (checkbox.checked) {
+                        sidebarIndicator.classList.remove('offline');
+                    } else {
+                        sidebarIndicator.classList.add('offline');
+                    }
+                }
+            }
+            else {
+                alert("Error updating status: " + error.message);
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+
+        async function uploadAvatar(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            try {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64 = reader.result;
+                    // Preview only
+                    document.getElementById('settingsAvatar').src = base64;
+                    currentAvatarBase64 = base64;
+                };
+                reader.readAsDataURL(file);
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred during selection.");
+            }
+        }
+
+        async function saveSettings() {
+            const SB = getSB();
+            if (!SB) return;
+            
+            const phone = document.getElementById('settingsPhone').value;
+            const email = localStorage.getItem('currentUserEmail');
+            
+            const updates = { 
+                name: document.getElementById('settingsName').value,
+                mobile: phone 
+            };
+            if (currentAvatarBase64) {
+                updates.avatar_url = currentAvatarBase64;
+                localStorage.setItem('currentUserAvatar', currentAvatarBase64);
+            }
+
+            const { error } = await SB
+                .from('workers')
+                .update(updates)
+                .eq('email', email);
+
+            if (!error) {
+                alert("Profile updated successfully!");
+                if (currentAvatarBase64) {
+                    document.getElementById('sidebarAvatar').src = currentAvatarBase64;
+                    currentAvatarBase64 = null; // Reset
+                }
+                initDashboard();
+            } else {
+                alert("Error updating profile: " + error.message);
+            }
+        }
+
+        function getIcon(service) {
+            const s = service.toLowerCase();
+            if (s.includes('ac')) return 'fa-snowflake';
+            if (s.includes('elect')) return 'fa-bolt';
+            if (s.includes('plum')) return 'fa-faucet';
+            if (s.includes('clean')) return 'fa-broom';
+            return 'fa-tools';
+        }
+
+        async function logout() {
+            console.log("[WorkerDashboard] Logging out...");
+            try {
+                const email = localStorage.getItem('currentUserEmail');
+                const client = getSB();
+                if (email && client) {
+                    await client.from('users').update({ status: 'offline' }).eq('email', email);
+                }
+            } catch (err) {
+                console.warn("[WorkerDashboard] Logout database update failed:", err);
+            } finally {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+
+        // --- HEARTBEAT LOGIC ---
+        async function startHeartbeat() {
+            const email = localStorage.getItem('currentUserEmail');
+            if (!email) return;
+
+            const SB = getSB();
+            if (!SB) return;
+            
+            // Immediate update
+            await SB.from('workers').update({ 
+                status: 'online',
+                last_seen: new Date().toISOString() 
+            }).eq('email', email);
+
+            // Every 2 minutes
+            setInterval(async () => {
+                const client = getSB();
+                if (client) {
+                    await client.from('workers').update({ 
+                        last_seen: new Date().toISOString() 
+                    }).eq('email', email);
+                }
+            }, 120000);
+        }
+
+        // --- LOCATION & RADIUS LOGIC ---
+        async function updateWorkerLocation() {
+            if (navigator.geolocation && localStorage.getItem('isOnline') === 'true') {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const email = localStorage.getItem('currentUserEmail');
+                    
+                    localStorage.setItem('workerLat', lat);
+                    localStorage.setItem('workerLng', lng);
+                    
+                    const SB = getSB();
+                    if (!SB) return;
+                    
+                    await SB.from('workers').update({ 
+                        lat: lat, 
+                        lng: lng,
+                        last_seen: new Date().toISOString() 
+                    }).eq('email', email);
+                });
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+            const R = 6371; // km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        async function claimJob(jobId) {
+            const SB = getSB();
+            if (!SB) return;
+            
+            const partnerId = localStorage.getItem('partnerId');
+            const { error } = await SB
+                .from('orders')
+                .update({ 
+                    worker_id: partnerId, 
+                    status: 'active' 
+                })
+                .eq('id', jobId)
+                .is('worker_id', null); // Atomic check: first come first served
+
+            if (!error) {
+                alert("Job claimed successfully!");
+                initDashboard();
+            } else {
+                alert("Could not claim job. It might have been taken by someone else.");
+            }
+        }
+
+        async function logout() {
+            if (!confirm("Are you sure you want to logout?")) return;
+            const email = localStorage.getItem('currentUserEmail');
+            const client = getSB();
+            if (client && email) {
+                await client.from('workers').update({ status: 'offline' }).eq('email', email);
+            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        setInterval(updateWorkerLocation, 60000); // Sync location every minute
+
+        // Initialize if loaded via SPA
+        if (typeof initDashboard === 'function') initDashboard();
+        if (typeof startHeartbeat === 'function') startHeartbeat();
+    </script>
+    </main>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item"><i class="fas fa-house"></i><span class="mbn-label">Home</span></a>
+        <a href="/src/pages/service.html" class="mbn-item"><i class="fas fa-screwdriver-wrench"></i><span class="mbn-label">Services</span></a>
+        <a href="/src/pages/shop.html" class="mbn-item mbn-center"><div class="mbn-center-bg"><i class="fas fa-bag-shopping"></i></div><span class="mbn-label">Shop</span></a>
+        <a href="/src/pages/track.html" class="mbn-item"><i class="fas fa-truck-fast"></i><span class="mbn-label">Track</span></a>
+        <a href="/src/pages/worker-dashboard.html" class="mbn-item active"><i class="fas fa-circle-user"></i><span class="mbn-label">Account</span></a>
+    </nav>
+</body>
+</html>
+
+
+

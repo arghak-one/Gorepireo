@@ -1,0 +1,345 @@
+<script>
+    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
+    if (window === window.top) {
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+    }
+</script>
+
+<style>
+    :root {
+        --bg-base: #050b14;
+        --bg-gradient: radial-gradient(circle at 80% -10%, rgba(193, 154, 50, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 20% 100%, rgba(193, 154, 50, 0.04) 0%, transparent 40%);
+        --text-primary: #FFFFFF;
+        --text-secondary: #CBD5E1; /* Brightened from #9CA3AF */
+        --accent: #C19A32;
+        --accent-hover: #a8852a;
+        --accent-dim: rgba(193, 154, 50, 0.15);
+        --accent-border: rgba(193, 154, 50, 0.3);
+        --surface: rgba(255, 255, 255, 0.03);
+        --surface-glass: rgba(5, 11, 20, 0.9);
+        --border-subtle: rgba(255, 255, 255, 0.15); /* Increased visibility */
+        --radius-pill: 9999px;
+        --radius-lg: 16px;
+        --radius-md: 14px;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* --- VISIBILITY REFRESH --- */
+    .custom-input::placeholder { color: #94A3B8 !important; opacity: 1 !important; }
+    .custom-input:focus::placeholder { color: #CBD5E1 !important; }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 24px 120px;
+    }
+
+    .booking-box {
+        background: var(--surface-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-subtle);
+        border-radius: 24px;
+        padding: 60px 48px;
+        text-align: center;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+    }
+
+    .service-icon-large {
+        width: 80px;
+        height: 80px;
+        background: var(--accent-dim);
+        border: 2px solid var(--accent-border);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: var(--accent);
+        margin: 0 auto 32px;
+        box-shadow: 0 20px 40px rgba(193, 154, 50, 0.15);
+    }
+
+    h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+    }
+
+    .subtitle {
+        color: var(--text-secondary);
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .custom-input-wrapper {
+        text-align: left;
+        margin-bottom: 24px;
+    }
+
+    .input-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700; /* Increased weight */
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .custom-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05); /* Slightly darker for better contrast */
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 18px 20px;
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 15px;
+        transition: var(--transition);
+        outline: none;
+    }
+
+    .custom-input:focus {
+        border-color: var(--accent);
+        background: rgba(193, 154, 50, 0.08);
+        box-shadow: 0 0 0 4px rgba(193, 154, 50, 0.15);
+    }
+
+    .book-action-btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 18px 40px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        width: 100%;
+        margin-top: 40px;
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(193, 154, 50, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .book-action-btn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Fragment specific helpers */
+    .mic-icon {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .mic-listening { color: var(--accent) !important; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+    .custom-select-wrapper { position: relative; }
+    .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle);
+        padding: 16px 20px; border-radius: var(--radius-md); cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center; font-size: 15px;
+        color: var(--text-primary); /* Explicit visibility */
+    }
+    .custom-select-options {
+        position: absolute; top: 100%; left: 0; right: 0; background: #0a1120;
+        border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+        margin-top: 8px; display: none; z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .custom-select-wrapper.open .custom-select-options { display: block; }
+    .custom-option { padding: 12px 20px; cursor: pointer; transition: 0.2s; color: var(--text-secondary); }
+    .custom-option:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+    .analyzing-overlay, .searching-overlay, .payment-overlay {
+        position: fixed; inset: 0; background: rgba(5, 11, 20, 0.95); backdrop-filter: blur(16px);
+        z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center;
+    }
+
+    /* --- ITEM SELECTION --- */
+    .item-selection-box {
+        margin-top: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-md); padding: 16px; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: 0.3s; color: var(--text-secondary); font-size: 14px; font-weight: 600;
+    }
+    .item-selection-box:hover { border-color: var(--accent); color: var(--accent); background: rgba(193, 154, 50, 0.05); }
+    
+    .selected-item-card {
+        display: none; align-items: center; gap: 16px; background: rgba(255,255,255,0.05);
+        border: 1px solid var(--accent-border); border-radius: var(--radius-md); padding: 12px 16px; margin-top: 12px;
+    }
+    .selected-item-card img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+    .selected-item-info { flex: 1; text-align: left; }
+    .selected-item-info h4 { font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
+    .selected-item-info p { font-size: 12px; color: var(--accent); font-weight: 700; }
+    .change-item-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: var(--text-secondary); padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
+    .change-item-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+</style>
+
+<main id="app-content">
+    <div class="container">
+        <div class="booking-box">
+            <div class="service-icon-large" id="serviceIcon"><i class="fas fa-tools"></i></div>
+            <h1>Book a <em style="color:#C19A32;">Service</em></h1>
+            <p class="subtitle">Professional and reliable home services.</p>
+
+            <div class="custom-input-wrapper">
+                <label class="input-label">Select Order Type</label>
+                <div class="custom-select-wrapper" id="orderTypeWrapper">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('orderTypeWrapper')" id="orderTypeTrigger">Service</div>
+                    <select id="orderType" style="display: none;">
+                        <option value="service" selected>Service</option>
+                        <option value="installation">Installation</option>
+                    </select>
+                    <ul class="custom-select-options">
+                        <li class="custom-option" data-value="service">Service</li>
+                        <li class="custom-option" data-value="installation">Installation</li>
+                    </ul>
+                </div>
+
+                <div id="itemSelectionContainer" style="display: none;">
+                    <div id="addItemBox" class="item-selection-box" onclick="goToShop()">
+                        <i class="fas fa-plus-circle" style="margin-right: 8px; font-size: 16px;"></i> Select Item to Install
+                    </div>
+                    <div id="selectedItemCard" class="selected-item-card">
+                        <img id="selItemImg" src="" alt="item">
+                        <div class="selected-item-info">
+                            <h4 id="selItemName">Item Name</h4>
+                            <p id="selItemPrice">₹0</p>
+                        </div>
+                        <button class="change-item-btn" onclick="goToShop()">Change</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="custom-input-wrapper">
+                <label class="input-label">Describe your problem</label>
+                <div style="position:relative;">
+                    <textarea class="custom-input" id="problemDesc" rows="4" placeholder="e.g. My AC is making a strange noise..."></textarea>
+                    <div class="mic-icon" id="micBtn" onclick="startSpeech()"><i class="fas fa-microphone"></i></div>
+                </div>
+            </div>
+
+            <button class="book-action-btn" onclick="initiateAnalysis()">Book Now <i class="fas fa-check-circle"></i></button>
+        </div>
+
+        <!-- Overlays -->
+        <div id="analyzingOverlay" class="analyzing-overlay">
+            <div class="radar"></div>
+            <div class="analyze-text">Checking your request...</div>
+        </div>
+
+        <div id="paymentModal" class="payment-overlay">
+            <div class="payment-box" style="background:#0a1120; padding:40px; border-radius:20px; border:1px solid var(--accent-border);">
+                <h2>Execution Authorization</h2>
+                <div class="bill-total" style="font-size:24px; margin:20px 0;">Total: <span id="billTotal">₹0</span></div>
+                <button class="book-action-btn" onclick="processPayment('online')">Pay Online</button>
+                <button class="book-action-btn" style="background:transparent; border:1px solid var(--border-subtle);" onclick="closePayment()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    (function() {
+        // Page specific logic
+        window.toggleCustomSelect = function(id) {
+            const el = document.getElementById(id);
+            const isOpen = el.classList.contains('open');
+            document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+            if (!isOpen) {
+                el.classList.add('open');
+            }
+        };
+
+        window.initiateAnalysis = function() {
+            document.getElementById('analyzingOverlay').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('analyzingOverlay').style.display = 'none';
+                document.getElementById('billTotal').innerText = '₹499';
+                document.getElementById('paymentModal').style.display = 'flex';
+            }, 2000);
+        };
+
+        window.closePayment = function() {
+            document.getElementById('paymentModal').style.display = 'none';
+        };
+
+        window.processPayment = function(method) {
+            alert('Order Placed Successfully via ' + method);
+            if (window.appRouter) window.appRouter.navigateTo('/src/pages/track.html');
+            else window.location.href = '/src/pages/track.html';
+        };
+
+        // Handle dropdown clicks
+        document.querySelectorAll('.custom-option').forEach(opt => {
+            opt.onclick = function() {
+                const val = this.getAttribute('data-value');
+                const wrapper = this.closest('.custom-select-wrapper');
+                wrapper.querySelector('.custom-select-trigger').innerText = this.innerText;
+                wrapper.querySelector('select').value = val;
+                wrapper.classList.remove('open');
+                
+                if(val === 'installation') {
+                    document.getElementById('itemSelectionContainer').style.display = 'block';
+                    if(!localStorage.getItem('selectedItemId')) {
+                         document.getElementById('addItemBox').style.display = 'flex';
+                         document.getElementById('selectedItemCard').style.display = 'none';
+                    }
+                } else {
+                    document.getElementById('itemSelectionContainer').style.display = 'none';
+                }
+            };
+        });
+
+        window.goToShop = function() {
+            const desc = document.getElementById('problemDesc')?.value || '';
+            localStorage.setItem('pendingServiceDesc', desc);
+            localStorage.setItem('pendingOrderType', 'installation');
+            if(window.appRouter) window.appRouter.navigateTo('/src/pages/all-items.html');
+            else window.location.href = '/src/pages/all-items.html';
+        };
+
+        // Initialize
+        console.log("Service page fragment initialized");
+        const storedOrderType = localStorage.getItem('pendingOrderType');
+        const storedDesc = localStorage.getItem('pendingServiceDesc');
+        const selectedItemName = localStorage.getItem('selectedItemName');
+        const selectedItemPrice = localStorage.getItem('selectedItemPrice');
+        const selectedItemImage = localStorage.getItem('selectedItemImage');
+
+        if (storedDesc) {
+            document.getElementById('problemDesc').value = storedDesc;
+        }
+
+        if (storedOrderType === 'installation' || selectedItemName) {
+            const wrapper = document.getElementById('orderTypeWrapper');
+            wrapper.querySelector('.custom-select-trigger').innerText = 'Installation';
+            wrapper.querySelector('select').value = 'installation';
+            
+            document.getElementById('itemSelectionContainer').style.display = 'block';
+            
+            if (selectedItemName) {
+                document.getElementById('addItemBox').style.display = 'none';
+                document.getElementById('selectedItemCard').style.display = 'flex';
+                document.getElementById('selItemName').innerText = selectedItemName;
+                document.getElementById('selItemPrice').innerText = '₹' + selectedItemPrice;
+                document.getElementById('selItemImg').src = selectedItemImage || 'https://via.placeholder.com/48?text=No+Image';
+            } else {
+                document.getElementById('addItemBox').style.display = 'flex';
+                document.getElementById('selectedItemCard').style.display = 'none';
+            }
+        }
+    })();
+</script>
+</main>

@@ -1,0 +1,1040 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoRepireo | Admin Panel</title>
+    <link rel='icon' type='image/png' href='/assets/GoRepireo.png'>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("ABkWJi8hB94_iu6Pq");
+        })();
+    </script>
+
+    <!-- Global Assets -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Unified Design System -->
+    <link rel="stylesheet" href="/src/css/tokens.css">
+    <link rel="stylesheet" href="/src/css/glass-ui.css">
+    <link rel="stylesheet" href="/src/css/admin-layout.css">
+    <link rel="stylesheet" href="/src/css/mobile-nav.css">
+
+
+</head>
+
+<body data-theme="dark">
+    <main id="app-content">
+        <!-- Login Overlay -->
+        <div id="loginOverlay">
+            <div class="login-lang-container app-lang-switcher">
+                <div class="app-theme-toggle" onclick="window.toggleTheme()" style="color: white; opacity: 0.6; cursor: pointer;">
+                    <i class="fas fa-sun theme-sun"></i>
+                    <i class="fas fa-moon theme-moon"></i>
+                </div>
+                <div class="app-lang-btn" onclick="window.toggleLanguage()" style="color: white; opacity: 0.6; cursor: pointer;">
+                    <i class="fas fa-language"></i>
+                    <span class="app-lang-text" id="langSwitcherTriggerLogin">EN</span>
+                </div>
+            </div>
+            <div class="login-box">
+                <img src="/assets/GoRepireo.png" class="login-logo" alt="Logo" onerror="this.style.display='none'"
+                    style="filter: drop-shadow(0px 0px 12px rgba(255, 255, 255, 0.15));">
+                <h2 data-i18n="admin-login-title">Admin Terminal</h2>
+                <span class="login-subtitle" data-i18n="admin-login-subtitle">Secure access to GoRepireo Infrastructure</span>
+                <input type="text" id="adminId" class="input-field" data-i18n-placeholder="admin-login-id"
+                    placeholder="Admin Identification">
+                <input type="password" id="adminPass" class="input-field" data-i18n-placeholder="admin-login-pass"
+                    placeholder="Secret Key" onkeypress="if(event.key==='Enter') checkCredentials()">
+                <button class="btn-login" onclick="checkCredentials()" data-i18n="admin-login-btn">Authorize Access</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent">
+
+        <!-- --- UNIFIED DESKTOP HEADER --- -->
+        <header id="gnav-desktop">
+            <a href="/index.html" class="gnav-logo">
+                <div class="gnav-logo-circle" style="width: 44px !important; height: 44px !important;">
+                    <img src="/assets/GoRepireo.png" alt="GoRepireo" style="height: 38px !important; width: auto !important;">
+                </div>
+                <span class="gnav-logo-text">GoRepireo</span>
+            </a>
+            <nav class="gnav-links">
+                <a href="/index.html" class="desktop-nav-link" data-i18n="nav-home">Home</a>
+                <a href="/src/pages/service.html" class="desktop-nav-link" data-i18n="nav-services">Services</a>
+                <a href="/src/pages/shop.html" class="desktop-nav-link" data-i18n="nav-shop">Shop</a>
+                <a href="/src/pages/track.html" class="desktop-nav-link" data-i18n="nav-track">Track Order</a>
+            </nav>
+            <div class="gnav-actions">
+                <div class="gnav-lang-btn" onclick="window.toggleLanguage()">
+                    <i class="fas fa-language"></i>
+                    <span id="langSwitcherTrigger">EN</span>
+                </div>
+                <div id="navAuth">
+                    <button class="gnav-cta" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; margin-right: 12px; border-radius: 99px; padding: 10px 24px; font-weight: 700; cursor: pointer;" onclick="logoutAdmin()">Logout</button>
+                    <a href="/src/pages/admin.html" class="gnav-profile active">
+                        <div class="gnav-avatar"><i class="fas fa-hammer"></i></div>
+                        <span data-i18n="nav-login">Admin</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- --- MOBILE APP HEADER --- -->
+        <div class="mobile-app-header">
+            <a href="/index.html" class="logo-container">
+                <img src="/assets/GoRepireo.png" alt="GoRepireo" class="mobile-header-logo">
+            </a>
+            <div class="mobile-menu-trigger" onclick="toggleMenu()">
+                <i class="fas fa-bars-staggered"></i>
+            </div>
+        </div>
+
+        <!-- --- PREMIUM SIDE DRAWER --- -->
+        <div class="drawer-overlay" onclick="window.togglePremiumDrawer()"></div>
+        <div class="premium-side-drawer">
+            <div class="gnav-drawer-logo">
+                <img src="/assets/GoRepireo.png" alt="Logo">
+            </div>
+            <nav class="gnav-drawer-links">
+                <a href="/index.html" class="mobile-link">Home</a>
+                <a href="/src/pages/service.html" class="mobile-link" data-i18n="nav-services">Services</a>
+                <a href="/src/pages/shop.html" class="mobile-link" data-i18n="nav-shop">Shop</a>
+                <a href="/src/pages/track.html" class="mobile-link" data-i18n="nav-track">Track Order</a>
+            </nav>
+            <div class="gnav-drawer-footer">
+                <div onclick="window.toggleLanguage()" style="padding: 14px 24px; display: flex; align-items: center; gap: 12px; color: #94A3B8; cursor: pointer;">
+                    <i class="fas fa-language" style="color: #C19A32;"></i>
+                    <span id="mobileLangTrigger">EN / HI</span>
+                </div>
+                <a href="javascript:void(0)" class="mobile-link" onclick="logoutAdmin()">Logout</a>
+                <a href="/src/pages/worker-register.html" class="gnav-drawer-cta">Become a Pro</a>
+            </div>
+        </div>
+
+
+        <!-- Sidebar Overlay & Sidebar -->
+        <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3 data-i18n="admin-sidebar-actions">Actions</h3>
+                <div class="close-btn" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="menu-links">
+                <a onclick="switchTab('customers')" class="menu-link"><i class="fas fa-users"></i> User Base</a>
+                <a onclick="switchTab('apps')" class="menu-link"><i class="fas fa-clock"></i> Pending Apps</a>
+                <a onclick="switchTab('shopApps')" class="menu-link"><i class="fas fa-store"></i> Shop Apps</a>
+                <a onclick="switchTab('workers')" class="menu-link"><i class="fas fa-check-double"></i> Verified Workers</a>
+                <a onclick="switchTab('cms')" class="menu-link"><i class="fas fa-edit"></i> Content Management</a>
+                <a onclick="migrateLocalData()" class="menu-link"><i class="fas fa-database"></i> Data Migration</a>
+                <a onclick="resetSystem()" class="menu-link menu-reset"><i class="fas fa-shield-virus"></i> Hard Reset
+                    System</a>
+                <a href="/index.html" class="menu-link" style="margin-top:20px;"><i class="fas fa-power-off"></i> Safe
+                    Exit</a>
+            </div>
+        </aside>
+
+        <div class="container">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-users stat-icon"></i>
+                    <h3><span id="totalCount">0</span></h3>
+                    <p>Total Ecosystem Profiles</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock stat-icon" style="color:var(--warning)"></i>
+                    <h3><span id="pendingCount" style="color:var(--warning)">0</span></h3>
+                    <p>Applications Awaiting Review</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-double stat-icon" style="color:var(--success)"></i>
+                    <h3><span id="approvedCount" style="color:var(--success)">0</span></h3>
+                    <p>Verified Service Partners</p>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <div class="admin-tab active" onclick="switchTab('customers', this)" data-i18n="admin-tab-users">
+                    <i class="fas fa-users"></i> Users
+                </div>
+                <div class="admin-tab" onclick="switchTab('apps', this)" data-i18n="admin-tab-pending">
+                    <i class="fas fa-clock"></i> Worker Apps
+                </div>
+                <div class="admin-tab" onclick="switchTab('shopApps', this)">
+                    <i class="fas fa-store"></i> Shop Apps
+                </div>
+                <div class="admin-tab" onclick="switchTab('workers', this)" data-i18n="admin-tab-workers">
+                    <i class="fas fa-check-double"></i> Verified
+                </div>
+                <div class="admin-tab" onclick="switchTab('cms', this)">
+                    <i class="fas fa-edit"></i> CMS
+                </div>
+            </div>
+
+            <div id="dashboardListView"></div>
+        </div>
+    </div>
+
+    <script>
+        const getSB = () => window.getSB ? window.getSB() : (window.supabaseClient || window.dbClient?.database);
+        const SB_INIT = getSB();
+        // Since SB is used everywhere, we'll keep the name but ensure it's accessed safely.
+        // For admin, we usually aren't callling these immediately on load without user interaction, 
+        // but for safety, we'll wrap the first data-fetching call.
+        
+        let SB = SB_INIT;
+        function ensureSB() {
+            if (!SB) SB = getSB();
+            return SB;
+        }
+
+        function logoutAdmin() {
+            if (!confirm("Terminate Admin Session?")) return;
+            localStorage.removeItem('adminAuth');
+            window.location.href = 'index.html';
+        }
+
+        function checkCredentials() {
+            ensureSB();
+            const id = document.getElementById('adminId').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+            if (id === "Ansh6396060416" && pass === "Ansh@123") {
+                localStorage.setItem('adminAuth', 'true');
+                document.getElementById('loginOverlay').style.display = "none";
+                document.getElementById('dashboardContent').style.display = "block";
+                renderContent();
+            } else {
+                alert("Wrong ID or Password");
+            }
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
+        function closeMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
+        let currentTab = 'apps';
+
+        function switchTab(tab, el) {
+            currentTab = tab;
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+
+            if (el) {
+                el.classList.add('active');
+            } else {
+                document.querySelectorAll('.admin-tab').forEach(t => {
+                    if (t.getAttribute('onclick')?.includes(`'${tab}'`)) t.classList.add('active');
+                });
+            }
+            renderContent();
+        }
+
+        async function renderContent() {
+            ensureSB();
+            closeMenu();
+            const list = document.getElementById('dashboardListView');
+            list.innerHTML = `
+                <div style="text-align:center; padding:100px 0; opacity:0.5;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:32px; color:var(--accent); margin-bottom:16px;"></i>
+                    <p style="font-weight:600; font-size:14px; color:var(--text-secondary); letter-spacing:0.05em; text-transform:uppercase;">Accessing Encrypted Records...</p>
+                </div>
+            `;
+
+            if (currentTab === 'apps') await loadApplications();
+            else if (currentTab === 'shopApps') await loadShopApplications();
+            else if (currentTab === 'workers') await loadActiveWorkers();
+            else if (currentTab === 'customers') await loadCustomers();
+            else if (currentTab === 'cms') await renderCMS();
+            updateTotalStats();
+        }
+
+        async function updateTotalStats() {
+            ensureSB();
+            const { data: allApps } = await SB.from('worker_applications').select('status_level');
+            const { data: allShopApps } = await SB.from('shop_applications').select('status');
+            const { data: allWorkers } = await SB.from('workers').select('id');
+            const { data: allUsers } = await SB.from('users').select('id');
+            
+            document.getElementById('totalCount').innerText = (allUsers?.length || 0) + (allWorkers?.length || 0);
+            document.getElementById('pendingCount').innerText = (allApps?.filter(w => (w.status_level || 1) < 6).length || 0) + (allShopApps?.filter(s => s.status === 'pending').length || 0);
+            document.getElementById('approvedCount').innerText = allWorkers?.length || 0;
+        }
+
+        async function loadShopApplications() {
+            const { data: shops, error } = await SB
+                .from('shop_applications')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            renderShopList(shops || []);
+        }
+
+        function renderShopList(data) {
+            let list = document.getElementById('dashboardListView');
+            list.innerHTML = "";
+
+            if (data.length === 0) {
+                list.innerHTML = `
+                <div style="text-align:center; padding:120px 0; background: var(--surface-glass); border-radius: 24px; border: 1px dashed var(--border-subtle);">
+                    <i class="fas fa-store-slash" style="font-size: 48px; color: var(--text-secondary); opacity: 0.2; margin-bottom: 24px;"></i>
+                    <p style="font-size:16px; color:var(--text-secondary); font-weight: 500;">No pending shop applications found.</p>
+                </div>`;
+                return;
+            }
+
+            data.forEach((s) => {
+                const shopPreview = s.shop_photo_url || '/assets/GoRepireo.png';
+                const ownerPreview = s.owner_photo_url || '/assets/GoRepireo.png';
+
+                list.innerHTML += `
+                <div class="worker-card collapsed" id="shop-${s.id}">
+                    <div class="card-header" onclick="toggleCard('shop-${s.id}')">
+                        <div style="display:flex; align-items:center;">
+                            <div class="avatar-box">
+                                <img src="${shopPreview}" class="avatar-img" alt="Shop">
+                            </div>
+                            <div>
+                                <h3 style="margin-bottom:2px;">${s.shop_name}</h3>
+                                <p style="font-size:11px; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">${s.owner_name}</p>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span class="app-id-badge" style="background:rgba(193,154,50,0.1); color:var(--accent); border-color:var(--border-active);">SHOP-APP</span>
+                            <div class="view-btn"><i class="fas fa-chevron-down toggle-icon"></i>Review</div>
+                            <button class="btn-reset-profile" onclick="event.stopPropagation(); delShopApp('${s.id}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-block">
+                            <span class="info-heading"><i class="fas fa-info-circle" style="margin-right:8px;"></i>Contact Details</span>
+                            <div class="grid-4">
+                                <div class="data-point"><label>Email</label><span>${s.email}</span></div>
+                                <div class="data-point"><label>Mobile</label><span>${s.phone}</span></div>
+                                <div class="data-point"><label>Applied On</label><span>${new Date(s.created_at).toLocaleDateString()}</span></div>
+                            </div>
+                        </div>
+                        <div class="info-block">
+                            <span class="info-heading"><i class="fas fa-map-marker-alt" style="margin-right:8px;"></i>Business Address</span>
+                            <div class="data-point"><label>Store Location</label><span>${s.address}</span></div>
+                        </div>
+                        <div class="info-block" style="background:transparent; border:none; padding:0;">
+                            <span class="info-heading"><i class="fas fa-images" style="margin-right:8px;"></i>Verification Assets</span>
+                            <div style="display:flex; gap:24px;">
+                                <div>
+                                    <label style="font-size:10px; color:var(--text-secondary); font-weight:700; text-transform:uppercase; margin-bottom:10px; display:block;">Storefront</label>
+                                    <div class="asset-preview-box">
+                                        <img src="${shopPreview}" class="asset-preview-img" alt="Storefront">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size:10px; color:var(--text-secondary); font-weight:700; text-transform:uppercase; margin-bottom:10px; display:block;">Owner Portrait</label>
+                                    <div class="asset-preview-box">
+                                        <img src="${ownerPreview}" class="asset-preview-img" alt="Owner">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-area" style="margin-top:24px;">
+                            <div style="display:flex; gap:16px;">
+                                <button class="btn-action btn-approve" style="flex:1;" onclick="doApproveShop('${s.id}')">Approve Shop Partner</button>
+                                <button class="btn-action btn-reject" style="flex:1;" onclick="doRejectShop('${s.id}')">Reject Application</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function doApproveShop(id) {
+            if (!confirm("Are you sure you want to approve this shop? All details will be permanent.")) return;
+
+            const { data: s, error: fetchError } = await SB.from('shop_applications').select('*').eq('id', id).single();
+            if (!s) return alert("Shop application not found or database error: " + (fetchError?.message || ""));
+
+            // 1. Create Partner Account (in workers table) to satisfy identity and potential FK
+            // This also ensures they appear in the total ecosystem count
+            const { error: workerError } = await SB.from('workers').insert({
+                id: s.id,
+                app_id: 'OH-S-' + String(new Date().getTime()).substring(7),
+                from_name: s.owner_name,
+                name: s.owner_name,
+                shop_name: s.shop_name,
+                email: s.email,
+                phone: s.phone,
+                mobile: s.phone,
+                address: s.address,
+                role: 'shop',
+                password: s.password,
+                login_access: true,
+                status: 'offline'
+            });
+
+            if (workerError) {
+                console.error("Worker account creation error:", workerError);
+                // If it already exists, we might proceed or error. Usually it won't exist.
+                if (!workerError.message.includes("already exists")) {
+                    return alert("Error creating partner account: " + workerError.message);
+                }
+            }
+
+            // 2. Create the specific Shop Business record
+            const { error: shopError } = await SB.from('shops').insert({
+                owner_id: s.id, 
+                name: s.shop_name,
+                owner_name: s.owner_name,
+                email: s.email,
+                phone: s.phone,
+                address: s.address,
+                avatar_url: s.shop_photo_url,
+                owner_photo_url: s.owner_photo_url,
+                password: s.password
+            });
+
+            if (shopError) {
+                console.error("Error creating shop record:", shopError);
+                return alert("Error creating storefront: " + shopError.message);
+            }
+
+            // 3. Remove application
+            const { error: updError } = await SB.from('shop_applications').delete().eq('id', id);
+            
+            // 4. Notify Owner
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: s.email,
+                    subject: 'Shop Partnership Approved',
+                    text: `Hi ${s.owner_name},\n\nCongratulations! Your application for "${s.shop_name}" has been APPROVED.\n\nYou can now login to your Shop Dashboard using your registered email and password.\n\nWelcome to GoRepireo!`
+                })
+            }).catch(e => console.error("Email Error:", e));
+
+            alert("Shop Approved! Partner account and storefront created.");
+            renderContent();
+        }
+
+        async function doRejectShop(id) {
+            let reason = prompt("Reason for rejection:");
+            if (reason === null) return;
+
+            const { data: s } = await SB.from('shop_applications').select('*').eq('id', id).single();
+            if (!s) return alert("Shop application not found.");
+
+            const { error: delError } = await SB.from('shop_applications').delete().eq('id', id);
+            if (delError) return alert("Error deleting: " + delError.message);
+
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: s.email,
+                    subject: 'Shop Application Status',
+                    text: `Hi ${s.owner_name},\n\nThank you for your interest in GoRepireo.\n\nUnfortunately, your application for "${s.shop_name}" could not be approved at this time.\n\nReason: ${reason || 'Incomplete verification'}\n\nYou may re-apply after 30 days.`
+                })
+            }).catch(e => console.error("Email error:", e));
+
+            alert("Application rejected.");
+            renderContent();
+        }
+
+        async function delShopApp(id) {
+            if (confirm("Permanently delete this shop application? This cannot be undone.")) {
+                const { error } = await SB.from('shop_applications').delete().eq('id', id);
+                if (error) alert("Error: " + error.message);
+                else renderContent();
+            }
+        }
+
+        async function loadApplications() {
+            const { data: pending, error } = await SB
+                .from('worker_applications')
+                .select('*')
+                .lt('status_level', 6)
+                .order('created_at', { ascending: false });
+
+            renderWorkerList(pending || [], "No pending applications found.");
+        }
+
+        async function loadActiveWorkers() {
+            const { data: active, error } = await SB
+                .from('workers')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            renderWorkerList(active || [], "No active partners found.");
+        }
+
+        function renderWorkerList(data, emptyMsg) {
+            let list = document.getElementById('dashboardListView');
+            list.innerHTML = "";
+
+            if (data.length === 0) {
+                list.innerHTML = `
+                <div class="glass-card" style="text-align:center; padding:120px 0; border: 1px dashed var(--accent-border);">
+                    <i class="fas fa-folder-open" style="font-size: 48px; color: var(--accent); opacity: 0.3; margin-bottom: 24px;"></i>
+                    <p style="font-size:16px; color:var(--text-secondary); font-weight: 500;">${emptyMsg}</p>
+                </div>`;
+                return;
+            }
+
+            data.forEach((w) => {
+                let lvl = w.status_level || 1;
+                let steps = ["App Received", "Documents Checked", "Background Check Done", "Skills Tested"];
+                let stepsHtml = steps.map((s, idx) => `
+                    <div class="step-row" style="${lvl > idx ? 'opacity: 1;' : 'opacity: 0.5;'}">
+                        <input type="checkbox" onchange="updStatus('${w.id}', ${idx + 1}, this)" ${lvl > idx ? 'checked' : ''} style="cursor:pointer;">
+                        <span style="${lvl > idx ? 'color: var(--text-primary); font-weight: 700;' : ''}">${s}</span>
+                    </div>`).join('');
+
+                let actionHtml = '';
+                if (currentTab === 'apps') {
+                    let decisionHtml = `
+                        <div style="display:flex; gap:16px; margin-top:24px;">
+                            <button class="btn-action btn-approve" onclick="showId('slot-${w.id}')">Approve</button>
+                            <button class="btn-action btn-reject" onclick="showId('reason-${w.id}')">Reject</button>
+                        </div>
+                        <div id="slot-${w.id}" class="slot-input">
+                            <label style="display:block; margin-bottom:12px; font-weight:600;">Setting Training Time:</label>
+                            <input type="datetime-local" id="date-${w.id}" class="input-field">
+                            <button class="btn-action btn-approve" style="width:100%" onclick="doApprove('${w.id}')">Confirm Approval</button>
+                        </div>
+                        <div id="reason-${w.id}" class="reject-input">
+                            <input type="text" id="rej-${w.id}" class="input-field" placeholder="Reason for rejection...">
+                            <button class="btn-action btn-reject" style="width:100%" onclick="doReject('${w.id}')">Confirm Reject</button>
+                        </div>`;
+
+                    actionHtml = `
+                        <div class="action-area">
+                            <span class="info-heading"><i class="fas fa-tasks" style="margin-right: 8px;"></i>Operational Workflow</span>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                                <div>${stepsHtml}</div>
+                                <div style="border-left: 1px solid var(--border-subtle); padding-left: 32px;">${decisionHtml}</div>
+                            </div>
+                        </div>`;
+                } else if (currentTab === 'workers') {
+                    actionHtml = `
+                        <div class="action-area" style="border-color: var(--success); background: rgba(16, 185, 129, 0.03);">
+                             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 16px;">
+                                <div style="color:var(--success); font-weight:600;">
+                                    <i class="fas fa-check-circle"></i> Partner is Active & Verified
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <label style="font-size:12px; font-weight:700; color:var(--text-secondary);">ASSIGN ROLE:</label>
+                                    <select onchange="updatePartnerRole('${w.id}', this.value)" style="width:140px; height:36px; padding:0 8px; background:rgba(0,0,0,0.2);">
+                                        <option value="worker" ${w.role === 'worker' ? 'selected' : ''}>Worker</option>
+                                        <option value="shopkeeper" ${w.role === 'shopkeeper' ? 'selected' : ''}>Shopkeeper</option>
+                                    </select>
+                                </div>
+                                <button class="btn-action btn-reject" style="margin:0;" onclick="doReject('${w.id}')">Deactivate Partner</button>
+                             </div>
+                        </div>`;
+                }
+
+                const isOnline = w.status === 'online' && (new Date() - new Date(w.last_seen)) < 300000;
+                const isShop = w.role === 'shop' || w.role === 'shopkeeper';
+                const displayName = isShop ? (w.shop_name || w.name || w.from_name) : (w.from_name || w.name);
+                const avatar = w.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0EA5E9&color=fff`;
+                const roleBadge = isShop ? 
+                    `<span class="app-id-badge" style="background:rgba(193,154,50,0.1); color:var(--accent); border-color:var(--border-active);">SHOP PARTNER</span>` : 
+                    `<span class="app-id-badge">${w.app_id || 'ID: ' + w.id.substring(0,6)}</span>`;
+
+                list.innerHTML += `
+                <div class="worker-card glass-card collapsed" id="card-${w.id}">
+                    <div class="card-header" onclick="toggleCard('card-${w.id}')">
+                        <div style="display:flex; align-items:center;">
+                            <div class="avatar-box">
+                                <img src="${avatar}" class="avatar-img" alt="Avatar">
+                                <div class="status-dot ${isOnline ? 'online' : ''}"></div>
+                            </div>
+                            <h3>${displayName} <span style="font-size:13px; color:var(--text-secondary); font-weight: 400; margin-left:8px;">• ${isShop ? 'Storefront' : (w.service || 'Partner')}</span></h3>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            ${roleBadge}
+                            <div class="view-btn"><i class="fas fa-chevron-down toggle-icon"></i>Details</div>
+                            <button class="btn-reset-profile" onclick="event.stopPropagation(); delApp('${w.id}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-block">
+                            <span class="info-heading"><i class="fas fa-user-circle" style="margin-right:8px;"></i>Core Profile Data</span>
+                            <div class="grid-4">
+                                <div class="data-point"><label>Gender</label><span>${w.gender || 'N/A'}</span></div>
+                                <div class="data-point"><label>Born</label><span>${w.dob || 'N/A'}</span></div>
+                                <div class="data-point"><label>Mobile</label><span>${w.mobile}</span></div>
+                                <div class="data-point"><label>WhatsApp</label><span>${w.whatsapp || '—'}</span></div>
+                            </div>
+                        </div>
+                        <div class="info-block">
+                            <span class="info-heading"><i class="fas fa-briefcase" style="margin-right:8px;"></i>Professional background</span>
+                            <div class="grid-4">
+                                <div class="data-point"><label>Expertise</label><span>${w.experience} Years</span></div>
+                                <div class="data-point"><label>Inventory</label><span>${w.tools || 'None Specified'}</span></div>
+                                <div class="data-point"><label>Availability</label><span>${w.availability || 'Full-time'}</span></div>
+                                <div class="data-point"><label>Postal Node</label><span>${w.pincode}</span></div>
+                            </div>
+                        </div>
+                        <div class="info-block" style="margin-bottom:0;">
+                            <span class="info-heading"><i class="fas fa-map-marker-alt" style="margin-right:8px;"></i>Terminal Address</span>
+                            <div class="data-point"><label>Geo-location</label><span>${w.address}, ${w.district}, ${w.state}</span></div>
+                        </div>
+                        ${actionHtml}
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function loadCustomers() {
+            const { data: users, error } = await SB
+                .from('users')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            let list = document.getElementById('dashboardListView');
+            list.innerHTML = "";
+
+            if (!users || users.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:100px 0;">
+                    <p style="font-size: 24px; color:var(--text-secondary);">No customers found.</p>
+                </div>`;
+                return;
+            }
+
+            users.forEach((u) => {
+                const isOnline = u.status === 'online' && (new Date() - new Date(u.last_seen)) < 300000;
+                const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}&background=F43F5E&color=fff`;
+
+                list.innerHTML += `
+                <div class="worker-card collapsed" id="user-${u.id}">
+                    <div class="card-header" onclick="toggleCard('user-${u.id}')">
+                        <div style="display:flex; align-items:center;">
+                            <div class="avatar-box">
+                                <img src="${avatar}" class="avatar-img" alt="Avatar">
+                                <div class="status-dot ${isOnline ? 'online' : ''}"></div>
+                            </div>
+                            <h3>${u.name}</h3>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                             <div class="view-btn"><i class="fas fa-chevron-down toggle-icon"></i>Details</div>
+                             <button class="btn-reset-profile" onclick="event.stopPropagation(); delUser('${u.id}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-4">
+                            <div class="data-point"><label>Email Alias</label><span style="color:var(--accent);">${u.email}</span></div>
+                            <div class="data-point"><label>Security Hash</label><span>••••••••</span></div>
+                            <div class="data-point"><label>Network Status</label>
+                                <span style="color:${isOnline ? 'var(--success)' : 'var(--text-secondary)'}; font-weight:700;">
+                                    <i class="fas fa-circle" style="font-size:8px; vertical-align:middle; margin-right:6px;"></i>
+                                    ${isOnline ? 'ONLINE' : 'OFFLINE'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function renderCMS() {
+            const list = document.getElementById('dashboardListView');
+            list.innerHTML = `
+                <div class="worker-card" style="max-width: 600px; margin: 0 auto; background: var(--surface-glass); border-radius: 24px; padding: 40px; border: 1px solid var(--border-subtle);">
+                    <div style="text-align:center; margin-bottom: 32px;">
+                        <i class="fas fa-magic" style="font-size: 40px; color: var(--accent); margin-bottom:16px;"></i>
+                        <h2 style="font-size: 28px; font-weight: 700;">Content Management</h2>
+                        <p style="color:var(--text-secondary); font-size:14px;">Modify global site assets and configuration.</p>
+                    </div>
+                    
+                    <div class="info-block">
+                        <label class="info-heading" style="margin-bottom:12px;"><i class="fas fa-photo-video" style="margin-right:8px;"></i> Landing Page Hero Asset</label>
+                        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">Upload a high-quality visualization or video (MP4) for the main hero section.</p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div id="heroPreviewContainer" style="width:100%; height:200px; background: rgba(0,0,0,0.2); border: 2px dashed var(--border-subtle); border-radius:16px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; cursor:pointer;" onclick="document.getElementById('heroAssetInput').click()">
+                                <img id="heroPreviewImg" src="" style="width:100%; height:100%; object-fit:cover; display:none;">
+                                <video id="heroPreviewVid" style="width:100%; height:100%; object-fit:cover; display:none;" autoplay muted loop></video>
+                                <div id="heroUploadPlaceholder" style="text-align:center;">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size:32px; color:var(--text-secondary); margin-bottom:8px;"></i>
+                                    <p style="font-size:12px; color:var(--text-secondary);">Click to upload new image/video</p>
+                                </div>
+                            </div>
+                            <input type="file" id="heroAssetInput" style="display:none;" accept="image/*,video/mp4" onchange="previewHeroAsset(this)">
+                            <button class="btn-action btn-approve" style="width:100%; height:50px; font-size:15px;" onclick="saveCMSAsset()">
+                                <i class="fas fa-save"></i> Synchronize Assets
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="cmsStatus" style="margin-top:20px; text-align:center; font-size:13px; font-weight:600;"></div>
+                </div>
+            `;
+
+            // Fetch current asset for preview
+            const { data } = await SB.from('site_settings').select('value').eq('key', 'hero_image_url').single();
+            if (data && data.value) {
+                const prevImg = document.getElementById('heroPreviewImg');
+                const prevVid = document.getElementById('heroPreviewVid');
+                const place = document.getElementById('heroUploadPlaceholder');
+
+                if (data.value.startsWith('data:video')) {
+                    prevVid.src = data.value;
+                    prevVid.style.display = 'block';
+                    prevImg.style.display = 'none';
+                } else {
+                    prevImg.src = data.value;
+                    prevImg.style.display = 'block';
+                    prevVid.style.display = 'none';
+                }
+                place.style.display = 'none';
+            }
+        }
+
+        function previewHeroAsset(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const prevImg = document.getElementById('heroPreviewImg');
+                    const prevVid = document.getElementById('heroPreviewVid');
+                    const place = document.getElementById('heroUploadPlaceholder');
+
+                    if (file.type.startsWith('video')) {
+                        prevVid.src = e.target.result;
+                        prevVid.style.display = 'block';
+                        prevImg.style.display = 'none';
+                    } else {
+                        prevImg.src = e.target.result;
+                        prevImg.style.display = 'block';
+                        prevVid.style.display = 'none';
+                    }
+                    place.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function saveCMSAsset() {
+            const prevImg = document.getElementById('heroPreviewImg');
+            const prevVid = document.getElementById('heroPreviewVid');
+            const status = document.getElementById('cmsStatus');
+
+            const assetData = (prevVid.style.display === 'block') ? prevVid.src : prevImg.src;
+            if (!assetData || assetData.includes('window.location')) return alert("Please select an asset first");
+
+            status.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Uploading Asset to database...`;
+            status.style.color = "var(--accent)";
+
+            const { error } = await SB.from('site_settings').upsert({
+                key: 'hero_image_url',
+                value: assetData
+            });
+
+            if (error) {
+                status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Upload Failed: ${error.message}`;
+                status.style.color = "var(--danger)";
+            } else {
+                status.innerHTML = `<i class="fas fa-check-circle"></i> <span data-i18n="admin-cms-success">Hero Asset Synchronized!</span>`;
+                status.style.color = "var(--success)";
+                if (window.i18n) window.i18n.updateDOM();
+                setTimeout(() => { if (status) status.innerHTML = ""; }, 3000);
+            }
+        }
+
+        async function delUser(id) {
+            if (confirm(window.i18n.get('admin-del-customer-confirm'))) {
+                const { error } = await SB.from('users').delete().eq('id', id);
+                if (error) alert("Error deleting: " + error.message);
+                else renderContent();
+            }
+        }
+
+        async function updatePartnerRole(id, role) {
+            const { error: roleError } = await SB.from('workers').update({ role: role }).eq('id', id);
+            if (roleError) {
+                alert("Error updating role: " + roleError.message);
+                return;
+            }
+
+            // If role is shopkeeper, ensure a shop record exists
+            if (role === 'shopkeeper') {
+                const { data: w } = await SB.from('workers').select('*').eq('id', id).single();
+                
+                // Check if shop already exists
+                const { data: shop } = await SB.from('shops').select('id').eq('owner_id', id).single();
+                
+                if (!shop) {
+                    const { error: shopError } = await SB.from('shops').insert({
+                        owner_id: id,
+                        name: w.shop_name || (w.from_name + "'s Shop"),
+                        address: w.address,
+                        pincode: w.pincode,
+                        avatar_url: w.avatar_url
+                    });
+                    if (shopError) console.error("Error creating shop record:", shopError);
+                }
+            }
+
+            alert("Role updated to: " + role);
+            renderContent();
+        }
+
+        async function updStatus(id, s, cb) {
+            if (!cb.checked) return;
+            if (confirm(window.i18n.get('admin-update-confirm'))) {
+                const { error } = await SB.from('worker_applications').update({ status_level: s }).eq('id', id);
+                if (error) {
+                    alert("Error updating status: " + error.message);
+                    cb.checked = false;
+                } else {
+                    renderContent();
+                }
+            } else {
+                cb.checked = false;
+            }
+        }
+
+        function generatePassword(length = 10) {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            let retVal = "";
+            for (let i = 0, n = charset.length; i < length; ++i) {
+                retVal += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return retVal;
+        }
+
+        function toggleCard(id) {
+            const card = document.getElementById(id);
+            if (card.classList.contains('collapsed')) {
+                // Collapse others first for accordion effect (optional, disabling for now)
+                // document.querySelectorAll('.worker-card').forEach(c => c.classList.add('collapsed'));
+                card.classList.remove('collapsed');
+            } else {
+                card.classList.add('collapsed');
+            }
+        }
+
+        function showId(id) {
+            document.querySelectorAll('.slot-input, .reject-input').forEach(el => el.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+
+        async function doApprove(id) {
+            let d = document.getElementById('date-' + id).value;
+            if (!d) return alert(window.i18n.get('admin-err-time'));
+
+            // Get worker details for email
+            const { data: w } = await SB.from('worker_applications').select('*').eq('id', id).single();
+            if (!w) return alert(window.i18n.get('admin-err-worker-not-found'));
+
+            let fDate = new Date(d).toLocaleDateString();
+            // Use application password if exists, else generate one
+            const autoGenPass = w.password || generatePassword();
+            const passMsg = w.password ? "the password you created during registration" : `this temporary password: ${autoGenPass}`;
+
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: w.email,
+                    subject: 'Application Approved',
+                    text: `Hi ${w.from_name},\n\nCongratulations!\n\nYour application is APPROVED!\n\nTraining Date: ${fDate}\nLocation: GoRepireo Office\n\nYou can now login to your dashboard with your registered email and the password you created during registration.\n\nWelcome to GoRepireo.`
+                })
+            }).then(() => alert(window.i18n.get('admin-email-sent')), (e) => alert("Email error: " + e.message));
+
+            // 1. DITELS GO TO WORKER: Insert the worker data into the 'workers' table, keeping the same ID
+            const isShopkeeper = w.service === 'Shopkeeper';
+            const { error: insertError } = await SB.from('workers').insert({
+                id: w.id,
+                app_id: w.app_id,
+                from_name: w.from_name,
+                dob: w.dob,
+                gender: w.gender,
+                mobile: w.mobile,
+                whatsapp: w.whatsapp,
+                email: w.email,
+                name: w.from_name,
+                password: autoGenPass,
+                pincode: w.pincode,
+                state: w.state,
+                district: w.district,
+                address: w.address,
+                service: w.service,
+                experience: w.experience,
+                tools: w.tools,
+                availability: w.availability,
+                other_skills: w.other_skills,
+                login_access: true,
+                training_slot: fDate,
+                role: isShopkeeper ? 'shopkeeper' : 'worker'
+            });
+
+            if (insertError) {
+                return alert("Error moving to worker table: " + insertError.message + "\n\nMake sure you have created the worker table in Supabase!");
+            }
+
+            // 1.5 Create Shop if shopkeeper
+            if (isShopkeeper) {
+                const { error: shopError } = await SB.from('shops').insert({
+                    owner_id: w.id,
+                    name: w.from_name + "'s Shop",
+                    owner_name: w.from_name,
+                    email: w.email,
+                    phone: w.mobile,
+                    address: w.address,
+                    pincode: w.pincode,
+                    password: autoGenPass
+                });
+                if (shopError) console.error("Error creating initial shop record:", shopError);
+            }
+
+            // 2. REMOVE FROM WORKER APPLICATION: Delete the record from 'worker_applications'
+            const { error: deleteError } = await SB.from('worker_applications').delete().eq('id', id);
+
+            if (deleteError) {
+                alert("Worker approved but failed to remove from applications: " + deleteError.message);
+            } else {
+                renderContent();
+            }
+        }
+
+        async function doReject(id) {
+            let rElement = document.getElementById('rej-' + id);
+            let r = rElement ? rElement.value : "Requirement mismatch";
+            let table = currentTab === 'workers' ? 'workers' : 'worker_applications';
+
+            const { data: w } = await SB.from(table).select('*').eq('id', id).single();
+            if (w && w.email) {
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: w.email,
+                        subject: currentTab === 'workers' ? 'Account Deactivated' : 'Application Status Update',
+                        text: currentTab === 'workers' 
+                            ? `Hi ${w.from_name || w.name},\n\nYour GoRepireo partner account has been deactivated.\n\nContact support if you believe this is an error.`
+                            : `Hi ${w.from_name},\n\nYour application was rejected.\nReason: ${r}\n\nThank you for your interest in GoRepireo.`
+                    })
+                });
+            }
+
+            const { error } = await SB.from(table).delete().eq('id', id);
+            if (error) alert("Error removing entry: " + error.message);
+            else {
+                alert(currentTab === 'workers' ? "Partner Deactivated" : window.i18n.get('admin-rejected'));
+                renderContent();
+            }
+        }
+
+        async function delApp(id) {
+            if (confirm(window.i18n.get('admin-del-app-confirm'))) {
+                let table = currentTab === 'workers' ? 'workers' : 'worker_applications';
+                const { error } = await SB.from(table).delete().eq('id', id);
+                if (error) alert("Error deleting: " + error.message);
+                else renderContent();
+            }
+        }
+
+        async function resetSystem() {
+            closeMenu();
+            if (confirm(window.i18n.get('admin-reset-confirm'))) {
+                const { error: err1 } = await SB.from('users').delete().neq('name', '___');
+                const { error: err2 } = await SB.from('worker_applications').delete().neq('from_name', '___');
+                localStorage.clear();
+                alert(window.i18n.get('admin-reset-success'));
+                location.reload();
+            }
+        }
+
+        async function migrateLocalData() {
+            closeMenu();
+            alert(window.i18n.get('admin-migrate-start'));
+
+            // 1. Migrate Users
+            let users = JSON.parse(localStorage.getItem('allUsersData') || "[]");
+            if (users.length > 0) {
+                const { error } = await SB.from('users').upsert(users.map(u => ({
+                    name: u.name,
+                    email: u.email.toLowerCase(),
+                    phone: u.phone,
+                    alt_phone: u.altPhone,
+                    address: u.address,
+                    password: u.password
+                })), { onConflict: 'email' });
+                if (error) console.error("User Migration Error:", error);
+                else alert(window.i18n.get('admin-migrate-users'));
+            }
+
+            // 2. Migrate Workers
+            let workers = JSON.parse(localStorage.getItem('GoRepireo_WORKER_DB') || "[]");
+            if (workers.length > 0) {
+                const { error } = await SB.from('worker_applications').upsert(workers.map(w => ({
+                    app_id: w.appId,
+                    from_name: w.from_name,
+                    dob: w.dob,
+                    gender: w.gender,
+                    mobile: w.mobile,
+                    whatsapp: w.whatsapp,
+                    email: w.reply_to || w.email,
+                    pincode: w.pincode,
+                    state: w.state,
+                    district: w.district,
+                    address: w.address,
+                    service: w.service,
+                    experience: parseInt(w.experience) || 0,
+                    tools: w.tools,
+                    availability: w.availability,
+                    status_level: w.statusLevel || 1,
+                    login_access: w.loginAccess || false,
+                    training_slot: w.trainingSlot || ""
+                })), { onConflict: 'app_id' });
+                if (error) console.error("Worker Migration Error:", error);
+                else alert(window.i18n.get('admin-migrate-workers'));
+            }
+
+            renderContent();
+        }
+
+        // SPA auto-init
+        if (typeof checkCredentials === 'function') {
+            const isAuth = localStorage.getItem('adminAuth') === 'true';
+            if (isAuth) {
+                const overlay = document.getElementById('loginOverlay');
+                const content = document.getElementById('dashboardContent');
+                if (overlay) overlay.style.display = "none";
+                if (content) content.style.display = "block";
+                renderContent();
+            }
+        }
+    </script>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item"><i class="fas fa-house"></i><span class="mbn-label">Home</span></a>
+        <a href="/src/pages/service.html" class="mbn-item"><i class="fas fa-screwdriver-wrench"></i><span class="mbn-label">Services</span></a>
+        <a href="/src/pages/shop.html" class="mbn-item mbn-center"><div class="mbn-center-bg"><i class="fas fa-bag-shopping"></i></div><span class="mbn-label">Shop</span></a>
+        <a href="/src/pages/track.html" class="mbn-item"><i class="fas fa-truck-fast"></i><span class="mbn-label">Track</span></a>
+        <a href="/src/pages/admin.html" class="mbn-item active"><i class="fas fa-hammer"></i><span class="mbn-label">Admin</span></a>
+    </nav>
+    </main>
+
+</body>
+</html>
+
+
+

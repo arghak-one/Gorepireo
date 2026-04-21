@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoRepireo | Shop Dashboard</title>
+    <link rel='icon' type='image/png' href='/assets/GoRepireo.png'>
+    <!-- Playfair Display + Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/css/mobile-nav.css">
+    <!-- Scripts -->
+    <!-- Chart.js (Loaded globally or deferred if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #050b14;
+            --bg-gradient: radial-gradient(circle at 80% -10%, rgba(193,154,50,0.09) 0%, transparent 55%),
+                radial-gradient(circle at 10% 90%, rgba(193,154,50,0.05) 0%, transparent 45%);
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --accent: #C19A32;
+            --accent-hover: #a8852a;
+            --accent-dim: rgba(193, 154, 50, 0.12);
+            --accent-border: rgba(193, 154, 50, 0.3);
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-glass: rgba(5, 11, 20, 0.92);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --radius-pill: 9999px;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Ambient Orbs */
+        .ambient-orb {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(193, 154, 50, 0.08) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .orb-1 { top: -100px; right: -100px; }
+        .orb-2 { bottom: -100px; left: -100px; width: 600px; height: 600px; opacity: 0.5; }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(24px);
+            border-right: 1px solid var(--border-subtle);
+            height: calc(100vh - 72px);
+            position: fixed;
+            left: 0;
+            top: 72px;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            transition: 0.3s;
+        }
+
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 16px rgba(193, 154, 50, 0.2);
+        }
+
+        .sidebar-footer {
+            padding: 24px 16px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 112px 40px 80px;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        /* --- NAVIGATION STANDARDIZED VIA mobile-nav.css --- */
+        .sidebar { top: 72px; height: calc(100vh - 72px); }
+
+        /* --- PROFILE CARD (Inside Sidebar) --- */
+        .profile-summary {
+            padding: 0 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar-box {
+            position: relative;
+            width: 44px;
+            height: 44px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-base);
+            background: var(--success);
+        }
+
+        .status-badge.offline {
+            background: var(--text-secondary);
+        }
+
+        /* Stats Section */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 1px solid var(--accent-border);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Inventory Table */
+        .inventory-section {
+            margin-top: 32px;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-add {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .warranty-badge {
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-true { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+        .badge-false { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tabs Logic */
+        .dashboard-tab {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .dashboard-tab.active {
+            display: block;
+        }
+
+        .modal-content {
+            background: var(--surface-glass);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--accent-border);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .paper {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-subtle);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            background: rgba(193, 154, 50, 0.05);
+            box-shadow: 0 0 0 4px rgba(193, 154, 50, 0.1);
+        }
+
+        @media (max-width: 1199px) {
+            .sidebar {
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                z-index: 1002;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 100px 24px 80px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* --- DESKTOP HEADER ROBUST FALLBACK --- */
+        #gnav-desktop {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; 
+            width: 100% !important; z-index: 9999 !important; height: 72px !important;
+            display: flex !important; align-items: center !important; justify-content: space-between !important; 
+            padding: 0 5% !important; background: rgba(5, 11, 20, 0.98) !important; 
+            backdrop-filter: blur(30px) !important; -webkit-backdrop-filter: blur(30px) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+            box-sizing: border-box !important;
+            visibility: visible !important; opacity: 1 !important;
+        }
+        .gnav-logo { display: flex !important; align-items: center !important; gap: 12px !important; text-decoration: none !important; }
+        .gnav-logo-circle { width: 44px !important; height: 44px !important; background: white !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; padding: 4px !important; flex-shrink: 0 !important; }
+        .gnav-logo-circle img { height: 38px !important; width: auto !important; object-fit: contain !important; }
+        .gnav-logo-text { color: white !important; font-size: 20px !important; font-weight: 800 !important; margin-left: 12px !important; }
+        .gnav-links { display: flex !important; align-items: center !important; gap: 32px !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
+        .desktop-nav-link { color: #94A3B8 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important; transition: 0.3s !important; }
+        .desktop-nav-link:hover, .desktop-nav-link.active { color: #C19A32 !important; }
+        .gnav-actions { display: flex !important; align-items: center !important; gap: 20px !important; }
+        .gnav-cta { background: linear-gradient(to right, #C19A32, #a8852a) !important; color: white !important; padding: 10px 24px !important; border-radius: 99px !important; font-size: 13px !important; font-weight: 700 !important; text-decoration: none !important; transition: 0.3s !important; }
+        
+        @media (max-width: 1024px) { #gnav-desktop { display: none !important; } }
+    </style>
+
+</head>
+
+<body data-theme="dark">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- --- MOBILE APP HEADER --- -->
+    <div class="mobile-app-header">
+        <a href="/index.html" class="logo-container">
+            <img src="/assets/GoRepireo.png" alt="GoRepireo" class="mobile-header-logo">
+        </a>
+        <div class="mobile-menu-trigger" onclick="window.togglePremiumDrawer()">
+            <i class="fas fa-bars-staggered"></i>
+        </div>
+    </div>
+
+    <!-- --- PREMIUM SIDE DRAWER --- -->
+    <div class="drawer-overlay" onclick="window.togglePremiumDrawer()"></div>
+    <div class="premium-side-drawer">
+        <div class="gnav-drawer-logo">
+            <img src="/assets/GoRepireo.png" alt="Logo">
+        </div>
+        <nav class="gnav-drawer-links">
+            <a href="/index.html" class="mobile-link">Home</a>
+            <a href="/src/pages/service.html" class="mobile-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="mobile-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="mobile-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-drawer-footer">
+            <div onclick="window.toggleLanguage()" style="padding: 14px 24px; display: flex; align-items: center; gap: 12px; color: #94A3B8; cursor: pointer;">
+                <i class="fas fa-language" style="color: #C19A32;"></i>
+                <span id="mobileLangTrigger">EN / HI</span>
+            </div>
+            <a href="javascript:void(0)" class="mobile-link" onclick="logout()">Logout</a>
+            <a href="/src/pages/worker-register.html" class="gnav-drawer-cta">Become a Pro</a>
+        </div>
+    </div>
+
+    <!-- --- UNIFIED DESKTOP HEADER --- -->
+    <header id="gnav-desktop">
+        <a href="/index.html" class="gnav-logo">
+            <div class="gnav-logo-circle">
+                <img src="/assets/GoRepireo.png" alt="GoRepireo">
+            </div>
+            <span class="gnav-logo-text">GoRepireo</span>
+        </a>
+        <nav class="gnav-links">
+            <a href="/index.html" class="desktop-nav-link" data-i18n="nav-home">Home</a>
+            <a href="/src/pages/service.html" class="desktop-nav-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="desktop-nav-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="desktop-nav-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-actions">
+            <div class="gnav-lang-btn" onclick="window.toggleLanguage()">
+                <i class="fas fa-language"></i>
+                <span id="langSwitcherTrigger">EN</span>
+            </div>
+            <div id="navAuth">
+                <button class="gnav-cta" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; margin-right: 12px;" onclick="logout()">Logout</button>
+                <a href="/src/pages/shop-dashboard.html" class="gnav-profile active">
+                    <div class="gnav-avatar"><i class="fas fa-user-circle"></i></div>
+                    <span data-i18n="nav-login">Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content">
+    <div class="app-container">
+
+        <!-- --- SIDEBAR --- -->
+        <aside class="sidebar">
+            <div class="sidebar-nav">
+                <div class="profile-summary">
+                    <div class="avatar-box">
+                        <img id="sidebarAvatar" src="https://via.placeholder.com/44" class="avatar-img">
+                        <div id="sidebarStatusIndicator" class="status-badge"></div>
+                    </div>
+                    <div>
+                        <p id="sidebarOwnerName" style="font-weight: 700; font-size: 14px;">Partner Name</p>
+                        <p id="sidebarShopName" style="font-size: 12px; color: var(--text-secondary);">Shop Name</p>
+                    </div>
+                </div>
+
+                <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('tab-overview', this)">
+                    <i class="fas fa-grid-2"></i> Overview
+                </a>
+                <a href="javascript:void(0)" class="nav-item" onclick="switchTab('tab-inventory', this)">
+                    <i class="fas fa-box"></i> Inventory
+                </a>
+                <a href="javascript:void(0)" class="nav-item" onclick="switchTab('tab-orders', this)">
+                    <i class="fas fa-clipboard-list"></i> Orders
+                </a>
+                <a href="javascript:void(0)" class="nav-item" onclick="switchTab('tab-settings', this)">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="nav-item" onclick="window.toggleLanguage()">
+                    <i class="fas fa-language"></i>
+                    <span id="langSwitcherTrigger">EN</span>
+                </div>
+                <div class="nav-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-i18n="dash-logout">Logout</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- --- MAIN CONTENT --- -->
+        <main class="main-content">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                <div>
+                    <h1 id="currentSectionName" style="font-family: 'Playfair Display'; font-size: 32px; color: var(--accent);">Workspace</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Welcome back to your <span id="shopNameDisplayHeader">Shop</span></p>
+                </div>
+            </div>
+
+            <!-- OVERVIEW TAB -->
+            <div id="tab-overview" class="dashboard-tab active">
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                        <div>
+                            <span class="stat-value" id="incomeVal">₹0</span>
+                            <span class="stat-label">Total Earnings</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div>
+                            <span class="stat-value" id="soldVal">0</span>
+                            <span class="stat-label">Items Sold</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-box"></i></div>
+                        <div>
+                            <span class="stat-value" id="activeVal">0</span>
+                            <span class="stat-label">Active Listings</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="paper" style="height: 400px;">
+                    <h3 style="margin-bottom: 24px;">Sales Performance</h3>
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- INVENTORY TAB -->
+            <div id="tab-inventory" class="dashboard-tab">
+                <div class="inventory-header">
+                    <h2 style="font-family: 'Playfair Display';">Inventory Catalog</h2>
+                    <button class="btn-add" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Add New Item
+                    </button>
+                </div>
+                <div class="paper" style="overflow-x: auto;">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Item Name</th>
+                                <th>Company</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Warranty</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryList">
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="dashboard-tab">
+                 <div class="paper" style="max-width: 600px;">
+                    <h2 style="font-family: 'Playfair Display'; margin-bottom: 32px;">Shop Configuration</h2>
+                    
+                    <div class="form-group">
+                        <label>Owner Name</label>
+                        <input type="text" id="settingsOwnerName">
+                    </div>
+                    <div class="form-group">
+                        <label>Shop Name</label>
+                        <input type="text" id="settingsShopName">
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Account Number</label>
+                        <input type="text" id="bankAccountTab">
+                    </div>
+                    <div class="form-group">
+                        <label>UPI ID</label>
+                        <input type="text" id="upiIdTab">
+                    </div>
+                    
+                    <div style="margin-top: 32px;">
+                        <button class="btn-add" style="width: 100%; justify-content: center;" onclick="saveSettingsTab()">Save Changes</button>
+                    </div>
+                 </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family: 'Playfair Display'; margin-bottom: 24px; color: var(--accent);">Add New Product</h2>
+            <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" id="itemName">
+            </div>
+            <div class="form-group">
+                <label>Company</label>
+                <input type="text" id="itemCompany">
+            </div>
+            <div class="form-group">
+                <label>Item Image</label>
+                <div style="display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                    <img id="itemImagePreview" src="https://via.placeholder.com/60" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
+                    <input type="file" id="itemImageInput" accept="image/*" hidden onchange="previewItemImage(this)">
+                    <button class="btn-add" style="padding: 8px 16px; font-size: 12px;" onclick="document.getElementById('itemImageInput').click()">Select Image</button>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" id="itemQty">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" id="itemPrice">
+                </div>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="itemWarranty" style="width:auto;">
+                <label style="margin:0;">Has Warranty</label>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:12px;">
+                <button class="btn-add" style="flex:1; justify-content:center;" onclick="saveItem()">Save</button>
+                <button class="btn-logout" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--border-subtle); padding:10px; border-radius:12px; cursor:pointer;" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item">
+            <i class="fas fa-house"></i>
+            <span class="mbn-label">Home</span>
+        </a>
+        <a href="javascript:void(0)" class="mbn-item active" onclick="switchTab('tab-overview', this)">
+            <i class="fas fa-chart-pie"></i>
+            <span class="mbn-label">Stats</span>
+        </a>
+        <a href="javascript:void(0)" class="mbn-item mbn-center" onclick="switchTab('tab-inventory', this)">
+            <div class="mbn-center-bg">
+                <i class="fas fa-box"></i>
+            </div>
+            <span class="mbn-label">Stock</span>
+        </a>
+        <a href="javascript:void(0)" class="mbn-item" onclick="switchTab('tab-orders', this)">
+            <i class="fas fa-receipt"></i>
+            <span class="mbn-label">Sales</span>
+        </a>
+        <a href="javascript:void(0)" class="mbn-item" onclick="switchTab('tab-settings', this)">
+            <i class="fas fa-user-gear"></i>
+            <span class="mbn-label">Account</span>
+        </a>
+    </nav>
+
+    <script>
+        const getSB = () => window.getSB ? window.getSB() : (window.supabaseClient || window.dbClient?.database);
+
+        let currentWorkerId = null;
+        let currentShopId = null;
+        let currentAvatarBase64 = null;
+        let allSales = [];
+
+        async function init() {
+            // 1. Instant UI from Cache
+            let cachedName = localStorage.getItem('userName');
+            let cachedEmail = localStorage.getItem('userEmail') || localStorage.getItem('currentUserEmail');
+            let cachedAvatar = localStorage.getItem('userAvatar');
+
+            const updateUIElements = (name, email, avatar) => {
+                if (name && name !== 'User') {
+                    if (document.getElementById('sidebarOwnerName')) document.getElementById('sidebarOwnerName').innerText = name;
+                    if (document.getElementById('settingsOwnerName')) document.getElementById('settingsOwnerName').value = name;
+                }
+                if (avatar) {
+                    if (document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatar;
+                }
+                if (email && document.getElementById('settingsEmail')) {
+                    document.getElementById('settingsEmail').value = email;
+                }
+            };
+
+            updateUIElements(cachedName, cachedEmail, cachedAvatar);
+
+            // 2. SDK Reliability
+            const SB = getSB();
+            if (!SB) {
+                console.log("[ShopDash] SDK not ready, retrying in 500ms...");
+                setTimeout(init, 500);
+                return;
+            }
+
+            // 3. Resilience: Identity Recovery Fallback
+            if (!cachedEmail) {
+                console.log("[ShopDash] Missing identity keys. Attempting recovery...");
+                const recovered = await window.syncSession();
+                if (recovered) {
+                    cachedEmail = recovered.email;
+                    cachedName = recovered.user_metadata?.name || cachedName;
+                    updateUIElements(cachedName, cachedEmail, recovered.user_metadata?.avatar_url);
+                } else {
+                    if (document.getElementById('sidebarOwnerName')) document.getElementById('sidebarOwnerName').innerHTML = '<span style="color:var(--error); font-size:10px;">Auth Error</span>';
+                    return;
+                }
+            }
+
+            // 4. Timeout Handling
+            const loadTimeout = setTimeout(() => {
+                const statEl = document.getElementById('incomeVal');
+                if (statEl && statEl.innerText === '₹0') {
+                    console.warn("[ShopDash] Data loading taking too long...");
+                }
+            }, 10000);
+
+            const email = cachedEmail;
+            if(!email) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // 5. Fetch Worker & Shop Data
+                const { data: worker } = await SB.from('workers').select('*').eq('email', email).maybeSingle();
+                
+                clearTimeout(loadTimeout);
+                
+                if(worker) {
+                    currentWorkerId = worker.id;
+                    
+                    let { data: shop } = await SB.from('shops').select('*').eq('owner_id', currentWorkerId).maybeSingle();
+                    
+                    // Auto-create shop if missing (Owner must have a shop)
+                    if (!shop) {
+                        const { data: newShop } = await SB.from('shops').insert({
+                            owner_id: currentWorkerId,
+                            name: worker.shop_name || 'My Shop',
+                            avatar_url: worker.avatar_url
+                        }).select().single();
+                        shop = newShop;
+                    }
+
+                    if (shop) {
+                        currentShopId = shop.id;
+                        
+                        // Update UI with fresh data
+                        const displayName = worker.name || 'Partner';
+                        document.getElementById('sidebarOwnerName').innerText = displayName;
+                        document.getElementById('sidebarShopName').innerText = shop.name;
+                        document.getElementById('shopNameDisplayHeader').innerText = shop.name;
+                        
+                        document.getElementById('settingsOwnerName').value = displayName;
+                        document.getElementById('settingsShopName').value = shop.name;
+                        document.getElementById('bankAccountTab').value = worker.bank_account || '';
+                        document.getElementById('upiIdTab').value = worker.upi_id || '';
+                        
+                        const avatar = shop.avatar_url || worker.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=C19A32&color=fff`;
+                        document.getElementById('sidebarAvatar').src = avatar;
+
+                        // 4. Parallel Load Stats and Inventory
+                        await Promise.all([
+                            loadStats(),
+                            loadInventory()
+                        ]);
+                        
+                        initChart();
+                        startHeartbeat();
+
+                        // Cache for next time
+                        localStorage.setItem('userName', worker.name);
+                        localStorage.setItem('userAvatar', worker.avatar_url || '');
+                    }
+                }
+            } catch (err) {
+                console.error("[ShopDash] Init failed:", err);
+            }
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.mbn-item').forEach(item => item.classList.remove('active'));
+
+            if (el) el.classList.add('active');
+
+            const names = {
+                'tab-overview': 'Overview',
+                'tab-inventory': 'Inventory',
+                'tab-orders': 'Orders',
+                'tab-settings': 'Settings'
+            };
+            document.getElementById('currentSectionName').innerText = names[tabId] || 'Workspace';
+            window.scrollTo(0, 0);
+        }
+
+        async function saveSettingsTab() {
+            const SB = getSB();
+            const updates = {
+                name: document.getElementById('settingsOwnerName').value,
+                bank_account: document.getElementById('bankAccountTab').value,
+                upi_id: document.getElementById('upiIdTab').value
+            };
+            
+            await SB.from('workers').update(updates).eq('id', currentWorkerId);
+            await SB.from('shops').update({ name: document.getElementById('settingsShopName').value }).eq('id', currentShopId);
+            
+            alert('Settings saved!');
+            init();
+        }
+
+        async function loadInventory() {
+            const SB = getSB();
+            const { data } = await SB.from('shop_items').select('*').eq('shop_id', currentShopId);
+            const list = document.getElementById('inventoryList');
+            
+            if(data && data.length > 0) {
+                document.getElementById('activeVal').innerText = data.length;
+                list.innerHTML = data.map(item => `
+                    <tr>
+                        <td><img src="${item.image_url || 'https://via.placeholder.com/40'}" style="width: 44px; height: 44px; border-radius: 6px; object-fit: cover;"></td>
+                        <td style="font-weight:600;">${item.name}</td>
+                        <td>${item.company || '-'}</td>
+                        <td>${item.quantity}</td>
+                        <td>₹${item.price}</td>
+                        <td><span class="warranty-badge badge-${item.has_warranty}">${item.has_warranty ? 'Yes' : 'No'}</span></td>
+                        <td>
+                            <button onclick="deleteItem('${item.id}')" style="background:none; border:none; color:var(--error); cursor:pointer;"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                list.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-secondary);">No items in catalog</td></tr>';
+            }
+        }
+
+        let currentItemImageBase64 = null;
+        function previewItemImage(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('itemImagePreview').src = e.target.result;
+                currentItemImageBase64 = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        async function saveItem() {
+            const SB = getSB();
+            const item = {
+                shop_id: currentShopId,
+                name: document.getElementById('itemName').value,
+                company: document.getElementById('itemCompany').value,
+                quantity: parseInt(document.getElementById('itemQty').value),
+                price: parseFloat(document.getElementById('itemPrice').value),
+                has_warranty: document.getElementById('itemWarranty').checked,
+                image_url: currentItemImageBase64
+            };
+            await SB.from('shop_items').insert(item);
+            closeModal();
+            loadInventory();
+        }
+
+        async function deleteItem(id) {
+            if(confirm('Delete item?')) {
+                await getSB().from('shop_items').delete().eq('id', id);
+                loadInventory();
+            }
+        }
+
+        async function loadStats() {
+            const { data } = await getSB().from('shop_sales').select('*').eq('shop_id', currentShopId);
+            allSales = data || [];
+            const total = allSales.reduce((sum, s) => sum + (s.amount || 0), 0);
+            document.getElementById('incomeVal').innerText = `₹${total.toLocaleString()}`;
+            document.getElementById('soldVal').innerText = allSales.length;
+        }
+
+        let myChart = null;
+        function initChart() {
+            const ctx = document.getElementById('salesChart');
+            if(!ctx) return;
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [12000, 19000, 3000, 5000, 2000, 3000],
+                        borderColor: '#C19A32',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(193, 154, 50, 0.1)'
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function openModal() { document.getElementById('itemModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('itemModal').style.display = 'none'; }
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+        async function startHeartbeat() {
+            const email = localStorage.getItem('currentUserEmail');
+            setInterval(async () => {
+                await getSB().from('workers').update({ last_seen: new Date().toISOString() }).eq('email', email);
+            }, 60000);
+        }
+
+        if (typeof init === 'function') init();
+    </script>
+    </main>
+
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item"><i class="fas fa-house"></i><span class="mbn-label">Home</span></a>
+        <a href="/src/pages/service.html" class="mbn-item"><i class="fas fa-screwdriver-wrench"></i><span class="mbn-label">Services</span></a>
+        <a href="/src/pages/shop.html" class="mbn-item mbn-center"><div class="mbn-center-bg"><i class="fas fa-bag-shopping"></i></div><span class="mbn-label">Shop</span></a>
+        <a href="/src/pages/track.html" class="mbn-item"><i class="fas fa-truck-fast"></i><span class="mbn-label">Track</span></a>
+        <a href="/src/pages/shop-dashboard.html" class="mbn-item active"><i class="fas fa-circle-user"></i><span class="mbn-label">Account</span></a>
+    </nav>
+</body>
+</html>
+
+
+

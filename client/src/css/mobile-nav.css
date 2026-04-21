@@ -1,0 +1,403 @@
+/* ================================================================
+   GoRepireo — Unified Navigation Styles (GOLD STANDARD)
+   Desktop: Fixed top header (>1024px)
+   Mobile/Tablet: Top app bar + floating bottom pill + side drawer (≤1024px)
+   ================================================================ */
+
+/* ── 1. RESET & UNIVERSAL HIDING ── */
+.mobile-app-header,
+.drawer-overlay,
+.premium-side-drawer,
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* ── Progress Bar & Container Transitions (SPA) ── */
+#loading-bar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(to right, #C19A32, #FFF) !important;
+    z-index: 100001 !important;
+    width: 0%;
+    opacity: 0;
+    transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1), opacity 0.3s !important;
+    box-shadow: 0 0 10px rgba(193, 154, 50, 0.5) !important;
+}
+
+#app-content {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important;
+    will-change: opacity, transform;
+}
+
+body.router-loading #app-content {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(10px) !important;
+    pointer-events: none !important;
+}
+
+/* ── 2. UNIFIED DESKTOP HEADER (>1024px) ── */
+#gnav-desktop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 99999 !important;
+    height: 72px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 5% !important;
+    background: rgba(5, 11, 20, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 1024px) {
+    #gnav-desktop { display: none !important; }
+}
+
+.gnav-logo {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    text-decoration: none !important;
+    color: white !important;
+    flex-shrink: 0 !important;
+}
+
+.gnav-logo-circle {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: white !important;
+    padding: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    flex-shrink: 0 !important;
+}
+
+.gnav-logo-circle img {
+    height: 38px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+.gnav-logo-text {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+    color: white !important;
+    white-space: nowrap !important;
+}
+
+.gnav-links {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.desktop-nav-link {
+    color: #94A3B8 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    padding: 8px 0 !important;
+    position: relative !important;
+    display: block !important;
+    white-space: nowrap !important;
+}
+
+.desktop-nav-link:hover,
+.desktop-nav-link.active {
+    color: #C19A32 !important;
+}
+
+.desktop-nav-link::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    left: 0 !important;
+    width: 0 !important;
+    height: 2px !important;
+    background: #C19A32 !important;
+    transition: width 0.3s ease !important;
+}
+
+.desktop-nav-link:hover::after,
+.desktop-nav-link.active::after {
+    width: 100% !important;
+}
+
+.gnav-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+.gnav-lang-btn {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #94A3B8 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    padding: 8px 16px !important;
+    border-radius: 99px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: 0.3s !important;
+    white-space: nowrap !important;
+}
+
+.gnav-lang-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.gnav-profile {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    padding: 8px 16px !important;
+    border-radius: 99px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: 0.3s !important;
+    white-space: nowrap !important;
+}
+
+.gnav-profile:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.gnav-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: rgba(193, 154, 50, 0.15) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #C19A32 !important;
+    border: 1px solid rgba(193, 154, 50, 0.3) !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+.gnav-cta {
+    background: linear-gradient(to right, #C19A32, #a8852a) !important;
+    color: white !important;
+    text-decoration: none !important;
+    padding: 10px 24px !important;
+    border-radius: 99px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 4px 15px rgba(193, 154, 50, 0.3) !important;
+    transition: 0.3s !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+.gnav-cta:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 25px rgba(193, 154, 50, 0.4) !important;
+}
+
+/* ── 3. MOBILE VIEWPORT (≤1024px) ── */
+@media (max-width: 1024px) {
+    .mobile-app-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 20px !important;
+        height: 64px !important;
+        background: rgba(5, 11, 20, 0.98) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 99990 !important;
+    }
+
+    .mobile-header-logo {
+        height: 40px !important;
+        width: auto !important;
+    }
+
+    .mobile-menu-trigger {
+        font-size: 24px !important;
+        color: #C19A32 !important;
+        cursor: pointer !important;
+    }
+
+    .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 24px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 90% !important;
+        max-width: 440px !important;
+        background: rgba(15, 23, 42, 0.9) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 28px !important;
+        padding: 10px 14px !important;
+        z-index: 99995 !important;
+        justify-content: space-around !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .mbn-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 4px !important;
+        color: #94A3B8 !important;
+        text-decoration: none !important;
+        flex: 1 !important;
+    }
+
+    .mbn-item i { font-size: 20px !important; }
+    .mbn-label { font-size: 11px !important; font-weight: 600 !important; }
+
+    .mbn-item.active { 
+        color: #C19A32 !important; 
+    }
+    
+    .mbn-item.active i {
+        transform: scale(1.1) !important;
+        text-shadow: 0 0 15px rgba(193, 154, 50, 0.4) !important;
+    }
+    
+    .mbn-item.active .mbn-label {
+        font-weight: 800 !important;
+    }
+
+    .mbn-center.active .mbn-center-bg {
+        box-shadow: 0 0 25px rgba(193, 154, 50, 0.8) !important;
+        transform: scale(1.05) !important;
+    }
+
+    .mbn-center { position: relative !important; top: -18px !important; transition: transform 0.3s ease !important; }
+
+    .mbn-center-bg {
+        width: 56px !important;
+        height: 56px !important;
+        background: #C19A32 !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: white !important;
+        font-size: 22px !important;
+        box-shadow: 0 6px 20px rgba(193, 154, 50, 0.5) !important;
+    }
+
+    .drawer-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0, 0, 0, 0.8) !important;
+        backdrop-filter: blur(5px) !important;
+        z-index: 99999 !important;
+        display: none !important;
+    }
+    .drawer-overlay.active { display: block !important; }
+
+    .premium-side-drawer {
+        position: fixed !important;
+        top: 0 !important;
+        right: -320px !important;
+        width: 300px !important;
+        height: 100% !important;
+        background: #0F172A !important;
+        z-index: 100000 !important;
+        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        padding: 50px 0 !important;
+        box-shadow: -15px 0 50px rgba(0,0,0,0.6) !important;
+        display: block !important;
+    }
+
+    .premium-side-drawer.active { right: 0 !important; }
+
+    .gnav-drawer-logo {
+        text-align: center !important;
+        margin-bottom: 50px !important;
+        padding: 0 40px !important;
+    }
+    .gnav-drawer-logo img { height: 56px !important; }
+
+    .gnav-drawer-links {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .mobile-link {
+        display: block !important;
+        padding: 16px 40px !important;
+        color: #94A3B8 !important;
+        text-decoration: none !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
+    }
+
+    .mobile-link:hover, .mobile-link.active {
+        color: white !important;
+        background: rgba(255,255,255,0.05) !important;
+        border-left: 5px solid #C19A32 !important;
+    }
+
+    .gnav-drawer-footer {
+        position: absolute !important;
+        bottom: 50px !important;
+        left: 0 !important;
+        right: 0 !important;
+        padding: 0 40px !important;
+    }
+
+    .gnav-drawer-cta {
+        display: block !important;
+        background: #C19A32 !important;
+        color: white !important;
+        text-align: center !important;
+        padding: 16px !important;
+        border-radius: 14px !important;
+        text-decoration: none !important;
+        font-weight: 800 !important;
+        margin-top: 24px !important;
+    }
+}

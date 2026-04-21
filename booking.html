@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Service - Go_Repireo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0a0f1c',
+                            800: '#111827',
+                            700: '#1f2937'
+                        },
+                        gold: {
+                            400: '#e5c158',
+                            500: '#d4af37',
+                            600: '#b5952f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background-color: #0a0f1c;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(to right, #d4af37, #f3e5ab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        /* Ambient glow inside container */
+        .glow-bg {
+            position: absolute;
+            width: 15rem;
+            height: 15rem;
+            background: rgba(212, 175, 55, 0.05);
+            filter: blur(60px);
+            border-radius: 50%;
+            z-index: -1;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Suggestion card hover & click styles */
+        .suggestion-card {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .suggestion-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            background: rgba(17, 24, 39, 0.85);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+        }
+
+        .suggestion-card.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3) inset;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative items-center justify-center py-10 px-4">
+
+    <!-- Ambient Background Glow for Entire Page -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[20%] left-[10%] w-96 h-96 bg-gold-500 opacity-[0.03] rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Back to Home -->
+    <a href="/home.html" class="absolute top-6 left-6 text-gray-400 hover:text-gold-500 transition-colors flex items-center gap-2 text-sm font-medium">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-8 md:p-10 relative overflow-hidden shadow-2xl">
+        <div class="glow-bg"></div>
+        
+        <!-- Header Section -->
+        <div class="text-center mb-8 inline-block w-full">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-navy-800 border border-gold-500/20 mb-4 mx-auto text-gold-500 text-2xl shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                <i class="fa-solid fa-screwdriver-wrench" id="service-icon"></i>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">Book <span class="gold-gradient-text" id="service-title">Service</span></h1>
+            <p class="text-gray-400 text-sm">Tell us what you need help with, and we'll instantly match the right solution.</p>
+        </div>
+
+        <div id="step-1-section" class="transition-all duration-300">
+            <!-- Smart Input Section -->
+            <div class="relative group mb-8">
+                <div class="absolute top-4 left-4 text-gray-500">
+                    <i class="fa-solid fa-sparkles text-gold-500/70"></i>
+                </div>
+                <input type="text" id="problem-input" placeholder="Describe your problem... (e.g. leaking pipe)" 
+                    class="w-full bg-navy-800/80 border border-gold-500/30 text-white rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all placeholder-gray-500 text-sm md:text-base shadow-inner">
+            </div>
+
+            <!-- Selected Result Text -->
+            <div id="selection-status" class="hidden text-sm text-center text-gold-400 font-medium mb-4">
+                Selected Option: <span id="selected-value-text" class="text-white font-bold">None</span>
+            </div>
+
+            <!-- Suggestions Container -->
+            <div id="suggestions-title" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 hidden">
+                Smart Suggestions
+            </div>
+            <div id="suggestions-container" class="space-y-3 hidden">
+                <!-- Dynamically injected items go here -->
+            </div>
+
+            <!-- Empty State Container -->
+            <div id="empty-state" class="text-center py-8 text-gray-500 text-sm">
+                <i>Start typing above to see AI-detected service options.</i>
+            </div>
+
+            <!-- Warning container -->
+            <div id="warning-msg" class="hidden text-red-400 text-xs text-center mt-4">
+                <i class="fa-solid fa-circle-exclamation"></i> Please select a service first
+            </div>
+
+            <!-- Action Button -->
+            <button id="book-btn" class="w-full mt-4 bg-navy-800 text-gray-500 font-medium py-4 rounded-xl border border-gray-700 transition-all">
+                Select a service to continue
+            </button>
+        </div>
+
+        <!-- Step 2 Section -->
+        <div id="step-2-section" class="hidden transition-all duration-300 opacity-0 transform translate-y-4">
+            <h2 class="text-xl font-bold mb-4 text-center">Choose Service Details</h2>
+            <p class="text-center text-gray-400 text-sm mb-6">Select the exact service type you need.</p>
+
+            <div id="details-options-container" class="space-y-3 mb-6">
+                <!-- populated dynamically -->
+            </div>
+            
+            <div id="price-display" class="hidden text-center text-lg font-medium mb-6">
+                Estimated Price: <span id="price-value" class="text-gold-500 font-bold text-2xl"></span>
+            </div>
+
+            <button id="confirm-btn" class="w-full bg-navy-800 text-gray-500 font-medium py-4 rounded-xl border border-gray-700 transition-all" disabled>
+                Select an option to confirm
+            </button>
+        </div>
+
+        <!-- Step 3 Section (Payment) -->
+        <div id="step-3-section" class="hidden transition-all duration-300 opacity-0 transform translate-y-4">
+            <h2 class="text-xl font-bold mb-4 text-center">Choose Payment Method</h2>
+            
+            <div id="payment-options-container" class="space-y-4 mb-8">
+                <!-- Option 1 -->
+                <div class="payment-card cursor-pointer w-full p-5 rounded-xl border border-gold-500/10 bg-navy-800/40 flex items-start gap-4 transition-all" data-method="Online">
+                    <div class="mt-0.5">
+                        <i class="fa-regular fa-credit-card payment-icon text-gray-500 text-2xl transition-colors"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="payment-title font-medium text-gray-300 mb-1">Pay Online</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Pay securely using UPI, Card, or Net Banking</p>
+                    </div>
+                    <div class="flex items-center justify-center pt-2">
+                        <i class="fa-solid fa-circle check-icon text-gray-600 transition-colors"></i>
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="payment-card cursor-pointer w-full p-5 rounded-xl border border-gold-500/10 bg-navy-800/40 flex items-start gap-4 transition-all" data-method="Offline">
+                    <div class="mt-0.5">
+                        <i class="fa-solid fa-money-bill-wave payment-icon text-gray-500 text-2xl transition-colors"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="payment-title font-medium text-gray-300 mb-1">Pay After Service</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Pay in cash after service is completed</p>
+                    </div>
+                    <div class="flex items-center justify-center pt-2">
+                        <i class="fa-solid fa-circle check-icon text-gray-600 transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="complete-btn" class="w-full bg-navy-800 text-gray-500 font-medium py-4 rounded-xl border border-gray-700 transition-all" disabled>
+                Select a payment method
+            </button>
+        </div>
+
+        <!-- Step 4 Section (Success) -->
+        <div id="step-4-section" class="hidden transition-all duration-300 opacity-0 transform translate-y-4 text-center">
+            <div class="w-20 h-20 bg-green-500/20 border border-green-500/30 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+                <i class="fa-solid fa-check text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-6 text-white">Booking Confirmed <br/>Successfully!</h2>
+            
+            <div class="bg-navy-800/60 rounded-xl p-6 text-left border border-gold-500/20 shadow-lg text-sm mb-8">
+                <div class="mb-3 flex justify-between border-b border-gray-700/50 pb-3">
+                    <span class="text-gray-400">Service Area</span>
+                    <span id="final-service" class="font-semibold text-white"></span>
+                </div>
+                <div class="mb-3 flex justify-between border-b border-gray-700/50 pb-3">
+                    <span class="text-gray-400">Requested Task</span>
+                    <span id="final-detail" class="font-semibold text-white text-right ml-4"></span>
+                </div>
+                <div class="mb-3 flex justify-between border-b border-gray-700/50 pb-3">
+                    <span class="text-gray-400">Est. Price</span>
+                    <span id="final-price" class="font-semibold text-gold-500"></span>
+                </div>
+                <div class="flex justify-between pt-1">
+                    <span class="text-gray-400">Payment</span>
+                    <span id="final-payment" class="font-bold text-white"></span>
+                </div>
+            </div>
+
+            <!-- Cancellation Timer Section -->
+            <div id="cancellation-section" class="bg-navy-800/60 rounded-xl p-5 text-center border border-red-500/20 shadow-lg mb-8 transition-all relative overflow-hidden">
+                <div class="absolute inset-0 bg-red-500/5 pointer-events-none"></div>
+                <p id="timer-text" class="text-sm text-gray-300 mb-3 font-medium">You can cancel this booking within: <span id="countdown-timer" class="font-mono text-red-400 font-bold ml-1 text-base tracking-widest bg-navy-900 px-2 py-1 rounded">02:00</span></p>
+                <button id="cancel-booking-btn" class="w-full bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 font-semibold py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                    Cancel Booking
+                </button>
+                <p id="cancel-status" class="hidden text-sm"></p>
+            </div>
+
+            <!-- Professional Assigned Section -->
+            <div id="professional-section" class="hidden bg-navy-800/60 rounded-xl p-5 text-left border border-gold-500/20 shadow-lg mb-8 transition-all transform opacity-0 translate-y-4">
+                <h3 class="text-gold-500 font-bold mb-4 text-center tracking-wide"><i class="fa-solid fa-star text-xs mr-1 align-baseline"></i> Professional Assigned</h3>
+                <div class="flex items-center gap-4 border-b border-gray-700/50 pb-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-navy-900 border border-gold-500/30 flex items-center justify-center text-gold-500 text-xl shadow-[0_0_10px_rgba(212,175,55,0.15)]">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-lg">Rahul Sharma</h4>
+                        <a href="tel:9876543210" class="text-gray-400 text-sm hover:text-gold-500 transition-colors"><i class="fa-solid fa-phone text-xs mr-1"></i> 9876543210</a>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Distance</span>
+                        <span id="prof-distance" class="font-medium text-white">3.2 km away</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Status</span>
+                        <span id="prof-status" class="font-medium text-gold-400">Preparing to arrive</span>
+                    </div>
+                    <div class="flex justify-between mt-1 pt-3 border-t border-gray-700/50">
+                        <span class="text-gray-400">Estimated Arrival</span>
+                        <span id="prof-eta" class="font-bold text-white bg-navy-900 px-2 py-1 rounded">15 mins</span>
+                    </div>
+                </div>
+
+                <!-- Live Map UI -->
+                <div class="mt-6 border border-gray-700/50 rounded-xl overflow-hidden bg-navy-900 relative h-24 shadow-inner">
+                    <!-- Fake Route Line -->
+                    <div class="absolute top-1/2 left-4 right-4 h-0.5 border-t-2 border-dashed border-gray-600 -translate-y-1/2"></div>
+                    
+                    <!-- Destination (User Location) Fixed Right -->
+                    <div class="absolute top-1/2 right-4 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-[0_0_10px_rgba(239,68,68,0.8)] z-10 flex items-center justify-center">
+                        <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
+
+                    <!-- Service Person (Moving Icon) -->
+                    <div id="moving-marker" class="absolute top-1/2 left-4 -translate-y-1/2 -ml-3 transition-all duration-1000 ease-linear z-20">
+                        <div class="w-7 h-7 bg-gold-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.8)] text-navy-900 text-xs">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrival Message -->
+                <div id="arrival-message" class="hidden mt-4 text-center text-green-400 font-bold bg-green-500/10 p-3 rounded-lg border border-green-500/20 shadow-[0_0_10px_rgba(74,222,128,0.1)]">
+                    <i class="fa-solid fa-check-double mr-1"></i> Your service professional has arrived
+                </div>
+
+                <!-- View Map Trigger -->
+                <button id="view-map-btn" class="w-full mt-6 bg-navy-800 text-gold-500 border border-gold-500/30 hover:bg-gold-500/10 font-bold py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                    <i class="fa-solid fa-map-location-dot mr-2"></i>View Live Location
+                </button>
+            </div>
+            
+            <a href="/home.html" id="return-home-btn" class="inline-block w-full bg-navy-800 text-white font-medium py-4 rounded-xl border border-gray-700 hover:border-gold-500 transition-all">
+                Return to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Map Modal -->
+    <div id="map-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-900/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-navy-800 border border-gold-500/20 rounded-2xl w-full max-w-2xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-300" id="map-modal-content">
+            <div class="flex items-center justify-between p-4 border-b border-gray-700/50">
+                <h3 class="font-bold text-white text-lg"><i class="fa-solid fa-map-location-dot text-gold-500 mr-2"></i>Live Tracking</h3>
+                <button id="close-map-btn" class="text-gray-400 hover:text-red-400 transition-colors p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="w-full h-80 bg-[#0d1627] rounded-xl overflow-hidden relative border border-gray-700/50 shadow-inner" id="simulated-map-area">
+                    <!-- Background Map Visual (CSS Grid lines) -->
+                    <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    
+                    <!-- Route Line -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40">
+                        <line x1="20%" y1="20%" x2="80%" y2="80%" stroke="#d4af37" stroke-width="2" stroke-dasharray="6,6" />
+                    </svg>
+
+                    <!-- User Location (Fixed Target) -->
+                    <div class="absolute w-8 h-8 bg-red-500 rounded-full border-2 border-white shadow-[0_0_15px_rgba(239,68,68,0.8)] z-10 flex items-center justify-center text-white text-[10px]" style="top: 80%; left: 80%; transform: translate(-50%, -50%);">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+
+                    <!-- Professional Marker (Moving Entity) -->
+                    <div id="modal-moving-marker" class="absolute w-8 h-8 bg-gold-500 rounded-full border-2 border-white shadow-[0_0_20px_rgba(212,175,55,0.9)] z-20 flex items-center justify-center text-navy-900 text-[10px] transition-all duration-[3000ms] ease-linear" style="top: 20%; left: 20%; transform: translate(-50%, -50%);">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    
+                    <!-- Top Overlay Info -->
+                    <div class="absolute top-4 left-4 bg-navy-800/90 backdrop-blur border border-gold-500/30 px-3 py-2 rounded-lg shadow-lg z-30">
+                        <p class="text-xs text-gray-400 font-medium tracking-wide">MAP STATUS</p>
+                        <p id="modal-map-status" class="text-sm font-bold text-gold-400 mt-0.5"><i class="fa-solid fa-motorcycle text-xs mr-1"></i> On the way</p>
+                    </div>
+                    
+                    <!-- Distance Overlay -->
+                    <div class="absolute bottom-4 left-4 bg-navy-800/90 backdrop-blur border border-gray-600/50 px-3 py-2 rounded-lg shadow-lg z-30">
+                        <p class="text-xs text-gray-400 font-medium tracking-wide">DISTANCE</p>
+                        <p id="modal-map-distance" class="text-sm font-bold text-white mt-0.5">3.2 km away</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 text-center mt-4"><i class="fa-solid fa-satellite-dish mr-1"></i> Live tracking simulated environment.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Detection Logic -->
+    <script>
+        // Parse URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const serviceParam = urlParams.get('service');
+        const titleEl = document.getElementById('service-title');
+        const iconEl = document.getElementById('service-icon');
+
+        // Setup Header Dynamically based on current Service Focus from query
+        if (serviceParam) {
+            const capitalized = serviceParam.charAt(0).toUpperCase() + serviceParam.slice(1);
+            titleEl.textContent = capitalized;
+            
+            // Set dynamic icon strictly to Plumber or Electrician visually
+            if (serviceParam.toLowerCase() === 'plumber') {
+                iconEl.className = 'fa-solid fa-faucet-drip';
+            } else if (serviceParam.toLowerCase() === 'electrician') {
+                iconEl.className = 'fa-solid fa-bolt';
+            }
+        }
+
+        // DOM Elements
+        const inputEl = document.getElementById('problem-input');
+        const containerEl = document.getElementById('suggestions-container');
+        const titleContainerEl = document.getElementById('suggestions-title');
+        const emptyStateEl = document.getElementById('empty-state');
+        const statusEl = document.getElementById('selection-status');
+        const selectedValueTextEl = document.getElementById('selected-value-text');
+        const bookBtn = document.getElementById('book-btn');
+
+        let selectedService = null;
+
+        // Rules dictionary matching user query requirements
+        const detectionRules = [
+            {
+                keywords: ['ac', 'cooling'],
+                options: ['AC Repair', 'AC Installation', 'Gas Refill']
+            },
+            {
+                keywords: ['water', 'pipe', 'leak'],
+                options: ['Pipe Fix', 'Leak Repair', 'Bathroom Plumbing']
+            },
+            {
+                keywords: ['fan', 'light', 'switch', 'electric'],
+                options: ['Fan Repair', 'Switch Repair', 'Wiring Fix']
+            }
+        ];
+
+        const defaultOptions = ['General Inspection', 'Home Service Support'];
+
+        // Core Input listener
+        inputEl.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            
+            if (!val) {
+                // If completely empty, reset everything to idle view
+                containerEl.innerHTML = '';
+                containerEl.classList.add('hidden');
+                titleContainerEl.classList.add('hidden');
+                emptyStateEl.classList.remove('hidden');
+                resetSelection();
+                return;
+            }
+
+            emptyStateEl.classList.add('hidden');
+            titleContainerEl.classList.remove('hidden');
+            containerEl.classList.remove('hidden');
+
+            let matchedOptions = [];
+            let isMatched = false;
+
+            // Iterate mapped rules to find matching keywords
+            for (const rule of detectionRules) {
+                if (rule.keywords.some(keyword => val.includes(keyword))) {
+                    matchedOptions = rule.options;
+                    isMatched = true;
+                    break;
+                }
+            }
+
+            // Fallback rules if no keyword matches their query string
+            if (!isMatched) {
+                matchedOptions = defaultOptions;
+            }
+
+            renderSuggestions(matchedOptions);
+        });
+
+        // Function to Draw Cards
+        function renderSuggestions(options) {
+            containerEl.innerHTML = ''; // wipe old array
+            
+            options.forEach(opt => {
+                const isCurrentSelected = (selectedService === opt);
+                const card = document.createElement('div');
+                
+                // Add base attributes setup and potential state rendering
+                card.className = `suggestion-card cursor-pointer w-full p-4 rounded-xl border border-gold-500/10 bg-navy-800/40 flex items-center justify-between ${isCurrentSelected ? 'selected' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid ${isCurrentSelected ? 'fa-circle-check text-gold-500' : 'fa-circle text-gray-600'} transition-colors"></i>
+                        <span class="font-medium ${isCurrentSelected ? 'text-white' : 'text-gray-300'}">${opt}</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => handleSelection(opt));
+                containerEl.appendChild(card);
+            });
+        }
+
+        // DOM Elements continued...
+        const warningEl = document.getElementById('warning-msg');
+        const step1Section = document.getElementById('step-1-section');
+        const step2Section = document.getElementById('step-2-section');
+        const step3Section = document.getElementById('step-3-section');
+        const step4Section = document.getElementById('step-4-section');
+        const detailsContainer = document.getElementById('details-options-container');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const completeBtn = document.getElementById('complete-btn');
+
+        let selectedDetail = null;
+        let estimatedPrice = null;
+        let selectedPayment = null;
+
+        const detailedOptionsData = {
+            'Fan Repair': [
+                { title: 'Basic Inspection', desc: 'Identify the core issue', price: 199 },
+                { title: 'Capacitor Replacement', desc: 'Replace faulty capacitors', price: 399 },
+                { title: 'Motor Repair', desc: 'Fix or replace internal motor', price: 799 },
+                { title: 'Full Fan Service', desc: 'Complete teardown, clean, and fix', price: 999 },
+                { title: 'Installation Support', desc: 'Install a brand new fan', price: 499 }
+            ],
+            // Generic fallback for others
+            'default': [
+                { title: 'Basic Inspection', desc: 'Identify the core issue', price: 199 },
+                { title: 'Standard Fix', desc: 'Standard service and maintenance', price: 399 },
+                { title: 'Full Replacement', desc: 'Complete teardown and install', price: 999 }
+            ]
+        };
+
+        // ... existing handleSelection logic modified lightly ...
+        function handleSelection(optionValue) {
+            selectedService = optionValue;
+            warningEl.classList.add('hidden'); // Clear warning immediately if previously triggered
+            
+            // Render green state textual success updates
+            statusEl.classList.remove('hidden');
+            selectedValueTextEl.innerText = optionValue;
+
+            // Change Book Button styling visually logic
+            bookBtn.classList.remove('bg-navy-800', 'text-gray-500', 'border-gray-700');
+            bookBtn.classList.add('bg-gold-500', 'text-navy-900', 'hover:bg-gold-400', 'border-transparent', 'shadow-[0_0_15px_rgba(212,175,55,0.3)]', 'hover:shadow-[0_0_20px_rgba(212,175,55,0.5)]');
+            bookBtn.innerText = `Continue with ${optionValue}`;
+
+            const currentNodes = containerEl.querySelectorAll('.suggestion-card');
+            currentNodes.forEach(node => {
+                const label = node.querySelector('span').innerText;
+                const icon = node.querySelector('i');
+                
+                if(label === optionValue) {
+                    node.classList.add('selected');
+                    icon.classList.remove('fa-circle', 'text-gray-600');
+                    icon.classList.add('fa-circle-check', 'text-gold-500');
+                    node.querySelector('span').classList.replace('text-gray-300', 'text-white');
+                } else {
+                    node.classList.remove('selected');
+                    icon.classList.remove('fa-circle-check', 'text-gold-500');
+                    icon.classList.add('fa-circle', 'text-gray-600');
+                    node.querySelector('span').classList.replace('text-white', 'text-gray-300');
+                }
+            });
+        }
+
+        function resetSelection() {
+            selectedService = null;
+            statusEl.classList.add('hidden');
+            selectedValueTextEl.innerText = 'None';
+            warningEl.classList.add('hidden');
+            
+            bookBtn.classList.add('bg-navy-800', 'text-gray-500', 'border-gray-700');
+            bookBtn.classList.remove('bg-gold-500', 'text-navy-900', 'hover:bg-gold-400', 'border-transparent', 'shadow-[0_0_15px_rgba(212,175,55,0.3)]', 'hover:shadow-[0_0_20px_rgba(212,175,55,0.5)]');
+            bookBtn.innerText = 'Select a service to continue';
+        }
+
+        bookBtn.addEventListener('click', () => {
+            if (!selectedService) {
+                // Show warning message
+                warningEl.classList.remove('hidden');
+                // Shake anim
+                bookBtn.classList.add('animate-pulse');
+                setTimeout(() => bookBtn.classList.remove('animate-pulse'), 500);
+                return;
+            }
+
+            // Proceed to Step 2
+            // 1. Hide step 1 smoothly
+            step1Section.classList.add('opacity-0', '-translate-y-4');
+            
+            setTimeout(() => {
+                step1Section.classList.add('hidden');
+                
+                // 2. Prep step 2
+                renderStep2Options(selectedService);
+                step2Section.classList.remove('hidden');
+                
+                // Trigger reflow for transition
+                void step2Section.offsetWidth;
+                
+                // 3. Show step 2 smoothly
+                step2Section.classList.remove('opacity-0', 'translate-y-4');
+            }, 300); // 300ms matches tailwind default duration-300
+        });
+
+        function renderStep2Options(service) {
+            detailsContainer.innerHTML = '';
+            const opts = detailedOptionsData[service] || detailedOptionsData['default'];
+
+            opts.forEach(detail => {
+                const isSelected = (selectedDetail === detail.title);
+                const card = document.createElement('div');
+                
+                card.className = `suggestion-card cursor-pointer w-full p-4 rounded-xl border border-gold-500/10 bg-navy-800/40 flex items-start gap-4 ${isSelected ? 'selected' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="mt-1">
+                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-gold-500' : 'fa-circle text-gray-600'} transition-colors"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-medium ${isSelected ? 'text-white' : 'text-gray-300'} mb-1">${detail.title}</h4>
+                        <p class="text-xs text-gray-500">${detail.desc}</p>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => handleDetailSelection(detail.title, detail.price));
+                detailsContainer.appendChild(card);
+            });
+        }
+
+        function handleDetailSelection(title, price) {
+            selectedDetail = title;
+            estimatedPrice = price;
+            renderStep2Options(selectedService); // re-render to update UI states
+            
+            const priceDisplayNode = document.getElementById('price-display');
+            const priceValueNode = document.getElementById('price-value');
+            priceDisplayNode.classList.remove('hidden');
+            priceValueNode.innerText = `₹${price}`;
+            
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove('bg-navy-800', 'text-gray-500', 'cursor-not-allowed', 'border-gray-700');
+            confirmBtn.classList.add('bg-gold-500', 'text-navy-900', 'hover:bg-gold-400', 'border-transparent', 'shadow-[0_0_15px_rgba(212,175,55,0.3)]', 'hover:shadow-[0_0_20px_rgba(212,175,55,0.5)]');
+            confirmBtn.innerText = `Confirm Booking`;
+        }
+
+        // --- Step 2 -> Step 3 Transition ---
+        confirmBtn.addEventListener('click', () => {
+            step2Section.classList.add('opacity-0', '-translate-y-4');
+            setTimeout(() => {
+                step2Section.classList.add('hidden');
+                step3Section.classList.remove('hidden');
+                void step3Section.offsetWidth;
+                step3Section.classList.remove('opacity-0', 'translate-y-4');
+            }, 300);
+        });
+
+        // --- Step 3 Logic ---
+        const paymentCards = document.querySelectorAll('.payment-card');
+        paymentCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Clear previous highlights
+                paymentCards.forEach(c => {
+                    c.classList.remove('border-gold-500', 'selected');
+                    c.classList.add('border-gold-500/10');
+                    c.style.background = 'rgba(17, 24, 39, 0.4)';
+                    c.querySelector('.check-icon').classList.replace('text-gold-500', 'text-gray-600');
+                    c.querySelector('.check-icon').classList.replace('fa-circle-check', 'fa-circle');
+                    c.querySelector('.payment-icon').classList.replace('text-gold-500', 'text-gray-500');
+                    c.querySelector('.payment-title').classList.replace('text-white', 'text-gray-300');
+                });
+                
+                // Highlight active
+                card.classList.add('border-gold-500', 'selected');
+                card.classList.remove('border-gold-500/10');
+                card.style.background = 'rgba(212, 175, 55, 0.1)';
+                card.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.2) inset';
+                card.querySelector('.check-icon').classList.replace('text-gray-600', 'text-gold-500');
+                card.querySelector('.check-icon').classList.replace('fa-circle', 'fa-circle-check');
+                card.querySelector('.payment-icon').classList.replace('text-gray-500', 'text-gold-500');
+                card.querySelector('.payment-title').classList.replace('text-gray-300', 'text-white');
+
+                selectedPayment = card.getAttribute('data-method');
+
+                completeBtn.disabled = false;
+                completeBtn.classList.remove('bg-navy-800', 'text-gray-500', 'cursor-not-allowed', 'border-gray-700');
+                completeBtn.classList.add('bg-gold-500', 'text-navy-900', 'hover:bg-gold-400', 'border-transparent', 'shadow-[0_0_15px_rgba(212,175,55,0.3)]', 'hover:shadow-[0_0_20px_rgba(212,175,55,0.5)]');
+                completeBtn.innerText = `Complete Booking`;
+            });
+        });
+
+        // --- Step 3 -> Step 4 Transition ---
+        completeBtn.addEventListener('click', () => {
+            step3Section.classList.add('opacity-0', '-translate-y-4');
+            
+            // Populate summary dynamically
+            document.getElementById('final-service').innerText = selectedService;
+            document.getElementById('final-detail').innerText = selectedDetail;
+            document.getElementById('final-price').innerText = `₹${estimatedPrice}`;
+            document.getElementById('final-payment').innerText = selectedPayment === 'Online' ? 'Pay Online (UPI/Card)' : 'Pay After Service (Cash)';
+
+            setTimeout(() => {
+                step3Section.classList.add('hidden');
+                
+                // Hide header info to show full success modal clean
+                titleEl.parentElement.classList.add('hidden');
+
+                step4Section.classList.remove('hidden');
+                void step4Section.offsetWidth;
+                step4Section.classList.remove('opacity-0', 'translate-y-4');
+                
+                startCancellationTimer();
+            }, 300);
+        });
+
+        // --- Cancellation Logic ---
+        let countdownInterval;
+        const countdownTimerEl = document.getElementById('countdown-timer');
+        const cancelBtnEl = document.getElementById('cancel-booking-btn');
+        const timerTextEl = document.getElementById('timer-text');
+        const cancelStatusEl = document.getElementById('cancel-status');
+        const cancellationSection = document.getElementById('cancellation-section');
+        const professionalSection = document.getElementById('professional-section');
+
+        function startCancellationTimer() {
+            let timeLeft = 120; // 2 minutes in seconds
+
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                countdownTimerEl.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    cancellationSection.classList.add('hidden');
+                    
+                    professionalSection.classList.remove('hidden');
+                    void professionalSection.offsetWidth;
+                    professionalSection.classList.remove('opacity-0', 'translate-y-4');
+
+                    startLiveTrackingSimulation();
+                }
+            }, 1000);
+        }
+
+        function startLiveTrackingSimulation() {
+            // Main card elements
+            const distanceEl = document.getElementById('prof-distance');
+            const statusEl = document.getElementById('prof-status');
+            const etaEl = document.getElementById('prof-eta');
+            const markerEl = document.getElementById('moving-marker');
+            const arrivalMsg = document.getElementById('arrival-message');
+            
+            // Map Modal elements
+            const modalMarkerEl = document.getElementById('modal-moving-marker');
+            const modalStatusEl = document.getElementById('modal-map-status');
+            const modalDistanceEl = document.getElementById('modal-map-distance');
+
+            const trackingSteps = [
+                { dist: '2.8 km away', status: 'On the way', left: '15%', eta: '12 mins', mapPos: '32%' },
+                { dist: '2.1 km away', status: 'Nearby', left: '30%', eta: '9 mins', mapPos: '44%' },
+                { dist: '1.5 km away', status: 'Nearby', left: '55%', eta: '6 mins', mapPos: '56%' },
+                { dist: '0.5 km away', status: 'Arriving soon', left: '80%', eta: '2 mins', mapPos: '68%' },
+                { dist: 'Arrived', status: 'Arrived at location', left: 'calc(100% - 2.5rem)', eta: '0 mins', mapPos: '80%' },
+            ];
+
+            let stepData = 0;
+            const trackingInterval = setInterval(() => {
+                if(stepData < trackingSteps.length) {
+                    const current = trackingSteps[stepData];
+                    
+                    // Assign DOM updates (Card View)
+                    distanceEl.innerText = current.dist;
+                    statusEl.innerText = current.status;
+                    etaEl.innerText = current.eta;
+                    markerEl.style.left = current.left;
+                    
+                    // Assign DOM updates (Map UI)
+                    modalDistanceEl.innerText = current.dist;
+                    modalStatusEl.innerHTML = `<i class="${stepData === trackingSteps.length - 1 ? 'fa-solid fa-check-double' : 'fa-solid fa-motorcycle'} text-xs mr-1"></i> ${current.status}`;
+                    modalMarkerEl.style.top = current.mapPos;
+                    modalMarkerEl.style.left = current.mapPos;
+                    
+                    if (stepData === trackingSteps.length - 1) {
+                        // Triggers arrival success behaviors
+                        arrivalMsg.classList.remove('hidden');
+                        statusEl.classList.replace('text-gold-400', 'text-green-400');
+                        modalStatusEl.classList.replace('text-gold-400', 'text-green-400');
+                        clearInterval(trackingInterval);
+                    }
+                    stepData++;
+                }
+            }, 3000); // Shift every 3 seconds for fast simulation
+        }
+
+        cancelBtnEl.addEventListener('click', () => {
+            const isConfirmed = confirm("Are you sure you want to cancel?");
+            if (isConfirmed) {
+                // Cancel booking
+                finalizeTimerView('Booking Cancelled.', 'text-red-400');
+                
+                // Switch massive UI success checkmark to failure cross
+                document.querySelector('#step-4-section h2').innerHTML = 'Booking Cancelled';
+                const checkIcon = document.querySelector('#step-4-section .fa-check');
+                if (checkIcon) {
+                    checkIcon.classList.replace('fa-check', 'fa-xmark');
+                    checkIcon.parentElement.classList.replace('text-green-400', 'text-red-400');
+                    checkIcon.parentElement.classList.replace('bg-green-500/20', 'bg-red-500/20');
+                    checkIcon.parentElement.classList.replace('border-green-500/30', 'border-red-500/30');
+                    checkIcon.parentElement.classList.remove('shadow-[0_0_20px_rgba(74,222,128,0.2)]');
+                    checkIcon.parentElement.classList.add('shadow-[0_0_20px_rgba(239,68,68,0.2)]');
+                }
+            }
+        });
+
+        function finalizeTimerView(message, className) {
+            clearInterval(countdownInterval);
+            cancelBtnEl.classList.add('hidden');
+            timerTextEl.classList.add('hidden');
+            cancelStatusEl.classList.remove('hidden');
+            cancelStatusEl.innerText = message;
+            cancelStatusEl.className = `text-sm font-semibold mt-2 ${className}`;
+        }
+
+        // --- Map Modal Logic ---
+        const viewMapBtn = document.getElementById('view-map-btn');
+        const closeMapBtn = document.getElementById('close-map-btn');
+        const mapModal = document.getElementById('map-modal');
+        const mapModalContent = document.getElementById('map-modal-content');
+
+        viewMapBtn.addEventListener('click', () => {
+            mapModal.classList.remove('pointer-events-none');
+            mapModal.classList.remove('opacity-0');
+            mapModalContent.classList.remove('scale-95');
+        });
+
+        closeMapBtn.addEventListener('click', () => {
+            mapModal.classList.add('opacity-0');
+            mapModal.classList.add('pointer-events-none');
+            mapModalContent.classList.add('scale-95');
+        });
+    </script>
+</body>
+</html>

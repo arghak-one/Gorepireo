@@ -1,0 +1,177 @@
+/* 
+   GoRepireo - Auth Pages Layout
+   Version: 1.0.0 (Pro Max Edition)
+   Description: Premium styling for Login, Register, and recovery pages.
+*/
+
+.auth-page-container {
+    padding: 80px 24px 160px;
+    min-height: calc(100vh - 72px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--glass-shadow);
+    border: var(--glass-border);
+    animation: authAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authAppear {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.brand-panel {
+    background: var(--bg-deep);
+    border-right: var(--glass-border);
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-headline {
+    font-family: var(--font-serif);
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.brand-headline em {
+    font-style: italic;
+    color: var(--accent);
+}
+
+.form-panel {
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-header h2 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.form-header h2 em {
+    font-style: italic;
+    color: var(--accent);
+}
+
+/* --- INPUTS --- */
+.input-group {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 4px;
+}
+
+.input-wrap {
+    position: relative !important;
+    margin-bottom: 20px;
+    width: 100% !important;
+    display: block !important;
+}
+
+.input-wrap i:not(.pass-icon):not(.pass-toggle) {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    transition: var(--transition-base);
+    pointer-events: none;
+}
+
+.input-wrap input {
+    width: 100%;
+    padding: 16px 52px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: white;
+    outline: none;
+    transition: var(--transition-base);
+    font-size: 15px;
+}
+
+.input-wrap:has(.detect-btn) input {
+    padding-right: 120px !important;
+}
+
+.input-wrap input:focus {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 4px rgba(193, 154, 50, 0.1);
+}
+
+.input-wrap input:focus + i {
+    color: var(--accent);
+}
+
+.pass-icon, .pass-toggle {
+    position: absolute !important;
+    right: 20px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-base);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pass-icon:hover {
+    color: var(--accent);
+}
+
+/* --- BUTTONS --- */
+.login-btn, .register-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--accent-glow);
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 15px;
+}
+
+.login-btn:hover, .register-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(193, 154, 50, 0.4);
+}
+
+@media (max-width: 768px) {
+    .brand-panel { display: none; }
+    .login-wrapper { grid-template-columns: 1fr; max-width: 440px; }
+}

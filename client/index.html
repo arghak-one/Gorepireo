@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoRepireo | Home Services Redefined</title>
+    <link rel='icon' type='image/png' href='/assets/GoRepireo.png'>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Global Styles and Scripts -->
+    <link rel="stylesheet" href="/src/css/tokens.css">
+    <link rel="stylesheet" href="/src/css/glass-ui.css">
+    <link rel="stylesheet" href="/src/css/mesh-bg.css">
+    <link rel="stylesheet" href="src/css/mobile-nav.css?v=5">
+    
+    <!-- Dependency Chain: translations -> i18n -> app-init -> auth-logic -> auth-check -> router -->
+    <script type="module" src="src/js/translations.js"></script>
+    <script type="module" src="src/js/i18n.js"></script>
+    
+    <!-- PRE-LOAD GUARD: Detect subpage early to prevent Hero flash -->
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const isSub = params.has('p') || (window.location.pathname.split('/').pop() !== 'index.html' && window.location.pathname.split('/').pop() !== '');
+            if (isSub) document.documentElement.classList.add('is-subpage');
+        })();
+    </script>
+
+    <script type="module" src="src/js/app-init.js"></script>
+    <script type="module" src="src/js/auth-logic.js"></script>
+    <script type="module" src="src/js/auth-check.js"></script>
+    <script type="module" src="/src/js/router.js"></script>
+
+    <style>
+        /* CSS-First Visibility Engine */
+        .is-subpage .hero, 
+        .is-subpage .services, 
+        .is-subpage .excellence { 
+            display: none !important; 
+            opacity: 0 !important; 
+            pointer-events: none !important; 
+        }
+
+        /* --- GLOBAL VISIBILITY REFRESH --- */
+        ::placeholder { color: var(--text-secondary) !important; opacity: 0.8 !important; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark); /* Switched to dark mode by default */
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.5;
+            transition: background 0.3s;
+        }
+
+        /* --- SPA ROUTING STYLES --- */
+        #app-content {
+            transition: opacity 0.3s ease-in-out;
+            min-height: calc(100vh - 200px);
+            position: relative;
+            z-index: 10;
+        }
+
+        #loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent), #FFF);
+            z-index: 10001;
+            width: 0%;
+            opacity: 0;
+            transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1), opacity 0.3s;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* --- DASHBOARD HEADER REFINEMENT --- */
+        header#gnav-desktop {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; 
+            width: 100% !important; z-index: 9999 !important; height: 72px !important;
+            display: flex !important; align-items: center !important; justify-content: space-between !important; 
+            padding: 0 5% !important; 
+            background: rgba(5, 11, 20, 0.85) !important; 
+            backdrop-filter: var(--glass-blur) !important; -webkit-backdrop-filter: var(--glass-blur) !important;
+            border-bottom: var(--glass-border) !important;
+            box-sizing: border-box !important;
+            visibility: visible !important; opacity: 1 !important;
+        }
+        
+        @media (max-width: 1024px) { header#gnav-desktop { display: none !important; } }
+        header#gnav-desktop .gnav-logo { display: flex !important; align-items: center !important; gap: 12px !important; text-decoration: none !important; }
+        header#gnav-desktop .gnav-logo-circle { width: 44px !important; height: 44px !important; background: white !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; padding: 4px !important; flex-shrink: 0 !important; }
+        header#gnav-desktop .gnav-logo-circle img { height: 38px !important; width: auto !important; object-fit: contain !important; }
+        header#gnav-desktop .gnav-logo-text { color: white !important; font-size: 20px !important; font-weight: 800 !important; margin-left: 12px !important; }
+        header#gnav-desktop .gnav-links { display: flex !important; align-items: center !important; gap: 32px !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
+        header#gnav-desktop .desktop-nav-link { color: #94A3B8 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important; transition: 0.3s !important; }
+        header#gnav-desktop .desktop-nav-link:hover, header#gnav-desktop .desktop-nav-link.active { color: #C19A32 !important; }
+        header#gnav-desktop .gnav-actions { display: flex !important; align-items: center !important; gap: 20px !important; }
+        header#gnav-desktop .gnav-cta { background: linear-gradient(to right, #C19A32, #a8852a) !important; color: white !important; padding: 10px 24px !important; border-radius: 99px !important; font-size: 13px !important; font-weight: 700 !important; text-decoration: none !important; transition: 0.3s !important; }
+        
+        @media (max-width: 1024px) { header#gnav-desktop { display: none !important; } }
+
+
+        .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-gold); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 140px 5% 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .hero-content { max-width: 600px; }
+
+        .top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-gold-soft);
+            color: var(--accent-gold);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 68px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            letter-spacing: -1.5px;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .serif-italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        .hub-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-surface);
+            backdrop-filter: var(--glass-blur);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: var(--glass-border);
+            width: fit-content;
+            margin-bottom: 32px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .hub-tag { background: #F3F4F6; color: #374151; padding: 4px 10px; font-weight: 800; font-size: 12px; border-radius: 3px; }
+        .hub-text { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6B7280; }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: var(--bg-surface);
+            backdrop-filter: var(--glass-blur);
+            border-radius: 40px;
+            padding: 6px;
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 48px;
+            max-width: 550px;
+            transition: var(--transition-base);
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent-border);
+            box-shadow: var(--accent-glow);
+        }
+
+        .search-container i { margin-left: 20px; color: var(--accent); }
+        .search-container input { flex: 1; background: transparent; border: none; padding: 12px 16px; outline: none; font-size: 15px; color: var(--text-primary); }
+        .search-container button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .hero-stats { display: flex; gap: 48px; }
+        .stat-box h3 { font-size: 32px; font-weight: 800; color: var(--text-dark); }
+        .stat-box p { font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); }
+
+        .hero-visuals { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; height: 540px; }
+        .visual-item { border-radius: 12px; overflow: hidden; background: #F3F4F6; border: 1px solid var(--border-subtle); }
+        .visual-item img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .visual-item:hover img { transform: scale(1.05); }
+
+        /* --- SERVICES SECTION --- */
+        .services { padding: 80px 5%; max-width: 1440px; margin: 0 auto; }
+        .services-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; }
+        .services-header h2 { font-size: 36px; font-weight: 800; color: var(--text-dark); }
+        .services-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .service-tile { 
+            background: var(--bg-surface); 
+            backdrop-filter: var(--glass-blur);
+            padding: 40px 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: var(--glass-border); 
+            transition: var(--transition-base); 
+            text-decoration: none; 
+        }
+        .service-tile:hover { 
+            transform: translateY(-8px); 
+            border-color: var(--accent); 
+            box-shadow: var(--accent-glow); 
+            background: var(--bg-deep);
+        }
+        .service-tile i { font-size: 28px; color: var(--accent); margin-bottom: 16px; }
+        .service-tile h4 { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-primary); }
+
+        /* --- EXCELLENCE SECTION --- */
+        .excellence { background: var(--bg-dark); padding: 100px 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; color: white; }
+        .excellence-content h2 { font-size: 44px; font-weight: 800; line-height: 1.1; margin-bottom: 48px; }
+        .feature-node { display: flex; gap: 20px; margin-bottom: 32px; }
+        .node-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-size: 18px; flex-shrink: 0; }
+        .node-text h4 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .node-text p { color: #9CA3AF; font-size: 14px; max-width: 400px; }
+        .main-img { width: 100%; height: 600px; object-fit: cover; border-radius: 20px; }
+
+        /* --- FOOTER --- */
+        footer { padding: 80px 5% 40px; background: var(--bg-light); border-top: 1px solid var(--border-subtle); color: var(--text-dark); transition: var(--transition); }
+        [data-theme="dark"] footer { background: var(--bg-dark); color: var(--text-primary); border-top: 1px solid rgba(255,255,255,0.1); }
+        .footer-main { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 60px; margin-bottom: 80px; max-width: 1440px; margin: 0 auto; }
+        .f-brand h4 { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+        .f-logo { width: 36px; height: 36px; background: #050b14; border-radius: 50%; padding: 4px; }
+        .india-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9CA3AF; font-weight: 700; }
+        .india-badge img { width: 18px; }
+
+        /* --- DARK THEME OVERRIDES --- */
+        [data-theme="dark"] .hero h1,
+        [data-theme="dark"] .services-header h2,
+        [data-theme="dark"] .stat-box h3 { color: var(--text-primary); }
+        
+        [data-theme="dark"] .hub-label { background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle); }
+        [data-theme="dark"] .hub-tag { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+        [data-theme="dark"] .hub-text { color: var(--text-muted); }
+
+        [data-theme="dark"] .search-container { background: rgba(255, 255, 255, 0.03); border-color: var(--border-subtle); }
+        [data-theme="dark"] .search-container input { color: var(--text-primary); }
+        [data-theme="dark"] .search-container button { background: var(--text-primary); color: var(--text-dark); }
+
+        [data-theme="dark"] .visual-item { background: rgba(255, 255, 255, 0.03); border-color: var(--border-subtle); }
+
+        [data-theme="dark"] .service-tile { background: rgba(255, 255, 255, 0.03); border-color: var(--border-subtle); }
+        [data-theme="dark"] .service-tile h4 { color: var(--text-primary); }
+
+        [data-theme="dark"] footer a { color: var(--text-muted) !important; }
+
+        /* --- INDIA BADGE --- */
+        .footer-bottom { border-top: 1px solid #F3F4F6; padding-top: 40px; display: flex; justify-content: space-between; align-items: center; max-width: 1440px; margin: 0 auto; }
+        .footer-bottom p { font-size: 12px; color: #9CA3AF; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1024px) {
+            .hero { grid-template-columns: 1fr; text-align: center; padding-top: 120px; }
+            .hero h1 { font-size: 52px; }
+            .services-grid { grid-template-columns: repeat(3, 1fr); }
+            .excellence { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+    <!-- Immersive Mesh Background -->
+    <div class="mesh-atmosphere"></div>
+
+    <!-- Global Loading Bar for SPA Transitions -->
+    <div id="loading-bar"></div>
+
+    <!-- --- MOBILE APP HEADER --- -->
+    <div class="mobile-app-header">
+        <a href="/index.html" class="logo-container">
+            <img src="/assets/GoRepireo.png" alt="GoRepireo" class="mobile-header-logo">
+        </a>
+        <div class="mobile-menu-trigger" onclick="window.togglePremiumDrawer()">
+            <i class="fas fa-bars-staggered"></i>
+        </div>
+    </div>
+
+    <!-- --- PREMIUM SIDE DRAWER --- -->
+    <div class="drawer-overlay" onclick="window.togglePremiumDrawer()"></div>
+    <div class="premium-side-drawer">
+        <div class="gnav-drawer-logo">
+            <img src="/assets/GoRepireo.png" alt="Logo">
+        </div>
+        <nav class="gnav-drawer-links">
+            <a href="/index.html" class="mobile-link active">Home</a>
+            <a href="/src/pages/service.html" class="mobile-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="mobile-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="mobile-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-drawer-footer">
+            <div onclick="window.toggleLanguage()" style="padding: 14px 24px; display: flex; align-items: center; gap: 12px; color: #94A3B8; cursor: pointer;">
+                <i class="fas fa-language" style="color: #C19A32;"></i>
+                <span id="mobileLangTrigger">EN / HI</span>
+            </div>
+            <a href="/src/pages/login.html" class="mobile-link" id="drawerLogin">Login / Profile</a>
+            <a href="/src/pages/worker-register.html" class="gnav-drawer-cta">Become a Pro</a>
+        </div>
+    </div>
+
+    <!-- --- UNIFIED DESKTOP HEADER --- -->
+    <header id="gnav-desktop">
+        <a href="/index.html" class="gnav-logo">
+            <div class="gnav-logo-circle">
+                <img src="/assets/GoRepireo.png" alt="GoRepireo">
+            </div>
+            <span class="gnav-logo-text">GoRepireo</span>
+        </a>
+        <nav class="gnav-links">
+            <a href="/index.html" class="desktop-nav-link active" data-i18n="nav-home">Home</a>
+            <a href="/src/pages/service.html" class="desktop-nav-link" data-i18n="nav-services">Services</a>
+            <a href="/src/pages/shop.html" class="desktop-nav-link" data-i18n="nav-shop">Shop</a>
+            <a href="/src/pages/track.html" class="desktop-nav-link" data-i18n="nav-track">Track Order</a>
+        </nav>
+        <div class="gnav-actions">
+            <div class="gnav-lang-btn" onclick="window.toggleLanguage()">
+                <i class="fas fa-language"></i>
+                <span id="langSwitcherTrigger">EN</span>
+            </div>
+            <div id="navAuth">
+                <a href="/src/pages/login.html" class="gnav-profile">
+                    <div class="gnav-avatar"><i class="fas fa-user-circle"></i></div>
+                    <span data-i18n="nav-login">Profile</span>
+                </a>
+            </div>
+            <a href="/src/pages/worker-register.html" class="gnav-cta" data-i18n="nav-partner">Become a Pro</a>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="top-badge">
+                    <i class="fas fa-certificate"></i>
+                    <span>India's Premier Trusted Home Service Platform</span>
+                </div>
+                <h1>Expert Services,<br><span class="serif-italic">At Your<br>Doorstep.</span></h1>
+                <p>GoRepireo connects you with verified professionals instantly. Reliable, affordable & trusted by thousands of homeowners.</p>
+                
+                <div class="hub-label">
+                    <span class="hub-tag">hub</span>
+                    <span class="hub-text">All home services in one platform</span>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search for 'AC Repair', 'Plumber'...">
+                    <button>Find Pros <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <h3>4.8/5</h3>
+                        <p>Customer Rating</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>12M</h3>
+                        <p>Services Delivered</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visuals">
+                <div class="visual-item"><img src="hero_electrician.png" alt="Electrician"></div>
+                <div class="visual-item"><img src="hero_vanity_mirror.png" alt="Vanity Mirror"></div>
+                <div class="visual-item"><img src="hero_cleaning.png" alt="Cleaning"></div>
+                <div class="visual-item"><img src="hero_robot.png" alt="Service Robot"></div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services">
+            <div class="services-header">
+                <div>
+                    <h2>Our Services</h2>
+                    <p>Discover our most booked and highly rated home services.</p>
+                </div>
+                <a href="/src/pages/service.html" style="color: #C19A32; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase;">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="services-grid">
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-scissors"></i><h4>Salon</h4></a>
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-snowflake"></i><h4>AC Repair</h4></a>
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-broom"></i><h4>Cleaning</h4></a>
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-faucet-drip"></i><h4>Plumbers</h4></a>
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-plug-circle-bolt"></i><h4>Electricians</h4></a>
+                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-bug"></i><h4>Pest Control</h4></a>
+            </div>
+        </section>
+
+        <!-- Excellence Section -->
+        <section class="excellence">
+            <div class="excellence-content">
+                <h2>Professional excellence,<br><span class="serif-italic">tailored for your home.</span></h2>
+                <div class="feature-list">
+                    <div class="feature-node">
+                        <div class="node-icon"><i class="fas fa-user-shield"></i></div>
+                        <div class="node-text"><h4>Verified Professionals</h4><p>Every professional undergoes a rigorous background verification process.</p></div>
+                    </div>
+                    <div class="feature-node">
+                        <div class="node-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+                        <div class="node-text"><h4>Transparent Pricing</h4><p>Upfront pricing with no hidden charges. You know what you pay before you book.</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="excellence-visual">
+                <img src="excellence_room.png" alt="Premium Service" class="main-img">
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-main">
+            <div class="f-brand">
+                <h4><img src="/assets/GoRepireo.png" alt="O" class="f-logo">GoRepireo</h4>
+                <p>Revolutionizing home services with technology and trust.</p>
+                <div style="display: flex; gap: 16px;">
+                    <a href="#" style="color: #64748B;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" style="color: #64748B;"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="f-col">
+                <h6>Company</h6>
+                <ul style="list-style: none;">
+                    <li><a href="#" style="text-decoration: none; color: #374151; font-size: 14px;">About Us</a></li>
+                    <li><a href="#" style="text-decoration: none; color: #374151; font-size: 14px;">Terms</a></li>
+                </ul>
+            </div>
+            <div class="f-col">
+                <h6>Customers</h6>
+                <ul style="list-style: none;">
+                    <li><a href="/src/pages/service.html" style="text-decoration: none; color: #374151; font-size: 14px;">Book Now</a></li>
+                    <li><a href="/src/pages/track.html" style="text-decoration: none; color: #374151; font-size: 14px;">Track Order</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 GoRepireo. All rights reserved.</p>
+            <div class="india-badge"><span>MADE IN INDIA</span><img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="India"></div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="/index.html" class="mbn-item active"><i class="fas fa-house"></i><span class="mbn-label">Home</span></a>
+        <a href="/src/pages/service.html" class="mbn-item"><i class="fas fa-screwdriver-wrench"></i><span class="mbn-label">Services</span></a>
+        <a href="/src/pages/shop.html" class="mbn-item mbn-center"><div class="mbn-center-bg"><i class="fas fa-bag-shopping"></i></div><span class="mbn-label">Shop</span></a>
+        <a href="/src/pages/track.html" class="mbn-item"><i class="fas fa-truck-fast"></i><span class="mbn-label">Track</span></a>
+        <a href="/src/pages/login.html" class="mbn-item"><i class="fas fa-circle-user"></i><span class="mbn-label">Account</span></a>
+    </nav>
+</body>
+</html>
+
+
+

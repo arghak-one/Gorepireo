@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go_Repireo - Home Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0a0f1c',
+                            800: '#111827',
+                            700: '#1f2937'
+                        },
+                        gold: {
+                            400: '#e5c158',
+                            500: '#d4af37',
+                            600: '#b5952f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background-color: #0a0f1c; /* Navy dark background */
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Smooth scroll margin for anchors */
+        html { scroll-behavior: smooth; }
+
+        .gold-gradient-text {
+            background: linear-gradient(to right, #d4af37, #f3e5ab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        
+        .service-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.15);
+            background: rgba(17, 24, 39, 0.85);
+        }
+
+        .category-icon {
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .category-icon {
+            transform: scale(1.1);
+            color: #f3e5ab;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f1c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        /* Input autofill fix for dark mode */
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #111827 inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-gold-500 opacity-[0.03] rounded-full blur-3xl"></div>
+        <div class="absolute top-[40%] right-[-5%] w-[30rem] h-[30rem] bg-gold-400 opacity-[0.02] rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- 1. Header / Navbar -->
+    <header class="fixed w-full top-0 z-50 glass-panel border-b-0 border-gold-500/10">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3">
+                    <img src="./logo.png" alt="Go_Repireo Logo" class="h-10 md:h-12 w-auto object-contain rounded-lg">
+                    <span class="text-xl font-bold tracking-wide">Go_<span class="gold-gradient-text">Repireo</span></span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                    <a href="#" class="text-white hover:text-gold-400 transition-colors">Home</a>
+                    <a href="#services" class="text-gray-300 hover:text-gold-400 transition-colors">Services</a>
+                    <a href="#" class="text-gray-300 hover:text-gold-400 transition-colors">Shop</a>
+                    <a href="#" class="text-gray-300 hover:text-gold-400 transition-colors">Track Order</a>
+                </nav>
+
+                <!-- Desktop Actions -->
+                <div class="hidden md:flex items-center gap-4">
+                    <button class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Login</button>
+                    <button class="text-sm font-medium bg-gold-500 text-navy-900 px-5 py-2.5 rounded-full hover:bg-gold-400 transition-all shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                        Become a Partner
+                    </button>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-gold-500 focus:outline-none p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-gold-500/10 absolute w-full left-0 top-20">
+            <div class="px-4 py-6 space-y-4 flex flex-col items-center">
+                <a href="#" class="block text-white hover:text-gold-400 font-medium">Home</a>
+                <a href="#services" class="block text-gray-300 hover:text-gold-400 font-medium">Services</a>
+                <a href="#" class="block text-gray-300 hover:text-gold-400 font-medium">Shop</a>
+                <a href="#" class="block text-gray-300 hover:text-gold-400 font-medium">Track Order</a>
+                <div class="w-full h-px bg-gold-500/10 my-4"></div>
+                <button class="w-full text-center text-gray-300 hover:text-white font-medium py-2">Login</button>
+                <button class="w-full bg-gold-500 text-navy-900 font-medium px-4 py-3 rounded-xl hover:bg-gold-400 transition-colors">
+                    Become a Partner
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Section -->
+    <section class="flex-grow flex items-center pt-32 pb-16 px-4 md:px-8">
+        <div class="container mx-auto max-w-4xl text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gold-500/30 bg-gold-500/5 text-gold-400 text-xs font-semibold tracking-wider mb-6">
+                <i class="fa-solid fa-star text-[10px]"></i> PREMIUM HOME SERVICES
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+                Expert Services, <br/>
+                <span class="gold-gradient-text">At Your Doorstep.</span>
+            </h1>
+            
+            <p class="text-gray-400 text-lg md:text-xl md:max-w-2xl mx-auto mb-10 leading-relaxed">
+                Elevate your living spaces with our vetted, luxury-tier professionals. Book salon, cleaning, maintenance, and more in seconds.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto relative group">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gold-500/60 group-focus-within:text-gold-500 transition-colors"></i>
+                </div>
+                <input type="text" placeholder="Search for 'AC Repair', 'Salon', 'Cleaning'..." 
+                    class="w-full bg-navy-800/80 border border-gray-700 text-white rounded-full py-4 pl-12 pr-[140px] focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/50 transition-all placeholder-gray-500 text-sm md:text-base shadow-lg">
+                <div class="absolute right-2 top-2 bottom-2">
+                    <button class="h-full bg-gold-500 text-navy-900 font-medium px-6 rounded-full hover:bg-gold-400 transition-colors flex items-center justify-center">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Service Categories -->
+    <section id="services" class="py-16 md:py-24 px-4 md:px-8 border-t border-white/5">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-3">Our <span class="gold-gradient-text">Expertise</span></h2>
+                    <p class="text-gray-400">Select a category to explore premium services.</p>
+                </div>
+                <a href="#" class="text-gold-500 hover:text-gold-400 text-sm font-medium flex items-center gap-2 group">
+                    View All Services <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                <!-- Salon -->
+                <div class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40">
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-scissors text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-gray-200">Salon</span>
+                </div>
+
+                <!-- AC Repair -->
+                <div class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40">
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-snowflake text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-gray-200">AC Repair</span>
+                </div>
+
+                <!-- Cleaning -->
+                <div class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40">
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-broom text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-gray-200">Cleaning</span>
+                </div>
+
+                <!-- Plumber -->
+                <a href="/booking.html?service=plumber" class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40 relative border-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                    <div class="absolute -top-2 -right-2 bg-gold-500 text-navy-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-navy-900">
+                        ACTIVE
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-faucet-drip text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-white">Plumber</span>
+                </a>
+
+                <!-- Electrician -->
+                <a href="/booking.html?service=electrician" class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40 relative border-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                    <div class="absolute -top-2 -right-2 bg-gold-500 text-navy-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-navy-900">
+                        ACTIVE
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-bolt text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-white">Electrician</span>
+                </a>
+
+                <!-- Pest Control -->
+                <div class="service-card glass-panel rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center gap-4 h-40">
+                    <div class="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center border border-gold-500/20 category-icon">
+                        <i class="fa-solid fa-bug text-gold-500 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-gray-200">Pest Control</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Trust Section -->
+    <section class="py-12 border-y border-gold-500/10 bg-navy-800/30">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+                <div class="py-4 md:py-0">
+                    <div class="flex items-center justify-center gap-2 text-gold-400 mb-2">
+                        <i class="fa-solid fa-star"></i>
+                        <span class="text-3xl font-bold text-white">4.8<span class="text-lg text-gray-400 font-normal">/5</span></span>
+                    </div>
+                    <p class="text-sm text-gray-400">Average Customer Rating</p>
+                </div>
+                
+                <div class="py-4 md:py-0">
+                    <div class="text-3xl font-bold text-white mb-2">
+                        2M<span class="text-gold-500">+</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Premium Services Completed</p>
+                </div>
+                
+                <div class="py-4 md:py-0">
+                    <div class="text-3xl font-bold text-white mb-2">
+                        50k<span class="text-gold-500">+</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Verified Professionals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Features Section -->
+    <section class="py-20 px-4 md:px-8">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
+                <!-- Feature 1 -->
+                <div class="flex flex-col items-center text-center p-6 border border-transparent hover:border-gold-500/10 rounded-2xl transition-all hover:bg-navy-800/40">
+                    <div class="w-16 h-16 rounded-2xl bg-gold-500/10 flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-shield-halved text-2xl text-gold-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Verified Professionals</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Every partner undergoes strict background checks and skill assessments to ensure luxury-grade service.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="flex flex-col items-center text-center p-6 border border-transparent hover:border-gold-500/10 rounded-2xl transition-all hover:bg-navy-800/40">
+                    <div class="w-16 h-16 rounded-2xl bg-gold-500/10 flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-tag text-2xl text-gold-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Transparent Pricing</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        No hidden fees. See exactly what you'll pay upfront with our standardized premium rate cards.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="flex flex-col items-center text-center p-6 border border-transparent hover:border-gold-500/10 rounded-2xl transition-all hover:bg-navy-800/40">
+                    <div class="w-16 h-16 rounded-2xl bg-gold-500/10 flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-stopwatch text-2xl text-gold-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Fast Service</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Book a professional to arrive at your doorstep in as little as 60 minutes for urgent needs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Space -->
+    <footer class="mt-auto border-t border-white/5 py-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2026 Go_Repireo. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const icon = mobileMenuBtn.querySelector('i');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+    </script>
+</body>
+</html>
