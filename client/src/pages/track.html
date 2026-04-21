@@ -5,6 +5,8 @@
     }
 </script>
 
+<link rel="stylesheet" href="/src/css/responsive.css">
+
 <style>
     :root {
         --bg-base: #050b14;
@@ -118,6 +120,13 @@
 
     .step.completed .step-icon { background: var(--accent); color: white; }
     .step.active .step-icon { border: 3px solid var(--accent); color: var(--accent); }
+
+    @media (max-width: 768px) {
+        .container { margin: 20px auto 120px; padding: 0 16px; }
+        .track-card { padding: 28px 18px; margin-bottom: 24px; }
+        .profile-card { padding: 20px 18px; gap: 16px; }
+        .timeline-box { padding: 28px 18px; }
+    }
 </style>
 
 <main id="app-content">

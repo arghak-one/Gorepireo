@@ -69,40 +69,35 @@ body.router-loading #app-content {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px !important;
     text-decoration: none !important;
     color: white !important;
     flex-shrink: 0 !important;
 }
 
 .gnav-logo-circle {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    background: white !important;
-    padding: 4px !important;
+    width: 156px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    padding: 4px 10px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important;
     flex-shrink: 0 !important;
 }
 
 .gnav-logo-circle img {
-    height: 38px !important;
-    width: auto !important;
-    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: contain !important;
     display: block !important;
 }
 
 .gnav-logo-text {
-    font-size: 20px !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.5px !important;
-    color: white !important;
-    white-space: nowrap !important;
+    display: none !important;
 }
 
 .gnav-links {
@@ -253,8 +248,10 @@ body.router-loading #app-content {
     }
 
     .mobile-header-logo {
-        height: 40px !important;
+        height: 44px !important;
         width: auto !important;
+        max-width: min(46vw, 180px) !important;
+        object-fit: contain !important;
     }
 
     .mobile-menu-trigger {
@@ -359,7 +356,11 @@ body.router-loading #app-content {
         margin-bottom: 50px !important;
         padding: 0 40px !important;
     }
-    .gnav-drawer-logo img { height: 56px !important; }
+    .gnav-drawer-logo img {
+        height: auto !important;
+        width: min(100%, 220px) !important;
+        object-fit: contain !important;
+    }
 
     .gnav-drawer-links {
         display: flex !important;

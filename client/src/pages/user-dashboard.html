@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/src/css/responsive.css">
+
 <style>
     :root {
         --bg-base: #050b14;
@@ -39,6 +41,15 @@
     @keyframes dashFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } .profile-card { position: relative; top: 0; } }
+
+    @media (max-width: 768px) {
+        .dashboard-container { padding: 24px 16px 120px; }
+        .welcome-box { margin-bottom: 24px !important; }
+        .welcome-box h1 { font-size: 28px !important; }
+        .profile-card,
+        .section-card { padding: 22px !important; }
+        #orderHistoryList > div { gap: 12px; }
+    }
 </style>
 
 <main id="app-content">

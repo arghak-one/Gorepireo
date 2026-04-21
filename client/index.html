@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/src/css/glass-ui.css">
     <link rel="stylesheet" href="/src/css/mesh-bg.css">
     <link rel="stylesheet" href="src/css/mobile-nav.css?v=5">
+    <link rel="stylesheet" href="/src/css/responsive.css">
     
     <!-- Dependency Chain: translations -> i18n -> app-init -> auth-logic -> auth-check -> router -->
     <script type="module" src="src/js/translations.js"></script>
@@ -93,9 +94,9 @@
         
         @media (max-width: 1024px) { header#gnav-desktop { display: none !important; } }
         header#gnav-desktop .gnav-logo { display: flex !important; align-items: center !important; gap: 12px !important; text-decoration: none !important; }
-        header#gnav-desktop .gnav-logo-circle { width: 44px !important; height: 44px !important; background: white !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; padding: 4px !important; flex-shrink: 0 !important; }
-        header#gnav-desktop .gnav-logo-circle img { height: 38px !important; width: auto !important; object-fit: contain !important; }
-        header#gnav-desktop .gnav-logo-text { color: white !important; font-size: 20px !important; font-weight: 800 !important; margin-left: 12px !important; }
+        header#gnav-desktop .gnav-logo-circle { width: 156px !important; height: 48px !important; background: rgba(255, 255, 255, 0.96) !important; border-radius: 14px !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow: hidden !important; padding: 4px 10px !important; flex-shrink: 0 !important; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important; }
+        header#gnav-desktop .gnav-logo-circle img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+        header#gnav-desktop .gnav-logo-text { display: none !important; }
         header#gnav-desktop .gnav-links { display: flex !important; align-items: center !important; gap: 32px !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
         header#gnav-desktop .desktop-nav-link { color: #94A3B8 !important; text-decoration: none !important; font-size: 14px !important; font-weight: 600 !important; transition: 0.3s !important; }
         header#gnav-desktop .desktop-nav-link:hover, header#gnav-desktop .desktop-nav-link.active { color: #C19A32 !important; }
@@ -236,7 +237,8 @@
             text-align: center; 
             border: var(--glass-border); 
             transition: var(--transition-base); 
-            text-decoration: none; 
+            text-decoration: none;
+            position: relative;
         }
         .service-tile:hover { 
             transform: translateY(-8px); 
@@ -246,6 +248,31 @@
         }
         .service-tile i { font-size: 28px; color: var(--accent); margin-bottom: 16px; }
         .service-tile h4 { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-primary); }
+        .service-tile.disabled {
+            opacity: 0.9;
+            cursor: default;
+        }
+        .service-tile.active-service {
+            border-color: var(--accent-border);
+            box-shadow: 0 0 0 1px rgba(193, 154, 50, 0.22), 0 20px 35px rgba(193, 154, 50, 0.14);
+        }
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--accent-border);
+            background: rgba(193, 154, 50, 0.14);
+            color: #f3cf6c;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
 
         /* --- EXCELLENCE SECTION --- */
         .excellence { background: var(--bg-dark); padding: 100px 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; color: white; }
@@ -261,7 +288,7 @@
         [data-theme="dark"] footer { background: var(--bg-dark); color: var(--text-primary); border-top: 1px solid rgba(255,255,255,0.1); }
         .footer-main { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 60px; margin-bottom: 80px; max-width: 1440px; margin: 0 auto; }
         .f-brand h4 { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 800; margin-bottom: 24px; }
-        .f-logo { width: 36px; height: 36px; background: #050b14; border-radius: 50%; padding: 4px; }
+        .f-logo { width: 168px; height: 54px; background: rgba(255,255,255,0.96); border-radius: 16px; padding: 6px 12px; object-fit: contain; }
         .india-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9CA3AF; font-weight: 700; }
         .india-badge img { width: 18px; }
 
@@ -419,12 +446,12 @@
                 <a href="/src/pages/service.html" style="color: #C19A32; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase;">View All <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="services-grid">
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-scissors"></i><h4>Salon</h4></a>
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-snowflake"></i><h4>AC Repair</h4></a>
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-broom"></i><h4>Cleaning</h4></a>
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-faucet-drip"></i><h4>Plumbers</h4></a>
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-plug-circle-bolt"></i><h4>Electricians</h4></a>
-                <a href="/src/pages/service.html" class="service-tile"><i class="fas fa-bug"></i><h4>Pest Control</h4></a>
+                <div class="service-tile disabled"><i class="fas fa-scissors"></i><h4>Salon</h4></div>
+                <div class="service-tile disabled"><i class="fas fa-snowflake"></i><h4>AC Repair</h4></div>
+                <div class="service-tile disabled"><i class="fas fa-broom"></i><h4>Cleaning</h4></div>
+                <a href="/booking.html?service=plumber" class="service-tile active-service"><span class="service-status">Active</span><i class="fas fa-faucet-drip"></i><h4>Plumber</h4></a>
+                <a href="/booking.html?service=electrician" class="service-tile active-service"><span class="service-status">Active</span><i class="fas fa-plug-circle-bolt"></i><h4>Electrician</h4></a>
+                <div class="service-tile disabled"><i class="fas fa-bug"></i><h4>Pest Control</h4></div>
             </div>
         </section>
 
@@ -452,7 +479,7 @@
     <footer>
         <div class="footer-main">
             <div class="f-brand">
-                <h4><img src="/assets/GoRepireo.png" alt="O" class="f-logo">GoRepireo</h4>
+                <h4><img src="/assets/GoRepireo.png" alt="GoRepireo" class="f-logo"></h4>
                 <p>Revolutionizing home services with technology and trust.</p>
                 <div style="display: flex; gap: 16px;">
                     <a href="#" style="color: #64748B;"><i class="fab fa-facebook-f"></i></a>

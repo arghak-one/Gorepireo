@@ -5,6 +5,8 @@
     }
 </script>
 
+<link rel="stylesheet" href="/src/css/responsive.css">
+
 <style>
     /* Clean Body Reset for Fragments */
     body { background-color: #050b14 !important; margin: 0; padding: 0; }
@@ -178,6 +180,13 @@
     .details-overlay {
         position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
         z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .container { padding: 24px 16px 120px; }
+        .shop-hero { padding: 28px 0 32px; }
+        .category-nav { margin-bottom: 8px; }
+        .product-image-container { height: 220px; }
     }
 </style>
 

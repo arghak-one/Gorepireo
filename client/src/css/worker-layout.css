@@ -145,3 +145,23 @@
 .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .status-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .status-active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 92px 16px 110px;
+    }
+
+    .section-card {
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        padding: 18px;
+        gap: 14px;
+    }
+
+    .job-item {
+        padding: 16px;
+    }
+}

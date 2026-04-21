@@ -1,0 +1,402 @@
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+* {
+    min-width: 0;
+}
+
+#app-content,
+#login-fragment,
+#register-fragment,
+main {
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .container,
+    .dashboard-container,
+    .main-content {
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+
+    .hero {
+        gap: 32px !important;
+    }
+
+    .hero h1 {
+        font-size: 56px !important;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .footer-main {
+        gap: 32px !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    body {
+        padding-bottom: 110px;
+    }
+
+    #app-content {
+        min-height: auto !important;
+    }
+
+    .hero,
+    .excellence,
+    .grid,
+    .login-wrapper,
+    .register-wrapper {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero {
+        padding-top: 104px !important;
+        text-align: left !important;
+    }
+
+    .hero-content,
+    .hero p,
+    .search-container,
+    .hub-label {
+        max-width: 100% !important;
+    }
+
+    .hero-visuals {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .visual-item {
+        min-height: 180px;
+    }
+
+    .services-header,
+    .inventory-header,
+    .card-header,
+    .footer-bottom,
+    .profile-card,
+    .job-item,
+    .input-group {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .footer-main,
+    .stats-row,
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .main-content,
+    .dashboard-container,
+    .auth-page-container,
+    .worker-page-container,
+    .admin-page-container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .brand-panel,
+    aside.profile-card {
+        position: static !important;
+        top: auto !important;
+    }
+
+    .section-card,
+    .track-card,
+    .timeline-box,
+    .booking-box,
+    .profile-card,
+    .login-box {
+        padding: 28px !important;
+    }
+
+    .field-row,
+    .rules-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .search-container,
+    .shop-search-bar {
+        border-radius: 24px !important;
+    }
+
+    .search-container button,
+    .shop-search-bar button,
+    .btn-track {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 104px;
+    }
+
+    .hero {
+        padding: 96px 16px 48px !important;
+        gap: 24px !important;
+    }
+
+    .hero h1,
+    .shop-hero h1,
+    .track-card h2 {
+        font-size: 36px !important;
+        line-height: 1.08 !important;
+        letter-spacing: -0.04em !important;
+    }
+
+    .hero p,
+    .shop-hero p,
+    .subtitle {
+        font-size: 15px !important;
+    }
+
+    .search-container,
+    .shop-search-bar,
+    .input-group {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+
+    .search-container i,
+    .shop-search-bar i {
+        margin-left: 4px !important;
+    }
+
+    .search-container input,
+    .shop-search-bar input,
+    .input-box,
+    .custom-input,
+    .custom-select-trigger,
+    .custom-option,
+    .input-wrap input {
+        font-size: 16px !important;
+    }
+
+    .hero-stats,
+    .services-header,
+    .footer-bottom,
+    .profile-card,
+    .selected-item-card {
+        gap: 16px !important;
+    }
+
+    .hero-stats,
+    .footer-main,
+    .footer-bottom,
+    .stats-row,
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero-stats {
+        display: grid !important;
+    }
+
+    .services,
+    .excellence,
+    footer,
+    .container,
+    .dashboard-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .services {
+        padding-top: 56px !important;
+        padding-bottom: 56px !important;
+    }
+
+    .services-grid,
+    .product-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .service-tile,
+    .stat-card,
+    .section-card,
+    .product-card {
+        width: 100%;
+    }
+
+    .excellence {
+        gap: 32px !important;
+        padding-top: 56px !important;
+        padding-bottom: 56px !important;
+    }
+
+    .excellence-content h2 {
+        font-size: 32px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .main-img {
+        height: 320px !important;
+    }
+
+    .footer-main {
+        display: grid !important;
+        margin-bottom: 32px !important;
+    }
+
+    .footer-bottom {
+        display: flex !important;
+        text-align: center;
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+    }
+
+    .auth-page-container {
+        padding: 88px 16px 120px !important;
+        align-items: flex-start !important;
+    }
+
+    .login-wrapper,
+    .register-wrapper,
+    .login-box {
+        border-radius: 20px !important;
+    }
+
+    .form-panel,
+    .brand-panel {
+        padding: 28px 22px !important;
+    }
+
+    .form-header h2,
+    .brand-headline {
+        font-size: 28px !important;
+    }
+
+    .main-content {
+        padding: 92px 16px 108px !important;
+    }
+
+    .admin-tabs {
+        width: 100% !important;
+        overflow-x: auto;
+        flex-wrap: nowrap !important;
+    }
+
+    .admin-tab {
+        white-space: nowrap;
+    }
+
+    .card-header,
+    .action-area,
+    .profile-card,
+    .job-item,
+    .selected-item-card {
+        padding: 18px !important;
+    }
+
+    .details-modal {
+        width: min(100%, 94vw) !important;
+        padding: 24px !important;
+    }
+
+    .timeline::before {
+        left: 25px !important;
+    }
+
+    .step {
+        margin-bottom: 28px !important;
+    }
+
+    .step-icon {
+        width: 42px !important;
+        height: 42px !important;
+        margin-right: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-bottom: 98px;
+    }
+
+    .mobile-bottom-nav {
+        width: calc(100% - 16px) !important;
+        bottom: 10px !important;
+        padding: 8px 10px !important;
+        border-radius: 22px !important;
+    }
+
+    .mbn-center {
+        top: -12px !important;
+    }
+
+    .mbn-center-bg {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 18px !important;
+    }
+
+    .mbn-item i {
+        font-size: 18px !important;
+    }
+
+    .mbn-label {
+        font-size: 10px !important;
+    }
+
+    .mobile-app-header {
+        padding: 0 14px !important;
+    }
+
+    .premium-side-drawer {
+        width: min(86vw, 300px) !important;
+    }
+
+    .hero h1,
+    .shop-hero h1,
+    .track-card h2 {
+        font-size: 30px !important;
+    }
+
+    .top-badge,
+    .shop-tag {
+        font-size: 10px !important;
+    }
+
+    .track-card,
+    .timeline-box,
+    .booking-box,
+    .section-card,
+    .profile-card,
+    .login-box,
+    .container {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    .stat-card h3,
+    .stat-value,
+    .product-price {
+        font-size: 22px !important;
+    }
+
+    .btn-track,
+    .login-btn,
+    .register-btn,
+    .book-action-btn {
+        min-height: 50px;
+    }
+}

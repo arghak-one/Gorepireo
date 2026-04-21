@@ -1,345 +1,1364 @@
 <script>
-    // Shell Injection Guard: Redirect standalone fragment access into the main index.html container
     if (window === window.top) {
-        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop();
+        window.location.href = '/index.html?p=' + window.location.pathname.split('/').pop() + window.location.search;
     }
 </script>
+
+<link rel="stylesheet" href="/src/css/responsive.css">
 
 <style>
     :root {
         --bg-base: #050b14;
-        --bg-gradient: radial-gradient(circle at 80% -10%, rgba(193, 154, 50, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 20% 100%, rgba(193, 154, 50, 0.04) 0%, transparent 40%);
-        --text-primary: #FFFFFF;
-        --text-secondary: #CBD5E1; /* Brightened from #9CA3AF */
-        --accent: #C19A32;
-        --accent-hover: #a8852a;
-        --accent-dim: rgba(193, 154, 50, 0.15);
-        --accent-border: rgba(193, 154, 50, 0.3);
-        --surface: rgba(255, 255, 255, 0.03);
-        --surface-glass: rgba(5, 11, 20, 0.9);
-        --border-subtle: rgba(255, 255, 255, 0.15); /* Increased visibility */
-        --radius-pill: 9999px;
-        --radius-lg: 16px;
-        --radius-md: 14px;
-        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --bg-gradient:
+            radial-gradient(circle at 100% 0%, rgba(193, 154, 50, 0.12) 0%, transparent 36%),
+            radial-gradient(circle at 0% 100%, rgba(193, 154, 50, 0.08) 0%, transparent 32%);
+        --surface: rgba(255, 255, 255, 0.04);
+        --surface-strong: rgba(8, 15, 26, 0.92);
+        --border-subtle: rgba(255, 255, 255, 0.1);
+        --text-primary: #ffffff;
+        --text-secondary: #a8b4c7;
+        --accent: #c19a32;
+        --accent-border: rgba(193, 154, 50, 0.35);
+        --accent-glow: rgba(193, 154, 50, 0.18);
+        --success: #34d399;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-pill: 999px;
+        --transition: 0.26s ease;
     }
 
-    /* --- VISIBILITY REFRESH --- */
-    .custom-input::placeholder { color: #94A3B8 !important; opacity: 1 !important; }
-    .custom-input:focus::placeholder { color: #CBD5E1 !important; }
+    * {
+        box-sizing: border-box;
+    }
 
-    .container {
-        max-width: 800px;
+    body {
+        margin: 0;
+        background: var(--bg-base);
+        background-image: var(--bg-gradient);
+        color: var(--text-primary);
+    }
+
+    .booking-shell {
+        max-width: 1180px;
         margin: 0 auto;
-        padding: 40px 24px 120px;
+        padding: 56px 24px 120px;
     }
 
-    .booking-box {
-        background: var(--surface-glass);
-        backdrop-filter: blur(20px);
+    .booking-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 28px;
+        align-items: stretch;
+    }
+
+    .hero-panel,
+    .flow-panel {
+        background: var(--surface-strong);
         border: 1px solid var(--border-subtle);
-        border-radius: 24px;
-        padding: 60px 48px;
-        text-align: center;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
     }
 
-    .service-icon-large {
-        width: 80px;
-        height: 80px;
-        background: var(--accent-dim);
-        border: 2px solid var(--accent-border);
-        border-radius: 20px;
+    .hero-panel {
+        padding: 36px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-panel::before {
+        content: "";
+        position: absolute;
+        inset: auto -50px -60px auto;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(193, 154, 50, 0.18), transparent 68%);
+        pointer-events: none;
+    }
+
+    .service-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: var(--radius-pill);
+        background: rgba(193, 154, 50, 0.12);
+        border: 1px solid var(--accent-border);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+    }
+
+    .service-chip i {
+        font-size: 13px;
+    }
+
+    .booking-title {
+        margin: 0 0 12px;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+    }
+
+    .booking-title em {
+        color: var(--accent);
+        font-style: italic;
+    }
+
+    .booking-copy {
+        max-width: 580px;
+        margin: 0 0 28px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .search-block {
+        display: grid;
+        gap: 12px;
+    }
+
+    .search-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+    }
+
+    .search-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border-subtle);
+        background: rgba(255, 255, 255, 0.03);
+        transition: var(--transition);
+    }
+
+    .search-wrap:focus-within {
+        border-color: var(--accent-border);
+        box-shadow: 0 0 0 4px rgba(193, 154, 50, 0.12);
+        background: rgba(193, 154, 50, 0.04);
+    }
+
+    .search-wrap i {
+        color: var(--accent);
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .problem-input {
+        width: 100%;
+        min-height: 24px;
+        border: 0;
+        outline: 0;
+        resize: vertical;
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 16px;
+        line-height: 1.55;
+        font-family: inherit;
+    }
+
+    .problem-input::placeholder {
+        color: #8090a8;
+    }
+
+    .helper-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .helper-pill {
+        padding: 8px 12px;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .helper-pill:hover {
+        border-color: var(--accent-border);
+        color: var(--accent);
+        transform: translateY(-1px);
+    }
+
+    .flow-panel {
+        padding: 28px;
+        display: grid;
+        gap: 18px;
+        align-content: start;
+    }
+
+    .flow-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .flow-heading h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .smart-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: var(--radius-pill);
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+        color: var(--success);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .steps-list {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-secondary);
+    }
+
+    .step-index {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
+        font-size: 12px;
+        font-weight: 800;
         color: var(--accent);
-        margin: 0 auto 32px;
-        box-shadow: 0 20px 40px rgba(193, 154, 50, 0.15);
+        background: rgba(193, 154, 50, 0.12);
+        border: 1px solid rgba(193, 154, 50, 0.25);
+        flex-shrink: 0;
     }
 
-    h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 42px;
-        font-weight: 700;
-        margin-bottom: 12px;
-        letter-spacing: -0.02em;
-        color: var(--text-primary);
-    }
-
-    .subtitle {
-        color: var(--text-secondary);
-        font-size: 16px;
-        margin-bottom: 40px;
-    }
-
-    .custom-input-wrapper {
-        text-align: left;
-        margin-bottom: 24px;
-    }
-
-    .input-label {
+    .step-item strong {
         display: block;
-        font-size: 13px;
-        font-weight: 700; /* Increased weight */
-        color: var(--text-secondary);
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-    }
-
-    .custom-input {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.05); /* Slightly darker for better contrast */
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 18px 20px;
+        margin-bottom: 3px;
         color: var(--text-primary);
-        font-family: inherit;
-        font-size: 15px;
-        transition: var(--transition);
-        outline: none;
+        font-size: 13px;
     }
 
-    .custom-input:focus {
+    .step-item span {
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .results-shell {
+        margin-top: 28px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .step-shell {
+        transition: opacity 0.28s ease, transform 0.28s ease, max-height 0.35s ease, margin 0.35s ease;
+        transform-origin: top center;
+    }
+
+    .step-shell.is-hidden {
+        opacity: 0;
+        transform: translateY(-12px);
+        max-height: 0;
+        overflow: hidden;
+        pointer-events: none;
+        margin: 0;
+    }
+
+    .results-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .results-title {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+    }
+
+    .match-note {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .suggestions-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .suggestion-card {
+        width: 100%;
+        text-align: left;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: grid;
+        gap: 10px;
+        min-height: 132px;
+    }
+
+    .suggestion-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent-border);
+        box-shadow: 0 18px 35px rgba(0, 0, 0, 0.24);
+    }
+
+    .suggestion-card.is-selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(193, 154, 50, 0.18), 0 20px 36px rgba(193, 154, 50, 0.14);
+        background: rgba(193, 154, 50, 0.08);
+    }
+
+    .suggestion-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .suggestion-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(193, 154, 50, 0.12);
+        border: 1px solid rgba(193, 154, 50, 0.25);
+        color: var(--accent);
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .selected-tag {
+        display: none;
+        padding: 6px 10px;
+        border-radius: var(--radius-pill);
+        background: rgba(52, 211, 153, 0.12);
+        border: 1px solid rgba(52, 211, 153, 0.22);
+        color: var(--success);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .suggestion-card.is-selected .selected-tag {
+        display: inline-flex;
+    }
+
+    .suggestion-card h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .suggestion-card p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .empty-state {
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 28px 20px;
+        min-height: 168px;
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .empty-state i {
+        color: var(--accent);
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+
+    .selection-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid var(--accent-border);
+        background: rgba(193, 154, 50, 0.08);
+    }
+
+    .selection-bar strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 15px;
+    }
+
+    .selection-bar span {
+        color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    .selection-action {
+        padding: 12px 18px;
+        border: 0;
+        border-radius: var(--radius-pill);
+        background: var(--accent);
+        color: #08111d;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .selection-action:hover {
+        transform: translateY(-1px);
+        background: #d8ac3e;
+    }
+
+    .warning-note {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(245, 158, 11, 0.24);
+        background: rgba(245, 158, 11, 0.08);
+        color: #f5c46d;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .warning-note.is-visible {
+        display: inline-flex;
+    }
+
+    .details-shell {
+        display: none;
+        margin-top: 28px;
+        padding-top: 8px;
+        gap: 18px;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .details-shell.is-visible {
+        display: grid;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .details-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .details-heading h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .details-heading p {
+        margin: 6px 0 0;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+
+    .detail-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: var(--radius-pill);
+        background: rgba(193, 154, 50, 0.12);
+        border: 1px solid var(--accent-border);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .detail-card {
+        width: 100%;
+        text-align: left;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: grid;
+        gap: 10px;
+    }
+
+    .detail-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-border);
+        box-shadow: 0 16px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .detail-card.is-selected {
         border-color: var(--accent);
         background: rgba(193, 154, 50, 0.08);
-        box-shadow: 0 0 0 4px rgba(193, 154, 50, 0.15);
+        box-shadow: 0 0 0 2px rgba(193, 154, 50, 0.18);
     }
 
-    .book-action-btn {
-        background: var(--accent);
-        color: white;
-        border: none;
-        padding: 18px 40px;
+    .detail-card h3 {
+        margin: 0;
         font-size: 16px;
-        font-weight: 700;
-        border-radius: var(--radius-pill);
-        cursor: pointer;
-        width: 100%;
-        margin-top: 40px;
-        transition: var(--transition);
-        box-shadow: 0 10px 25px rgba(193, 154, 50, 0.3);
+        font-weight: 800;
+    }
+
+    .detail-card p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .detail-price {
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .price-panel {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--accent-border);
+        background: rgba(193, 154, 50, 0.08);
+    }
+
+    .price-panel.is-visible {
         display: flex;
+    }
+
+    .price-panel strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .estimated-price {
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        font-weight: 900;
+        color: var(--accent);
+        line-height: 1;
+    }
+
+    .confirm-button {
+        display: none;
+        width: 100%;
+        padding: 15px 20px;
+        border: 0;
+        border-radius: var(--radius-pill);
+        background: linear-gradient(135deg, var(--accent), #e1b64a);
+        color: #08111d;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .confirm-button.is-visible {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
     }
 
-    .book-action-btn:hover {
-        background: var(--accent-hover);
-        transform: translateY(-2px);
+    .confirm-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 34px rgba(193, 154, 50, 0.2);
     }
 
-    /* Fragment specific helpers */
-    .mic-icon {
-        position: absolute;
-        right: 12px;
-        bottom: 12px;
-        color: var(--text-secondary);
+    .payment-shell {
+        display: none;
+        margin-top: 28px;
+        padding-top: 8px;
+        gap: 18px;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .payment-shell.is-visible {
+        display: grid;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .payment-card {
+        width: 100%;
+        text-align: left;
+        padding: 20px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        color: var(--text-primary);
         cursor: pointer;
-        transition: 0.3s;
+        transition: var(--transition);
+        display: grid;
+        gap: 12px;
     }
 
-    .mic-listening { color: var(--accent) !important; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-    .custom-select-wrapper { position: relative; }
-    .custom-select-trigger {
-        background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle);
-        padding: 16px 20px; border-radius: var(--radius-md); cursor: pointer;
-        display: flex; justify-content: space-between; align-items: center; font-size: 15px;
-        color: var(--text-primary); /* Explicit visibility */
-    }
-    .custom-select-options {
-        position: absolute; top: 100%; left: 0; right: 0; background: #0a1120;
-        border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-        margin-top: 8px; display: none; z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-    .custom-select-wrapper.open .custom-select-options { display: block; }
-    .custom-option { padding: 12px 20px; cursor: pointer; transition: 0.2s; color: var(--text-secondary); }
-    .custom-option:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
-
-    .analyzing-overlay, .searching-overlay, .payment-overlay {
-        position: fixed; inset: 0; background: rgba(5, 11, 20, 0.95); backdrop-filter: blur(16px);
-        z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center;
+    .payment-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-border);
+        box-shadow: 0 16px 28px rgba(0, 0, 0, 0.2);
     }
 
-    /* --- ITEM SELECTION --- */
-    .item-selection-box {
-        margin-top: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-subtle);
-        border-radius: var(--radius-md); padding: 16px; display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: 0.3s; color: var(--text-secondary); font-size: 14px; font-weight: 600;
+    .payment-card.is-selected {
+        border-color: var(--accent);
+        background: rgba(193,154,50,0.08);
+        box-shadow: 0 0 0 2px rgba(193,154,50,0.18);
     }
-    .item-selection-box:hover { border-color: var(--accent); color: var(--accent); background: rgba(193, 154, 50, 0.05); }
-    
-    .selected-item-card {
-        display: none; align-items: center; gap: 16px; background: rgba(255,255,255,0.05);
-        border: 1px solid var(--accent-border); border-radius: var(--radius-md); padding: 12px 16px; margin-top: 12px;
+
+    .payment-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(193,154,50,0.12);
+        border: 1px solid rgba(193,154,50,0.25);
+        color: var(--accent);
+        font-size: 18px;
     }
-    .selected-item-card img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
-    .selected-item-info { flex: 1; text-align: left; }
-    .selected-item-info h4 { font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
-    .selected-item-info p { font-size: 12px; color: var(--accent); font-weight: 700; }
-    .change-item-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: var(--text-secondary); padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
-    .change-item-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+    .payment-card h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .payment-card p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .complete-button {
+        width: 100%;
+        padding: 15px 20px;
+        border: 0;
+        border-radius: var(--radius-pill);
+        background: linear-gradient(135deg, var(--accent), #e1b64a);
+        color: #08111d;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: var(--transition);
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+    .complete-button.is-enabled {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .complete-button.is-enabled:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 34px rgba(193,154,50,0.2);
+    }
+
+    .success-shell {
+        display: none;
+        margin-top: 28px;
+        padding: 24px;
+        border-radius: 22px;
+        border: 1px solid rgba(52,211,153,0.2);
+        background: rgba(52,211,153,0.08);
+        color: var(--text-primary);
+    }
+
+    .success-shell.is-visible {
+        display: grid;
+        gap: 12px;
+    }
+
+    .success-shell h2 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 900;
+    }
+
+    .success-shell p {
+        margin: 0;
+        color: #d5e6dd;
+        line-height: 1.6;
+    }
+
+    .success-meta {
+        display: grid;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .success-meta div {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(5,11,20,0.28);
+        border: 1px solid rgba(255,255,255,0.08);
+        font-size: 13px;
+    }
+
+    .success-meta strong {
+        color: var(--success);
+        margin-right: 8px;
+    }
+
+    @media (max-width: 1024px) {
+        .booking-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .booking-shell {
+            padding: 20px 16px 120px;
+        }
+
+        .hero-panel,
+        .flow-panel {
+            padding: 22px;
+        }
+
+        .suggestions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .selection-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .price-panel {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <main id="app-content">
-    <div class="container">
-        <div class="booking-box">
-            <div class="service-icon-large" id="serviceIcon"><i class="fas fa-tools"></i></div>
-            <h1>Book a <em style="color:#C19A32;">Service</em></h1>
-            <p class="subtitle">Professional and reliable home services.</p>
+    <section class="booking-shell">
+        <div class="booking-hero">
+            <div class="hero-panel">
+                <div class="service-chip">
+                    <i id="serviceChipIcon" class="fas fa-screwdriver-wrench"></i>
+                    <span id="serviceChipLabel">Premium Booking</span>
+                </div>
+                <h1 class="booking-title" id="bookingTitle">Book a <em>Premium Service</em></h1>
+                <p class="booking-copy" id="bookingCopy">
+                    Describe your issue and we will intelligently surface the best service options for you.
+                </p>
 
-            <div class="custom-input-wrapper">
-                <label class="input-label">Select Order Type</label>
-                <div class="custom-select-wrapper" id="orderTypeWrapper">
-                    <div class="custom-select-trigger" onclick="toggleCustomSelect('orderTypeWrapper')" id="orderTypeTrigger">Service</div>
-                    <select id="orderType" style="display: none;">
-                        <option value="service" selected>Service</option>
-                        <option value="installation">Installation</option>
-                    </select>
-                    <ul class="custom-select-options">
-                        <li class="custom-option" data-value="service">Service</li>
-                        <li class="custom-option" data-value="installation">Installation</li>
-                    </ul>
+                <div class="step-shell" id="searchStepShell">
+                <div class="search-block">
+                    <label class="search-label" for="problemInput">Problem Description</label>
+                    <div class="search-wrap">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <textarea
+                            id="problemInput"
+                            class="problem-input"
+                            rows="2"
+                            placeholder="Describe your problem..."
+                        ></textarea>
+                    </div>
+                    <div class="helper-row" id="helperPills"></div>
                 </div>
 
-                <div id="itemSelectionContainer" style="display: none;">
-                    <div id="addItemBox" class="item-selection-box" onclick="goToShop()">
-                        <i class="fas fa-plus-circle" style="margin-right: 8px; font-size: 16px;"></i> Select Item to Install
+                <div class="results-shell">
+                    <div class="results-header">
+                        <h2 class="results-title">Smart Detection Results</h2>
+                        <span class="match-note" id="matchNote"></span>
                     </div>
-                    <div id="selectedItemCard" class="selected-item-card">
-                        <img id="selItemImg" src="" alt="item">
-                        <div class="selected-item-info">
-                            <h4 id="selItemName">Item Name</h4>
-                            <p id="selItemPrice">₹0</p>
+
+                    <div id="suggestionsContainer" class="suggestions-grid"></div>
+
+                    <div class="warning-note" id="selectionWarning">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <span>Please select a service option before continuing.</span>
+                    </div>
+
+                    <div class="selection-bar" id="selectionBar">
+                        <div>
+                            <strong id="selectionTitle">No option selected</strong>
+                            <span id="selectionMeta">Choose one suggestion to continue your booking flow.</span>
                         </div>
-                        <button class="change-item-btn" onclick="goToShop()">Change</button>
+                        <button class="selection-action" id="selectionAction" type="button">Continue</button>
+                    </div>
+                </div>
+                </div>
+
+                <div class="details-shell" id="detailsShell">
+                    <div class="details-heading">
+                        <div>
+                            <h2>Choose Service Details</h2>
+                            <p id="detailsCopy">Select the exact service support you need.</p>
+                        </div>
+                        <span class="detail-badge"><i class="fas fa-layer-group"></i> Detailed Options</span>
+                    </div>
+
+                    <div class="detail-grid" id="detailGrid"></div>
+
+                    <div class="price-panel" id="pricePanel">
+                        <div>
+                            <strong>Estimated Price</strong>
+                            <div class="estimated-price" id="estimatedPrice">₹0</div>
+                        </div>
+                        <span id="priceMeta" class="match-note"></span>
+                    </div>
+
+                    <button class="confirm-button" id="confirmBookingButton" type="button">
+                        <i class="fas fa-check-circle"></i>
+                        Confirm Booking
+                    </button>
+                </div>
+
+                <div class="payment-shell" id="paymentShell">
+                    <div class="details-heading">
+                        <div>
+                            <h2>Choose Payment Method</h2>
+                            <p>Select how you want to complete this booking.</p>
+                        </div>
+                        <span class="detail-badge"><i class="fas fa-credit-card"></i> Payment Step</span>
+                    </div>
+
+                    <div class="payment-grid" id="paymentGrid">
+                        <button class="payment-card" type="button" data-payment="Online Payment">
+                            <div class="payment-icon"><i class="fas fa-wallet"></i></div>
+                            <div>
+                                <h3>Pay Online</h3>
+                                <p>Pay securely using UPI, Card, or Net Banking</p>
+                            </div>
+                        </button>
+
+                        <button class="payment-card" type="button" data-payment="Offline Payment">
+                            <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <div>
+                                <h3>Pay After Service</h3>
+                                <p>Pay in cash after service is completed</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <button class="complete-button" id="completeBookingButton" type="button">
+                        <i class="fas fa-badge-check"></i>
+                        Complete Booking
+                    </button>
+                </div>
+
+                <div class="success-shell" id="successShell">
+                    <h2>Booking Confirmed Successfully!</h2>
+                    <p>Your booking has been saved in this flow and is ready for the next operational step.</p>
+                    <div class="success-meta">
+                        <div><strong>Service:</strong><span id="successService"></span></div>
+                        <div><strong>Option:</strong><span id="successOption"></span></div>
+                        <div><strong>Payment:</strong><span id="successPayment"></span></div>
                     </div>
                 </div>
             </div>
 
-            <div class="custom-input-wrapper">
-                <label class="input-label">Describe your problem</label>
-                <div style="position:relative;">
-                    <textarea class="custom-input" id="problemDesc" rows="4" placeholder="e.g. My AC is making a strange noise..."></textarea>
-                    <div class="mic-icon" id="micBtn" onclick="startSpeech()"><i class="fas fa-microphone"></i></div>
+            <aside class="flow-panel">
+                <div class="flow-heading">
+                    <h2>Booking Flow</h2>
+                    <span class="smart-badge"><i class="fas fa-bolt"></i> Smart Match</span>
                 </div>
-            </div>
 
-            <button class="book-action-btn" onclick="initiateAnalysis()">Book Now <i class="fas fa-check-circle"></i></button>
+                <ol class="steps-list">
+                    <li class="step-item">
+                        <div class="step-index">1</div>
+                        <div>
+                            <strong>Service Selection</strong>
+                            <span id="flowServiceText">You selected a premium home service.</span>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-index">2</div>
+                        <div>
+                            <strong>Booking Page</strong>
+                            <span>Describe the issue in your own words using the smart input.</span>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-index">3</div>
+                        <div>
+                            <strong>Smart Detection</strong>
+                            <span>Keyword matching instantly suggests the right service options.</span>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-index">4</div>
+                        <div>
+                            <strong>Option Selection</strong>
+                            <span>Tap one result to highlight and store your selected booking type.</span>
+                        </div>
+                    </li>
+                </ol>
+            </aside>
         </div>
+    </section>
 
-        <!-- Overlays -->
-        <div id="analyzingOverlay" class="analyzing-overlay">
-            <div class="radar"></div>
-            <div class="analyze-text">Checking your request...</div>
-        </div>
-
-        <div id="paymentModal" class="payment-overlay">
-            <div class="payment-box" style="background:#0a1120; padding:40px; border-radius:20px; border:1px solid var(--accent-border);">
-                <h2>Execution Authorization</h2>
-                <div class="bill-total" style="font-size:24px; margin:20px 0;">Total: <span id="billTotal">₹0</span></div>
-                <button class="book-action-btn" onclick="processPayment('online')">Pay Online</button>
-                <button class="book-action-btn" style="background:transparent; border:1px solid var(--border-subtle);" onclick="closePayment()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-<script>
-    (function() {
-        // Page specific logic
-        window.toggleCustomSelect = function(id) {
-            const el = document.getElementById(id);
-            const isOpen = el.classList.contains('open');
-            document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
-            if (!isOpen) {
-                el.classList.add('open');
-            }
-        };
-
-        window.initiateAnalysis = function() {
-            document.getElementById('analyzingOverlay').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('analyzingOverlay').style.display = 'none';
-                document.getElementById('billTotal').innerText = '₹499';
-                document.getElementById('paymentModal').style.display = 'flex';
-            }, 2000);
-        };
-
-        window.closePayment = function() {
-            document.getElementById('paymentModal').style.display = 'none';
-        };
-
-        window.processPayment = function(method) {
-            alert('Order Placed Successfully via ' + method);
-            if (window.appRouter) window.appRouter.navigateTo('/src/pages/track.html');
-            else window.location.href = '/src/pages/track.html';
-        };
-
-        // Handle dropdown clicks
-        document.querySelectorAll('.custom-option').forEach(opt => {
-            opt.onclick = function() {
-                const val = this.getAttribute('data-value');
-                const wrapper = this.closest('.custom-select-wrapper');
-                wrapper.querySelector('.custom-select-trigger').innerText = this.innerText;
-                wrapper.querySelector('select').value = val;
-                wrapper.classList.remove('open');
-                
-                if(val === 'installation') {
-                    document.getElementById('itemSelectionContainer').style.display = 'block';
-                    if(!localStorage.getItem('selectedItemId')) {
-                         document.getElementById('addItemBox').style.display = 'flex';
-                         document.getElementById('selectedItemCard').style.display = 'none';
-                    }
-                } else {
-                    document.getElementById('itemSelectionContainer').style.display = 'none';
+    <script>
+        (function () {
+            const serviceConfig = {
+                plumber: {
+                    label: 'Plumber',
+                    hero: 'Book a <em>Plumber</em>',
+                    copy: 'Water leaks, pipe repairs, and bathroom issues handled with a premium home-service experience.',
+                    icon: 'fa-faucet-drip',
+                    helpers: ['Pipe leakage', 'Bathroom water issue', 'Kitchen sink problem']
+                },
+                electrician: {
+                    label: 'Electrician',
+                    hero: 'Book an <em>Electrician</em>',
+                    copy: 'Fan, switch, lighting, and wiring issues mapped into the right electrician service in seconds.',
+                    icon: 'fa-plug-circle-bolt',
+                    helpers: ['Switch not working', 'Fan repair needed', 'Light issue']
                 }
             };
-        });
 
-        window.goToShop = function() {
-            const desc = document.getElementById('problemDesc')?.value || '';
-            localStorage.setItem('pendingServiceDesc', desc);
-            localStorage.setItem('pendingOrderType', 'installation');
-            if(window.appRouter) window.appRouter.navigateTo('/src/pages/all-items.html');
-            else window.location.href = '/src/pages/all-items.html';
-        };
+            const detectionConfig = [
+                {
+                    match: ['ac', 'cooling'],
+                    note: 'Matched cooling related keywords',
+                    suggestions: [
+                        { title: 'AC Repair', description: 'Diagnosis and repair for cooling, compressor, or airflow issues.', icon: 'fa-snowflake' },
+                        { title: 'AC Installation', description: 'Professional unit setup, mounting, and testing.', icon: 'fa-screwdriver-wrench' },
+                        { title: 'Gas Refill', description: 'Cooling gas check and refill for low-performance AC units.', icon: 'fa-wind' }
+                    ]
+                },
+                {
+                    match: ['water', 'pipe', 'leak'],
+                    note: 'Matched plumbing related keywords',
+                    suggestions: [
+                        { title: 'Pipe Fix', description: 'Repair broken or blocked pipelines with quick inspection.', icon: 'fa-faucet-drip' },
+                        { title: 'Leak Repair', description: 'Stop visible leaks, drips, and pressure-loss issues fast.', icon: 'fa-droplet' },
+                        { title: 'Bathroom Plumbing', description: 'Resolve tap, shower, flush, and bathroom line problems.', icon: 'fa-bath' }
+                    ]
+                },
+                {
+                    match: ['fan', 'light', 'switch', 'electric'],
+                    note: 'Matched electrical related keywords',
+                    suggestions: [
+                        { title: 'Fan Repair', description: 'Fix slow, noisy, or non-working ceiling and wall fans.', icon: 'fa-fan' },
+                        { title: 'Switch Repair', description: 'Replace damaged switches, boards, and socket fittings.', icon: 'fa-toggle-on' },
+                        { title: 'Wiring Fix', description: 'Inspect and repair faulty home wiring connections safely.', icon: 'fa-bolt-lightning' }
+                    ]
+                }
+            ];
 
-        // Initialize
-        console.log("Service page fragment initialized");
-        const storedOrderType = localStorage.getItem('pendingOrderType');
-        const storedDesc = localStorage.getItem('pendingServiceDesc');
-        const selectedItemName = localStorage.getItem('selectedItemName');
-        const selectedItemPrice = localStorage.getItem('selectedItemPrice');
-        const selectedItemImage = localStorage.getItem('selectedItemImage');
+            const genericSuggestions = {
+                note: 'Showing general support options',
+                suggestions: [
+                    { title: 'General Inspection', description: 'A technician visits first to inspect and recommend the right fix.', icon: 'fa-magnifying-glass' },
+                    { title: 'Home Service Support', description: 'Need help deciding? We will connect you with the right specialist.', icon: 'fa-headset' }
+                ]
+            };
 
-        if (storedDesc) {
-            document.getElementById('problemDesc').value = storedDesc;
-        }
+            const params = new URLSearchParams(window.location.search);
+            const serviceKey = (params.get('service') || 'plumber').toLowerCase();
+            const service = serviceConfig[serviceKey] || serviceConfig.plumber;
 
-        if (storedOrderType === 'installation' || selectedItemName) {
-            const wrapper = document.getElementById('orderTypeWrapper');
-            wrapper.querySelector('.custom-select-trigger').innerText = 'Installation';
-            wrapper.querySelector('select').value = 'installation';
-            
-            document.getElementById('itemSelectionContainer').style.display = 'block';
-            
-            if (selectedItemName) {
-                document.getElementById('addItemBox').style.display = 'none';
-                document.getElementById('selectedItemCard').style.display = 'flex';
-                document.getElementById('selItemName').innerText = selectedItemName;
-                document.getElementById('selItemPrice').innerText = '₹' + selectedItemPrice;
-                document.getElementById('selItemImg').src = selectedItemImage || 'https://via.placeholder.com/48?text=No+Image';
-            } else {
-                document.getElementById('addItemBox').style.display = 'flex';
-                document.getElementById('selectedItemCard').style.display = 'none';
+            const titleEl = document.getElementById('bookingTitle');
+            const copyEl = document.getElementById('bookingCopy');
+            const chipLabelEl = document.getElementById('serviceChipLabel');
+            const chipIconEl = document.getElementById('serviceChipIcon');
+            const flowServiceTextEl = document.getElementById('flowServiceText');
+            const helperPillsEl = document.getElementById('helperPills');
+            const inputEl = document.getElementById('problemInput');
+            const suggestionsEl = document.getElementById('suggestionsContainer');
+            const matchNoteEl = document.getElementById('matchNote');
+            const searchStepShellEl = document.getElementById('searchStepShell');
+            const selectionBarEl = document.getElementById('selectionBar');
+            const selectionTitleEl = document.getElementById('selectionTitle');
+            const selectionMetaEl = document.getElementById('selectionMeta');
+            const selectionActionEl = document.getElementById('selectionAction');
+            const selectionWarningEl = document.getElementById('selectionWarning');
+            const detailsShellEl = document.getElementById('detailsShell');
+            const detailsCopyEl = document.getElementById('detailsCopy');
+            const detailGridEl = document.getElementById('detailGrid');
+            const pricePanelEl = document.getElementById('pricePanel');
+            const estimatedPriceEl = document.getElementById('estimatedPrice');
+            const priceMetaEl = document.getElementById('priceMeta');
+            const confirmBookingButtonEl = document.getElementById('confirmBookingButton');
+            const paymentShellEl = document.getElementById('paymentShell');
+            const paymentGridEl = document.getElementById('paymentGrid');
+            const completeBookingButtonEl = document.getElementById('completeBookingButton');
+            const successShellEl = document.getElementById('successShell');
+            const successServiceEl = document.getElementById('successService');
+            const successOptionEl = document.getElementById('successOption');
+            const successPaymentEl = document.getElementById('successPayment');
+
+            const detailOptionsMap = {
+                'Fan Repair': [
+                    { title: 'Basic Inspection', description: 'Initial diagnosis to identify wiring, speed, or noise problems.', price: 199 },
+                    { title: 'Capacitor Replacement', description: 'Replace weak or damaged capacitors for improved fan performance.', price: 399 },
+                    { title: 'Motor Repair', description: 'Repair internal motor faults, overheating, or humming issues.', price: 799 },
+                    { title: 'Full Fan Service', description: 'Cleaning, balancing, inspection, and repair in one complete visit.', price: 999 },
+                    { title: 'Installation Support', description: 'Fan mounting, fitting, and safe reconnection support.', price: 549 }
+                ],
+                'Switch Repair': [
+                    { title: 'Basic Inspection', description: 'Check board condition, loose contacts, and wiring health.', price: 199 },
+                    { title: 'Single Switch Replacement', description: 'Swap one damaged switch with a fresh working unit.', price: 299 },
+                    { title: 'Switch Board Repair', description: 'Repair faulty plates, sockets, and loose switch combinations.', price: 499 },
+                    { title: 'Full Switch Panel Service', description: 'End-to-end servicing for a complete multi-switch panel.', price: 799 },
+                    { title: 'Installation Support', description: 'Safe fitting support for a new switch board or upgrade.', price: 399 }
+                ],
+                'Wiring Fix': [
+                    { title: 'Basic Inspection', description: 'Trace the issue and test voltage, joints, and damaged points.', price: 249 },
+                    { title: 'Minor Wiring Repair', description: 'Fix exposed, loose, or short small sections of wiring.', price: 499 },
+                    { title: 'Circuit Repair', description: 'Repair one faulty room line or repeated breaker issue.', price: 799 },
+                    { title: 'Full Wiring Service', description: 'Broader service for multiple wire faults and safety cleanup.', price: 1199 },
+                    { title: 'Installation Support', description: 'Support for fitting lights, fans, or outlets with fresh wiring.', price: 649 }
+                ],
+                'Pipe Fix': [
+                    { title: 'Basic Inspection', description: 'Inspect line pressure, blockage, and visible pipe faults.', price: 199 },
+                    { title: 'Joint Seal Repair', description: 'Fix loose or leaking joints and connectors quickly.', price: 349 },
+                    { title: 'Pipe Section Replacement', description: 'Replace a damaged or cracked pipe section cleanly.', price: 699 },
+                    { title: 'Full Pipe Service', description: 'Complete pipe alignment, sealing, and functional testing.', price: 999 },
+                    { title: 'Installation Support', description: 'Support for fresh fittings or plumbing line setup.', price: 549 }
+                ],
+                'Leak Repair': [
+                    { title: 'Basic Inspection', description: 'Pinpoint source of leakage in taps, pipes, or connections.', price: 199 },
+                    { title: 'Seal & Tightening', description: 'Quick fix for loose joints, threads, and small drips.', price: 299 },
+                    { title: 'Fixture Repair', description: 'Repair leaking faucets, valves, or shower points.', price: 499 },
+                    { title: 'Full Leak Service', description: 'Deep leak repair with checks across connected plumbing points.', price: 899 },
+                    { title: 'Installation Support', description: 'Help install fresh leak-resistant plumbing fixtures.', price: 449 }
+                ],
+                'Bathroom Plumbing': [
+                    { title: 'Basic Inspection', description: 'Check bathroom fittings, drain flow, and water pressure.', price: 249 },
+                    { title: 'Faucet or Shower Repair', description: 'Fix tap, shower, or diverter related issues.', price: 399 },
+                    { title: 'Flush & Outlet Repair', description: 'Repair flush systems, traps, and drain outlet connections.', price: 649 },
+                    { title: 'Full Bathroom Service', description: 'Comprehensive plumbing care for multiple bathroom issues.', price: 1199 },
+                    { title: 'Installation Support', description: 'Support for sinks, showers, taps, or accessories.', price: 599 }
+                ],
+                'AC Repair': [
+                    { title: 'Basic Inspection', description: 'Check airflow, cooling, and visible component health.', price: 299 },
+                    { title: 'Cooling Repair', description: 'Resolve weak cooling, airflow drop, or strange noise issues.', price: 699 },
+                    { title: 'Compressor Service', description: 'Focused repair for compressor or condenser problems.', price: 1299 },
+                    { title: 'Full AC Service', description: 'Deep cleaning and repair for overall AC performance.', price: 1499 },
+                    { title: 'Installation Support', description: 'Support for shifting or fresh AC installation.', price: 999 }
+                ],
+                'AC Installation': [
+                    { title: 'Basic Inspection', description: 'Site visit to validate mounting and electrical readiness.', price: 299 },
+                    { title: 'Window AC Installation', description: 'Professional fitting for window AC units.', price: 799 },
+                    { title: 'Split AC Installation', description: 'Mount indoor and outdoor units with testing.', price: 1499 },
+                    { title: 'Full Installation Service', description: 'Complete installation plus trial run and cleanup.', price: 1999 },
+                    { title: 'Installation Support', description: 'Extra support for brackets, piping, or relocation prep.', price: 999 }
+                ],
+                'Gas Refill': [
+                    { title: 'Basic Inspection', description: 'Leak and pressure check before refill service.', price: 249 },
+                    { title: 'Partial Gas Refill', description: 'Top-up service for minor cooling loss cases.', price: 799 },
+                    { title: 'Full Gas Refill', description: 'Complete refill for low or empty cooling gas.', price: 1399 },
+                    { title: 'Cooling Performance Service', description: 'Refill plus cooling calibration and performance check.', price: 1599 },
+                    { title: 'Installation Support', description: 'Support for reconnecting gas lines post-installation.', price: 649 }
+                ],
+                'General Inspection': [
+                    { title: 'Basic Inspection', description: 'One professional visit to assess the issue in detail.', price: 199 },
+                    { title: 'Priority Inspection', description: 'Faster inspection slot with focused diagnostics.', price: 349 },
+                    { title: 'Home System Check', description: 'Inspect multiple related points in one service visit.', price: 599 },
+                    { title: 'Full Service Assessment', description: 'Detailed service diagnosis with recommended next steps.', price: 799 },
+                    { title: 'Installation Support', description: 'Support if your inspection leads into a fresh install.', price: 449 }
+                ],
+                'Home Service Support': [
+                    { title: 'Basic Support Callout', description: 'Technician assistance to identify the right service category.', price: 199 },
+                    { title: 'Priority Support', description: 'Faster on-site support for urgent home-service issues.', price: 349 },
+                    { title: 'Repair Coordination', description: 'Support plus guidance on the most suitable repair path.', price: 549 },
+                    { title: 'Full Service Support', description: 'Comprehensive help coordinating diagnosis and service.', price: 899 },
+                    { title: 'Installation Support', description: 'Assistance if your request turns into a setup or install job.', price: 499 }
+                ]
+            };
+
+            let selectedOption = null;
+            let selectedDetail = null;
+            let selectedPayment = null;
+
+            titleEl.innerHTML = service.hero;
+            copyEl.textContent = service.copy;
+            chipLabelEl.textContent = service.label + ' Booking';
+            chipIconEl.className = 'fas ' + service.icon;
+            flowServiceTextEl.textContent = 'You selected ' + service.label + ' for your home service request.';
+
+            helperPillsEl.innerHTML = service.helpers.map((helper) => `
+                <button class="helper-pill" type="button" data-helper="${helper}">${helper}</button>
+            `).join('');
+
+            helperPillsEl.querySelectorAll('.helper-pill').forEach((pill) => {
+                pill.addEventListener('click', () => {
+                    inputEl.value = pill.dataset.helper;
+                    runDetection();
+                    inputEl.focus();
+                });
+            });
+
+            function normalizeText(value) {
+                return (value || '').trim().toLowerCase();
             }
-        }
-    })();
-</script>
+
+            function getDetectionResult(value) {
+                const normalized = normalizeText(value);
+                if (!normalized) {
+                    return { note: '', suggestions: [] };
+                }
+
+                const matched = detectionConfig.find((rule) =>
+                    rule.match.some((keyword) => normalized.includes(keyword))
+                );
+
+                return matched || genericSuggestions;
+            }
+
+            function renderEmptyState() {
+                suggestionsEl.innerHTML = `
+                    <div class="empty-state">
+                        <div>
+                            <i class="fas fa-sparkles"></i>
+                            <div>Start typing to see smart suggestions for your booking.</div>
+                        </div>
+                    </div>
+                `;
+                matchNoteEl.textContent = '';
+            }
+
+            function renderSuggestions(result) {
+                if (!result.suggestions.length) {
+                    renderEmptyState();
+                    return;
+                }
+
+                matchNoteEl.textContent = result.note;
+                suggestionsEl.innerHTML = result.suggestions.map((item) => `
+                    <button class="suggestion-card" type="button" data-title="${item.title}">
+                        <div class="suggestion-top">
+                            <div class="suggestion-icon"><i class="fas ${item.icon}"></i></div>
+                            <span class="selected-tag">Selected</span>
+                        </div>
+                        <div>
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    </button>
+                `).join('');
+
+                suggestionsEl.querySelectorAll('.suggestion-card').forEach((card) => {
+                    card.addEventListener('click', () => {
+                        suggestionsEl.querySelectorAll('.suggestion-card').forEach((node) => node.classList.remove('is-selected'));
+                        card.classList.add('is-selected');
+                        selectedOption = {
+                            service: service.label,
+                            option: card.dataset.title,
+                            problem: inputEl.value.trim()
+                        };
+                        selectedDetail = null;
+                        localStorage.setItem('selectedBookingFlow', JSON.stringify(selectedOption));
+                        selectionTitleEl.textContent = selectedOption.option;
+                        selectionMetaEl.textContent = selectedOption.service + ' selected and stored for your booking flow.';
+                        selectionWarningEl.classList.remove('is-visible');
+                    });
+                });
+            }
+
+            function runDetection() {
+                const result = getDetectionResult(inputEl.value);
+                selectedOption = null;
+                selectedDetail = null;
+                selectionTitleEl.textContent = 'No option selected';
+                selectionMetaEl.textContent = 'Choose one suggestion to continue your booking flow.';
+                selectionWarningEl.classList.remove('is-visible');
+                detailsShellEl.classList.remove('is-visible');
+                searchStepShellEl.classList.remove('is-hidden');
+                renderSuggestions(result);
+            }
+
+            function renderDetailOptions(optionName) {
+                const options = detailOptionsMap[optionName] || detailOptionsMap['General Inspection'];
+                detailsCopyEl.textContent = 'Choose the service detail you want for ' + optionName + '.';
+                detailGridEl.innerHTML = options.map((item) => `
+                    <button class="detail-card" type="button" data-title="${item.title}" data-price="${item.price}">
+                        <div class="detail-price">${item.title === 'Basic Inspection' ? 'Starts at' : 'Estimated'} ₹${item.price}</div>
+                        <div>
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    </button>
+                `).join('');
+
+                pricePanelEl.classList.remove('is-visible');
+                confirmBookingButtonEl.classList.remove('is-visible');
+                paymentShellEl.classList.remove('is-visible');
+                successShellEl.classList.remove('is-visible');
+                estimatedPriceEl.textContent = '₹0';
+                priceMetaEl.textContent = '';
+                selectedPayment = null;
+                completeBookingButtonEl.classList.remove('is-enabled');
+
+                detailGridEl.querySelectorAll('.detail-card').forEach((card) => {
+                    card.addEventListener('click', () => {
+                        detailGridEl.querySelectorAll('.detail-card').forEach((node) => node.classList.remove('is-selected'));
+                        card.classList.add('is-selected');
+
+                        selectedDetail = {
+                            title: card.dataset.title,
+                            price: Number(card.dataset.price)
+                        };
+
+                        const bookingState = {
+                            ...(selectedOption || {}),
+                            detail: selectedDetail.title,
+                            estimatedPrice: selectedDetail.price
+                        };
+                        localStorage.setItem('selectedBookingFlow', JSON.stringify(bookingState));
+
+                        estimatedPriceEl.textContent = '₹' + selectedDetail.price;
+                        priceMetaEl.textContent = selectedDetail.title + ' selected';
+                        pricePanelEl.classList.add('is-visible');
+                        confirmBookingButtonEl.classList.add('is-visible');
+                    });
+                });
+            }
+
+            selectionActionEl.addEventListener('click', () => {
+                if (!selectedOption) {
+                    selectionWarningEl.classList.add('is-visible');
+                    return;
+                }
+
+                selectionWarningEl.classList.remove('is-visible');
+                searchStepShellEl.classList.add('is-hidden');
+                renderDetailOptions(selectedOption.option);
+
+                requestAnimationFrame(() => {
+                    detailsShellEl.classList.add('is-visible');
+                });
+            });
+
+            confirmBookingButtonEl.addEventListener('click', () => {
+                if (!selectedOption || !selectedDetail) return;
+                detailsShellEl.classList.remove('is-visible');
+                paymentGridEl.querySelectorAll('.payment-card').forEach((card) => card.classList.remove('is-selected'));
+                completeBookingButtonEl.classList.remove('is-enabled');
+                selectedPayment = null;
+
+                requestAnimationFrame(() => {
+                    paymentShellEl.classList.add('is-visible');
+                });
+            });
+
+            paymentGridEl.querySelectorAll('.payment-card').forEach((card) => {
+                card.addEventListener('click', () => {
+                    paymentGridEl.querySelectorAll('.payment-card').forEach((node) => node.classList.remove('is-selected'));
+                    card.classList.add('is-selected');
+                    selectedPayment = card.dataset.payment;
+                    completeBookingButtonEl.classList.add('is-enabled');
+                });
+            });
+
+            completeBookingButtonEl.addEventListener('click', () => {
+                if (!selectedPayment || !selectedOption || !selectedDetail) return;
+
+                const bookingState = {
+                    ...(selectedOption || {}),
+                    detail: selectedDetail.title,
+                    estimatedPrice: selectedDetail.price,
+                    paymentMethod: selectedPayment
+                };
+                localStorage.setItem('selectedBookingFlow', JSON.stringify(bookingState));
+
+                paymentShellEl.classList.remove('is-visible');
+                successServiceEl.textContent = selectedOption.service;
+                successOptionEl.textContent = selectedOption.option + ' - ' + selectedDetail.title;
+                successPaymentEl.textContent = selectedPayment === 'Online Payment' ? 'Pay Online' : 'Pay After Service';
+                successShellEl.classList.add('is-visible');
+            });
+
+            inputEl.addEventListener('input', runDetection);
+            renderEmptyState();
+        })();
+    </script>
 </main>

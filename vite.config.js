@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'client', 'index.html'),
+        booking: resolve(__dirname, 'client', 'booking.html'),
         login: resolve(__dirname, 'client', 'src', 'pages', 'login.html'),
         register: resolve(__dirname, 'client', 'src', 'pages', 'register.html'),
         worker_register: resolve(__dirname, 'client', 'src', 'pages', 'worker-register.html'),
@@ -33,4 +34,3 @@ export default defineConfig({
     historyApiFallback: true, 
   },
 });
-

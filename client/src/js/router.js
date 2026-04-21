@@ -35,7 +35,8 @@ class Router {
     });
 
     window.addEventListener('popstate', () => {
-      this.loadPage(window.location.pathname, false);
+      const path = window.location.pathname + window.location.search;
+      this.loadPage(path, false);
     });
 
     const params = new URLSearchParams(window.location.search);
@@ -62,7 +63,7 @@ class Router {
 
   async navigateTo(url) {
     if (this.isNavigating) return;
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPath = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
     if (url === currentPath || url === '/' + currentPath) return;
     await this.loadPage(url, true);
   }
@@ -74,17 +75,23 @@ class Router {
 
     try {
         let fetchUrl = url;
-        let cleanPath = url.startsWith('/') ? url.substring(1) : url;
+        const rawUrl = url || 'index.html';
+        const [pathOnly, queryString = ''] = rawUrl.split('?');
+        let cleanPath = pathOnly.startsWith('/') ? pathOnly.substring(1) : pathOnly;
+        const querySuffix = queryString ? `?${queryString}` : '';
         
         // Path Mapping
         if (!cleanPath.startsWith('src/pages/') && cleanPath.endsWith('.html') && cleanPath !== 'index.html') {
             fetchUrl = `src/pages/${cleanPath}`;
         } else if (cleanPath === '' || cleanPath === 'index.html') {
             fetchUrl = 'index.html';
+        } else {
+            fetchUrl = cleanPath;
         }
+        fetchUrl += querySuffix;
 
         // Visibility Guard
-        if (fetchUrl !== 'index.html') {
+        if (cleanPath !== 'index.html' && cleanPath !== '') {
             document.documentElement.classList.add('is-subpage');
         } else {
             document.documentElement.classList.remove('is-subpage');
@@ -115,7 +122,7 @@ class Router {
             this.appContent.id = 'app-content';
             
             if (pushState) {
-                const filename = url.split('/').pop() || 'index.html';
+                const filename = rawUrl.split('/').pop() || 'index.html';
                 window.history.pushState({}, '', filename);
             }
             
@@ -186,11 +193,11 @@ class Router {
   }
 
   updateActiveLinks(url) {
-    const filename = url.split('/').pop() || 'index.html';
+    const filename = (url.split('/').pop() || 'index.html').split('?')[0];
     const normalized = filename === '' ? 'index.html' : filename;
     document.querySelectorAll('.desktop-nav-link, .mbn-item, .mobile-link').forEach(link => {
         const href = link.getAttribute('href') || '/';
-        const linkFile = href.split('/').pop() || 'index.html';
+        const linkFile = (href.split('/').pop() || 'index.html').split('?')[0];
         const active = (normalized === (linkFile || 'index.html'));
         link.classList.toggle('active', active);
     });

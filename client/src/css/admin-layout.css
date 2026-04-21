@@ -41,9 +41,9 @@
 }
 
 .login-logo {
-    height: 64px; width: 64px;
-    border-radius: 12px;
-    padding: 4px;
+    height: 76px; width: 220px;
+    border-radius: 18px;
+    padding: 8px 14px;
     background: white;
     margin-bottom: 32px;
     object-fit: contain;
@@ -205,3 +205,29 @@
 
 .btn-approve { background: var(--success); color: white; }
 .btn-reject { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px 110px;
+        margin-top: 20px;
+    }
+
+    .login-box,
+    .stat-card,
+    .worker-card {
+        padding: 24px;
+    }
+
+    .card-header {
+        padding: 18px;
+        gap: 12px;
+    }
+
+    .action-area {
+        padding: 18px;
+    }
+
+    .btn-action {
+        width: 100%;
+    }
+}
